@@ -1,0 +1,156 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Dark Mode Theme -->
+
+    <!-- Window Background -->
+    <Style Selector="Window.dark">
+        <Setter Property="Background" Value="#0f172a"/>
+    </Style>
+
+    <!-- Card Border Style (Dark) -->
+    <Style Selector=".dark Border.card">
+        <Setter Property="Background" Value="#1e293b"/>
+        <Setter Property="BorderBrush" Value="#334155"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="16"/>
+        <Setter Property="Padding" Value="20"/>
+        <Setter Property="BoxShadow" Value="0 4 6 -1 #00000025, 0 2 4 -2 #00000015"/>
+    </Style>
+
+    <!-- Label Text Style (Dark) -->
+    <Style Selector=".dark TextBlock.label">
+        <Setter Property="Foreground" Value="#f8fafc"/>
+    </Style>
+
+    <!-- Code TextBox Style (Dark) -->
+    <Style Selector=".dark TextBox.code">
+        <Setter Property="Background" Value="#0f172a"/>
+        <Setter Property="BorderBrush" Value="#475569"/>
+        <Setter Property="Foreground" Value="#e2e8f0"/>
+    </Style>
+
+    <!-- Header Border Style (Dark) -->
+    <Style Selector=".dark Border.header">
+        <Setter Property="Background" Value="#020617"/>
+        <Setter Property="BoxShadow" Value="0 4 6 -1 #00000040"/>
+    </Style>
+
+    <!-- Status Bar Border Style (Dark) -->
+    <Style Selector=".dark Border.statusbar">
+        <Setter Property="Background" Value="#0f172a"/>
+        <Setter Property="BoxShadow" Value="0 -4 6 -1 #00000040"/>
+    </Style>
+
+    <!-- Text Input Styles (Dark) -->
+    <Style Selector=".dark TextBox">
+        <Setter Property="Background" Value="#0f172a"/>
+        <Setter Property="BorderBrush" Value="#475569"/>
+        <Setter Property="Foreground" Value="#f8fafc"/>
+    </Style>
+
+    <Style Selector=".dark TextBox:focus">
+        <Setter Property="BorderBrush" Value="#3b82f6"/>
+    </Style>
+
+    <Style Selector=".dark TextBox:pointerover">
+        <Setter Property="BorderBrush" Value="#64748b"/>
+    </Style>
+
+    <!-- ComboBox Styles (Dark) -->
+    <Style Selector=".dark ComboBox">
+        <Setter Property="Background" Value="#0f172a"/>
+        <Setter Property="BorderBrush" Value="#475569"/>
+        <Setter Property="Foreground" Value="#f8fafc"/>
+    </Style>
+
+    <Style Selector=".dark ComboBox:focus">
+        <Setter Property="BorderBrush" Value="#3b82f6"/>
+    </Style>
+
+    <Style Selector=".dark ComboBox:pointerover">
+        <Setter Property="BorderBrush" Value="#64748b"/>
+    </Style>
+
+    <!-- NumericUpDown Styles (Dark) -->
+    <Style Selector=".dark NumericUpDown">
+        <Setter Property="Background" Value="#0f172a"/>
+        <Setter Property="BorderBrush" Value="#475569"/>
+        <Setter Property="Foreground" Value="#f8fafc"/>
+    </Style>
+
+    <!-- Separator Style (Dark) -->
+    <Style Selector=".dark Separator">
+        <Setter Property="Background" Value="#334155"/>
+    </Style>
+
+    <!-- TabItem (Dark) -->
+    <Style Selector=".dark TabItem">
+        <Setter Property="Foreground" Value="#94a3b8"/>
+    </Style>
+
+    <Style Selector=".dark TabItem:selected">
+        <Setter Property="Foreground" Value="#3b82f6"/>
+    </Style>
+
+    <Style Selector=".dark TabItem:pointerover">
+        <Setter Property="Foreground" Value="#cbd5e1"/>
+    </Style>
+
+    <!-- Section Header Style (Dark) -->
+    <Style Selector=".dark TextBlock.section-header">
+        <Setter Property="Foreground" Value="#f8fafc"/>
+    </Style>
+
+    <!-- Description Text Style (Dark) -->
+    <Style Selector=".dark TextBlock.description">
+        <Setter Property="Foreground" Value="#94a3b8"/>
+    </Style>
+
+    <!-- Welcome Background (Dark) -->
+    <Style Selector=".dark Border#gradientBackground">
+        <Setter Property="Background">
+            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                <GradientStop Color="#0f172a" Offset="0.0"/>
+                <GradientStop Color="#1e293b" Offset="0.5"/>
+                <GradientStop Color="#334155" Offset="1.0"/>
+            </LinearGradientBrush>
+        </Setter>
+    </Style>
+
+    <!-- Welcome Text Colors (Dark) - Override inline colors -->
+    <Style Selector=".dark #welcomeView TextBlock">
+        <Setter Property="Foreground" Value="#f8fafc"/>
+    </Style>
+
+    <!-- Feature Card Style (Dark) -->
+    <Style Selector=".dark Border.feature-card">
+        <Setter Property="Background" Value="#1e293b"/>
+        <Setter Property="BorderBrush" Value="#475569"/>
+        <Setter Property="BoxShadow" Value="0 4 6 -1 #00000040, 0 2 4 -2 #00000025"/>
+    </Style>
+
+    <Style Selector=".dark Border.feature-card:pointerover">
+        <Setter Property="Background" Value="#334155"/>
+        <Setter Property="BorderBrush" Value="#64748b"/>
+        <Setter Property="BoxShadow" Value="0 10 15 -3 #00000050, 0 4 6 -4 #00000030"/>
+    </Style>
+
+    <Style Selector=".dark Border.feature-card TextBlock">
+        <Setter Property="Foreground" Value="#f8fafc"/>
+    </Style>
+
+    <!-- ScrollBar Styles (Dark) -->
+    <Style Selector=".dark ScrollBar /template/ Thumb">
+        <Setter Property="Background" Value="#475569"/>
+    </Style>
+
+    <Style Selector=".dark ScrollBar /template/ Thumb:pointerover">
+        <Setter Property="Background" Value="#64748b"/>
+    </Style>
+
+    <Style Selector=".dark ScrollBar /template/ Thumb:pressed">
+        <Setter Property="Background" Value="#94a3b8"/>
+    </Style>
+
+</Styles>

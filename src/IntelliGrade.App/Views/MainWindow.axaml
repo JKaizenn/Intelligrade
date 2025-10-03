@@ -1,20 +1,117 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:IntelliGrade.App.ViewModels"
+        xmlns:views="using:IntelliGrade.App.Views"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        mc:Ignorable="d" d:DesignWidth="1920" d:DesignHeight="1080"
         x:Class="IntelliGrade.App.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/avalonia-logo.ico"
-        Title="IntelliGrade.App">
+        Title="IntelliGrade - Automated Programming Grader"
+        Width="1920" Height="1080"
+        MinWidth="1024" MinHeight="768"
+        Background="#e2e8f0"
+        WindowStartupLocation="CenterScreen">
 
     <Design.DataContext>
-        <!-- This only sets the DataContext for the previewer in an IDE,
-             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
         <vm:MainWindowViewModel/>
     </Design.DataContext>
 
-    <TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+    <Grid RowDefinitions="Auto,*,Auto">
+
+        <!-- Header -->
+        <Border Grid.Row="0" Classes="header">
+            <Grid ColumnDefinitions="*,Auto,Auto,Auto">
+                <!-- Logo/Title -->
+                <StackPanel Grid.Column="0">
+                    <TextBlock Text="IntelliGrade"
+                               FontSize="28"
+                               FontWeight="Bold"
+                               Foreground="#f8fafc"/>
+                    <TextBlock Text="Automated Programming Assignment Grader"
+                               FontSize="13"
+                               Foreground="#cbd5e1"
+                               Margin="0,6,0,0"/>
+                </StackPanel>
+
+                <!-- AI Badge -->
+                <StackPanel Grid.Column="1"
+                            VerticalAlignment="Center"
+                            Margin="0,0,16,0">
+                    <Border Classes="badge success"
+                            IsVisible="{Binding OllamaAvailable}">
+                        <TextBlock Text="AI: Active"
+                                   Foreground="White"
+                                   FontSize="12"
+                                   FontWeight="SemiBold"/>
+                    </Border>
+                    <Border Classes="badge error"
+                            IsVisible="{Binding !OllamaAvailable}">
+                        <TextBlock Text="AI: Offline"
+                                   Foreground="White"
+                                   FontSize="12"
+                                   FontWeight="SemiBold"/>
+                    </Border>
+                </StackPanel>
+
+                <!-- Home Button -->
+                <Button Grid.Column="2"
+                        Classes="icon"
+                        Command="{Binding ReturnHomeCommand}"
+                        ToolTip.Tip="Return to Home"
+                        IsVisible="{Binding !ShowWelcomeScreen}"
+                        VerticalAlignment="Center"
+                        Margin="0,0,8,0">
+                    <TextBlock Text="Home" FontSize="11" FontWeight="SemiBold"/>
+                </Button>
+
+                <!-- Dark Mode Toggle -->
+                <Button Grid.Column="3"
+                        Classes="icon"
+                        Command="{Binding ToggleDarkModeCommand}"
+                        ToolTip.Tip="Toggle Dark Mode"
+                        VerticalAlignment="Center">
+                    <Panel>
+                        <TextBlock Text="Light" FontSize="11" FontWeight="SemiBold" IsVisible="{Binding !IsDarkMode}"/>
+                        <TextBlock Text="Dark" FontSize="11" FontWeight="SemiBold" IsVisible="{Binding IsDarkMode}"/>
+                    </Panel>
+                </Button>
+            </Grid>
+        </Border>
+
+        <!-- Main Content -->
+        <Panel Grid.Row="1">
+            <!-- Welcome Screen -->
+            <views:WelcomeView IsVisible="{Binding ShowWelcomeScreen}"/>
+
+            <!-- Grading Interface -->
+            <views:GradingView IsVisible="{Binding !ShowWelcomeScreen}"/>
+        </Panel>
+
+        <!-- Status Bar -->
+        <Border Grid.Row="2" Classes="statusbar">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+                <ProgressBar Grid.Column="0" 
+                             IsIndeterminate="{Binding IsProcessing}"
+                             IsVisible="{Binding IsProcessing}"
+                             Width="200" 
+                             Height="4"
+                             Margin="0,0,20,0"/>
+                <TextBlock Grid.Column="1"
+                           Text="{Binding StatusMessage}"
+                           Foreground="#f8fafc"
+                           FontSize="13"
+                           VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="2"
+                           Text="v1.0.0"
+                           Foreground="#64748b"
+                           FontSize="11"
+                           VerticalAlignment="Center"/>
+            </Grid>
+        </Border>
+
+    </Grid>
 
 </Window>

@@ -1,0 +1,93 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:IntelliGrade.App.ViewModels"
+             x:Class="IntelliGrade.App.Views.WelcomeView"
+             x:DataType="vm:MainWindowViewModel"
+             x:Name="welcomeView">
+
+    <Panel>
+        <!-- Subtle Gradient Background -->
+        <Border x:Name="gradientBackground" ClipToBounds="True">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Color="#f8fafc" Offset="0.0"/>
+                    <GradientStop Color="#e2e8f0" Offset="0.5"/>
+                    <GradientStop Color="#cbd5e1" Offset="1.0"/>
+                </LinearGradientBrush>
+            </Border.Background>
+        </Border>
+
+        <!-- Content -->
+        <Grid Margin="40">
+            <StackPanel VerticalAlignment="Center"
+                        HorizontalAlignment="Center"
+                        MaxWidth="600"
+                        Spacing="48">
+
+                <!-- Title -->
+                <StackPanel Spacing="16">
+                    <TextBlock Text="IntelliGrade"
+                               Classes="welcome-title"
+                               FontSize="64"
+                               FontWeight="Bold"
+                               TextAlignment="Center"
+                               Foreground="#0f172a"/>
+
+                    <TextBlock Text="AI-Powered Assignment Grading"
+                               Classes="welcome-subtitle"
+                               FontSize="24"
+                               TextAlignment="Center"
+                               Foreground="#475569"/>
+                </StackPanel>
+
+                <!-- Feature Cards -->
+                <Grid ColumnDefinitions="*,16,*,16,*">
+
+                    <!-- Feature 1 -->
+                    <Border Grid.Column="0" Classes="feature-card">
+                        <TextBlock Text="Fast Execution"
+                                   Classes="feature-title"
+                                   TextAlignment="Center"
+                                   Foreground="#1e293b"
+                                   FontSize="16"
+                                   FontWeight="SemiBold"/>
+                    </Border>
+
+                    <!-- Feature 2 -->
+                    <Border Grid.Column="2" Classes="feature-card">
+                        <TextBlock Text="AI Analysis"
+                                   Classes="feature-title"
+                                   TextAlignment="Center"
+                                   Foreground="#1e293b"
+                                   FontSize="16"
+                                   FontWeight="SemiBold"/>
+                    </Border>
+
+                    <!-- Feature 3 -->
+                    <Border Grid.Column="4" Classes="feature-card">
+                        <TextBlock Text="Export Results"
+                                   Classes="feature-title"
+                                   TextAlignment="Center"
+                                   Foreground="#1e293b"
+                                   FontSize="16"
+                                   FontWeight="SemiBold"/>
+                    </Border>
+
+                </Grid>
+
+                <!-- Get Started Button -->
+                <Button Content="Get Started"
+                        Command="{Binding StartGradingCommand}"
+                        Classes="primary"
+                        Width="200"
+                        Height="50"
+                        HorizontalAlignment="Center"
+                        FontSize="18"
+                        FontWeight="SemiBold"/>
+
+            </StackPanel>
+        </Grid>
+
+    </Panel>
+
+</UserControl>

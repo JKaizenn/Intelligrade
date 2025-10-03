@@ -1,0 +1,189 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:IntelliGrade.App.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="700"
+        x:Class="IntelliGrade.App.Views.RubricImportView"
+        x:DataType="vm:RubricImportViewModel"
+        Title="Import Rubric"
+        Width="800" Height="700"
+        MinWidth="700" MinHeight="600"
+        WindowStartupLocation="CenterOwner">
+
+    <Design.DataContext>
+        <vm:RubricImportViewModel/>
+    </Design.DataContext>
+
+    <Grid RowDefinitions="Auto,*,Auto" Margin="24">
+
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Spacing="8" Margin="0,0,0,24">
+            <TextBlock Text="Import Rubric"
+                       Classes="section-header"/>
+            <TextBlock Text="Add a new grading rubric from text or file. The program will automatically convert it to JSON format."
+                       Classes="description"
+                       TextWrapping="Wrap"/>
+        </StackPanel>
+
+        <!-- Content -->
+        <ScrollViewer Grid.Row="1">
+            <StackPanel Spacing="20">
+
+                <!-- Course and Language Selection -->
+                <Border Classes="card" Padding="20">
+                    <Grid RowDefinitions="Auto,12,Auto,12,Auto" ColumnDefinitions="*,16,*">
+
+                        <TextBlock Grid.Row="0" Grid.ColumnSpan="3"
+                                   Text="Rubric Information"
+                                   Classes="label"
+                                   FontSize="16"
+                                   Margin="0,0,0,8"/>
+
+                        <!-- Course Selection -->
+                        <StackPanel Grid.Row="2" Grid.Column="0">
+                            <TextBlock Text="Course" Classes="label"/>
+                            <ComboBox ItemsSource="{Binding Courses}"
+                                      SelectedItem="{Binding SelectedCourse}"
+                                      PlaceholderText="Select course..."
+                                      HorizontalAlignment="Stretch"/>
+                        </StackPanel>
+
+                        <!-- Language Selection -->
+                        <StackPanel Grid.Row="2" Grid.Column="2">
+                            <TextBlock Text="Programming Language" Classes="label"/>
+                            <ComboBox ItemsSource="{Binding Languages}"
+                                      SelectedItem="{Binding SelectedLanguage}"
+                                      PlaceholderText="Select language..."
+                                      HorizontalAlignment="Stretch"/>
+                        </StackPanel>
+
+                        <!-- Assignment Name -->
+                        <StackPanel Grid.Row="4" Grid.ColumnSpan="3">
+                            <TextBlock Text="Assignment Name" Classes="label"/>
+                            <TextBox Text="{Binding AssignmentName}"
+                                     Watermark="e.g., W06 Lab - Binary Tree"
+                                     MaxLength="100"/>
+                        </StackPanel>
+
+                    </Grid>
+                </Border>
+
+                <!-- Rubric Content -->
+                <Border Classes="card" Padding="20">
+                    <StackPanel Spacing="12">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Grid.Column="0"
+                                       Text="Rubric Content"
+                                       Classes="label"
+                                       FontSize="16"/>
+
+                            <Button Grid.Column="1"
+                                    Content="Load from File"
+                                    Command="{Binding ImportFromFileCommand}"
+                                    Classes="secondary"
+                                    Padding="16,8"/>
+                        </Grid>
+
+                        <TextBox Text="{Binding RubricText}"
+                                 AcceptsReturn="True"
+                                 TextWrapping="Wrap"
+                                 MinHeight="250"
+                                 MaxHeight="350"
+                                 Watermark="Paste or type your rubric here, or use 'Load from File' button..."
+                                 FontFamily="JetBrains Mono,Consolas,Menlo,Monaco,Courier New,monospace"
+                                 FontSize="13"/>
+
+                        <TextBlock Classes="description" FontSize="11" TextWrapping="Wrap">
+                            Tip: The program works best with rubrics that clearly list criteria and point values.
+                            Example: "Code Quality (35 pts): Excellent (35 pts), Good (28 pts), Fair (21 pts)"
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+
+                <!-- Conversion Options -->
+                <Border Classes="card" Padding="20">
+                    <StackPanel Spacing="12">
+                        <TextBlock Text="Conversion Options"
+                                   Classes="label"
+                                   FontSize="16"/>
+
+                        <CheckBox IsChecked="{Binding ConvertToJson}"
+                                  Content="Convert to JSON format (recommended)"
+                                  FontSize="14"/>
+
+                        <CheckBox IsChecked="{Binding UseAiConversion}"
+                                  IsEnabled="{Binding ConvertToJson}"
+                                  Content="Use AI for intelligent rubric parsing"
+                                  FontSize="14"
+                                  Margin="20,0,0,0"/>
+
+                        <TextBlock Classes="description" FontSize="11" TextWrapping="Wrap" Margin="0,4,0,0">
+                            JSON format enables better AI grading and structured analysis. If AI conversion fails,
+                            the program will attempt pattern-based conversion or save as plain text.
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+
+                <!-- Error/Status Messages -->
+                <Border IsVisible="{Binding HasError}"
+                        Background="#fef2f2"
+                        BorderBrush="#ef4444"
+                        BorderThickness="1"
+                        CornerRadius="6"
+                        Padding="16">
+                    <TextBlock Text="{Binding ErrorMessage}"
+                               Foreground="#dc2626"
+                               FontSize="13"
+                               TextWrapping="Wrap"
+                               FontWeight="SemiBold"/>
+                </Border>
+
+                <Border IsVisible="{Binding IsProcessing}"
+                        Background="#eff6ff"
+                        BorderBrush="#3b82f6"
+                        BorderThickness="1"
+                        CornerRadius="6"
+                        Padding="16">
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="{Binding StatusMessage}"
+                                   Foreground="#1e40af"
+                                   FontSize="13"
+                                   FontWeight="SemiBold"/>
+                        <ProgressBar IsIndeterminate="True" Height="4"/>
+                    </StackPanel>
+                </Border>
+
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Footer Buttons -->
+        <Grid Grid.Row="2" ColumnDefinitions="*,Auto,Auto" Margin="0,24,0,0">
+
+            <TextBlock Grid.Column="0"
+                       Text="{Binding StatusMessage}"
+                       VerticalAlignment="Center"
+                       Foreground="#64748b"
+                       FontSize="12"
+                       IsVisible="{Binding !IsProcessing}"/>
+
+            <Button Grid.Column="1"
+                    Content="Save Rubric"
+                    Command="{Binding SaveRubricCommand}"
+                    Classes="primary"
+                    Width="120"
+                    Margin="0,0,12,0"
+                    IsEnabled="{Binding !IsProcessing}"/>
+
+            <Button Grid.Column="2"
+                    Content="Cancel"
+                    Click="CancelButton_Click"
+                    Classes="secondary"
+                    Width="100"
+                    IsEnabled="{Binding !IsProcessing}"/>
+
+        </Grid>
+
+    </Grid>
+
+</Window>

@@ -1,0 +1,99 @@
+{
+  "course": "CSE 232",
+  "assignment": "Sorting Algorithms",
+  "totalPoints": 100,
+  "criteria": [
+    {
+      "name": "Algorithm Implementation",
+      "maxPoints": 50,
+      "ratings": [
+        {
+          "points": 50,
+          "description": "All sorting algorithms correctly implemented and tested"
+        },
+        {
+          "points": 40,
+          "description": "All algorithms implemented with minor bugs"
+        },
+        {
+          "points": 30,
+          "description": "Most algorithms work but one or two have significant issues"
+        },
+        {
+          "points": 20,
+          "description": "Only basic algorithms implemented correctly"
+        },
+        {
+          "points": 0,
+          "description": "Algorithms fail to sort or do not compile"
+        }
+      ]
+    },
+    {
+      "name": "Test Coverage",
+      "maxPoints": 20,
+      "ratings": [
+        {
+          "points": 20,
+          "description": "Comprehensive test cases including edge cases"
+        },
+        {
+          "points": 15,
+          "description": "Good test coverage but missing some edge cases"
+        },
+        {
+          "points": 10,
+          "description": "Basic test cases only"
+        },
+        {
+          "points": 0,
+          "description": "No tests or minimal testing"
+        }
+      ]
+    },
+    {
+      "name": "Time Complexity Analysis",
+      "maxPoints": 15,
+      "ratings": [
+        {
+          "points": 15,
+          "description": "Correct analysis with detailed explanations for all algorithms"
+        },
+        {
+          "points": 10,
+          "description": "Mostly correct analysis with minor errors"
+        },
+        {
+          "points": 5,
+          "description": "Partial or incomplete analysis"
+        },
+        {
+          "points": 0,
+          "description": "No analysis provided or completely incorrect"
+        }
+      ]
+    },
+    {
+      "name": "Code Quality",
+      "maxPoints": 15,
+      "ratings": [
+        {
+          "points": 15,
+          "description": "Clean, well-documented, professional code"
+        },
+        {
+          "points": 12,
+          "description": "Good code with minor style issues"
+        },
+        {
+          "points": 8,
+          "description": "Acceptable but lacks documentation or has style problems"
+        },
+        {
+          "points": 0,
+          "description": "Poor quality, hard to read"
+        }
+      ]
+    }
+  ]
+}
