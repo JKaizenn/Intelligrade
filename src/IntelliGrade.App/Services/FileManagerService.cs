@@ -81,4 +81,36 @@ public class FileManagerService
             }
         }
     }
+
+    public async System.Threading.Tasks.Task<string?> CloneGitRepository(string repoUrl, string targetDirectory)
+    {
+        try
+        {
+            var processInfo = new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = "git",
+                Arguments = $"clone {repoUrl} \"{targetDirectory}\"",
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+
+            using var process = System.Diagnostics.Process.Start(processInfo);
+            if (process == null)
+                return "Failed to start git process";
+
+            await process.WaitForExitAsync();
+
+            if (process.ExitCode == 0)
+                return null;
+
+            var error = await process.StandardError.ReadToEndAsync();
+            return string.IsNullOrWhiteSpace(error) ? "Git clone failed" : error;
+        }
+        catch (Exception ex)
+        {
+            return $"Error cloning repository: {ex.Message}";
+        }
+    }
 }

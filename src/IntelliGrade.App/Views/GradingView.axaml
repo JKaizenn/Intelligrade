@@ -22,9 +22,16 @@
                                  IsReadOnly="True"
                                  Watermark="No directory selected"
                                  Margin="0,0,0,10"/>
-                        <Button Content="Select Directory"
-                                Command="{Binding SelectDirectoryCommand}"
-                                Classes="primary"/>
+                        <Grid ColumnDefinitions="*,8,*">
+                            <Button Grid.Column="0"
+                                    Content="Select Directory"
+                                    Command="{Binding SelectDirectoryCommand}"
+                                    Classes="primary"/>
+                            <Button Grid.Column="2"
+                                    Content="Clone Git Repo"
+                                    Command="{Binding CloneGitRepositoryCommand}"
+                                    Classes="secondary"/>
+                        </Grid>
                     </StackPanel>
 
                     <Separator/>
@@ -37,14 +44,12 @@
                                     Content="Manage Courses"
                                     Command="{Binding ManageCoursesCommand}"
                                     Classes="secondary"
-                                    Padding="8,10"
-                                    FontSize="12"/>
+                                    Padding="8,10"/>
                             <Button Grid.Column="2"
                                     Content="Import Rubric"
                                     Command="{Binding ImportRubricCommand}"
                                     Classes="secondary"
-                                    Padding="8,10"
-                                    FontSize="12"/>
+                                    Padding="8,10"/>
                         </Grid>
                     </StackPanel>
 

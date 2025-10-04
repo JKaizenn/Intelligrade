@@ -5,19 +5,7 @@
              x:DataType="vm:MainWindowViewModel"
              x:Name="welcomeView">
 
-    <Panel>
-        <!-- Subtle Gradient Background -->
-        <Border x:Name="gradientBackground" ClipToBounds="True">
-            <Border.Background>
-                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
-                    <GradientStop Color="#f8fafc" Offset="0.0"/>
-                    <GradientStop Color="#e2e8f0" Offset="0.5"/>
-                    <GradientStop Color="#cbd5e1" Offset="1.0"/>
-                </LinearGradientBrush>
-            </Border.Background>
-        </Border>
-
-        <!-- Content -->
+    <!-- Content -->
         <Grid Margin="40">
             <StackPanel VerticalAlignment="Center"
                         HorizontalAlignment="Center"
@@ -30,14 +18,12 @@
                                Classes="welcome-title"
                                FontSize="64"
                                FontWeight="Bold"
-                               TextAlignment="Center"
-                               Foreground="#0f172a"/>
+                               TextAlignment="Center"/>
 
                     <TextBlock Text="AI-Powered Assignment Grading"
                                Classes="welcome-subtitle"
                                FontSize="24"
-                               TextAlignment="Center"
-                               Foreground="#475569"/>
+                               TextAlignment="Center"/>
                 </StackPanel>
 
                 <!-- Feature Cards -->
@@ -48,7 +34,6 @@
                         <TextBlock Text="Fast Execution"
                                    Classes="feature-title"
                                    TextAlignment="Center"
-                                   Foreground="#1e293b"
                                    FontSize="16"
                                    FontWeight="SemiBold"/>
                     </Border>
@@ -58,7 +43,6 @@
                         <TextBlock Text="AI Analysis"
                                    Classes="feature-title"
                                    TextAlignment="Center"
-                                   Foreground="#1e293b"
                                    FontSize="16"
                                    FontWeight="SemiBold"/>
                     </Border>
@@ -68,7 +52,6 @@
                         <TextBlock Text="Export Results"
                                    Classes="feature-title"
                                    TextAlignment="Center"
-                                   Foreground="#1e293b"
                                    FontSize="16"
                                    FontWeight="SemiBold"/>
                     </Border>
@@ -81,13 +64,9 @@
                         Classes="primary"
                         Width="200"
                         Height="50"
-                        HorizontalAlignment="Center"
-                        FontSize="18"
-                        FontWeight="SemiBold"/>
+                        HorizontalAlignment="Center"/>
 
             </StackPanel>
         </Grid>
-
-    </Panel>
 
 </UserControl>

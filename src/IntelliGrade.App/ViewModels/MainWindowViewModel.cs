@@ -81,11 +81,41 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         try
         {
-            IsDarkMode = await _localStorage.GetAsync("IsDarkMode", false);
+            // Check if user has a saved theme preference
+            var savedTheme = await _localStorage.GetAsync<bool?>("IsDarkMode", null);
+
+            if (savedTheme.HasValue)
+            {
+                // Use saved preference
+                IsDarkMode = savedTheme.Value;
+            }
+            else
+            {
+                // Detect system theme
+                IsDarkMode = DetectSystemTheme();
+            }
+
             var dir = await _localStorage.GetAsync("LastDirectory", Directory.GetCurrentDirectory());
             if (dir != null) CurrentDirectory = dir;
         }
         catch { }
+    }
+
+    private bool DetectSystemTheme()
+    {
+        try
+        {
+            var app = Application.Current;
+            if (app?.PlatformSettings != null)
+            {
+                var colorValues = app.PlatformSettings.GetColorValues();
+                return colorValues.ThemeVariant == Avalonia.Platform.PlatformThemeVariant.Dark;
+            }
+        }
+        catch { }
+
+        // Default to light mode if detection fails
+        return false;
     }
 
     private async void SaveThemePreference()
@@ -121,6 +151,11 @@ public partial class MainWindowViewModel : ViewModelBase
             DataContext = viewModel
         };
 
+        if (IsDarkMode)
+        {
+            window.Classes.Add("dark");
+        }
+
         viewModel.CourseAdded += (_, _) => LoadCourses();
         viewModel.CourseDeleted += (_, _) => LoadCourses();
 
@@ -139,6 +174,11 @@ public partial class MainWindowViewModel : ViewModelBase
             DataContext = viewModel
         };
 
+        if (IsDarkMode)
+        {
+            window.Classes.Add("dark");
+        }
+
         viewModel.RubricImported += (_, _) =>
         {
             LoadCourses();
@@ -146,6 +186,31 @@ public partial class MainWindowViewModel : ViewModelBase
             {
                 LoadAssignments();
             }
+        };
+
+        if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+        {
+            await window.ShowDialog(desktop.MainWindow!);
+        }
+    }
+
+    [RelayCommand]
+    private async Task OpenApiSettingsAsync()
+    {
+        var viewModel = new ApiSettingsViewModel(_localStorage);
+        var window = new Views.ApiSettingsView
+        {
+            DataContext = viewModel
+        };
+
+        if (IsDarkMode)
+        {
+            window.Classes.Add("dark");
+        }
+
+        viewModel.SettingsSaved += async (_, _) =>
+        {
+            await InitializeOllamaAsync();
         };
 
         if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
@@ -185,6 +250,74 @@ public partial class MainWindowViewModel : ViewModelBase
         catch (Exception ex)
         {
             StatusMessage = $"Error selecting folder: {ex.Message}";
+        }
+    }
+
+    [RelayCommand]
+    private async Task CloneGitRepositoryAsync()
+    {
+        if (StorageProvider == null)
+        {
+            StatusMessage = "Folder picker not available";
+            return;
+        }
+
+        try
+        {
+            var result = await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(async () =>
+            {
+                var dialog = new Views.GitCloneDialog();
+                if (IsDarkMode)
+                {
+                    dialog.Classes.Add("dark");
+                }
+                if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+                {
+                    return await dialog.ShowDialog<string?>(desktop.MainWindow!);
+                }
+                return null;
+            });
+
+            if (string.IsNullOrWhiteSpace(result))
+                return;
+
+            var repoUrl = result;
+            var folders = await StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
+            {
+                Title = "Select Directory to Clone Repository Into",
+                AllowMultiple = false
+            });
+
+            if (folders.Count == 0)
+                return;
+
+            var parentDir = folders[0].Path.LocalPath;
+            var repoName = Path.GetFileNameWithoutExtension(repoUrl.TrimEnd('/').Split('/').Last());
+            var targetDir = Path.Combine(parentDir, repoName);
+
+            IsProcessing = true;
+            StatusMessage = $"Cloning repository from {repoUrl}...";
+
+            var error = await _fileManager.CloneGitRepository(repoUrl, targetDir);
+
+            IsProcessing = false;
+
+            if (error == null)
+            {
+                CurrentDirectory = targetDir;
+                StatusMessage = $"Successfully cloned repository to {targetDir}";
+                await _localStorage.SetAsync("LastDirectory", CurrentDirectory);
+                DetectLanguages();
+            }
+            else
+            {
+                StatusMessage = $"Clone failed: {error}";
+            }
+        }
+        catch (Exception ex)
+        {
+            IsProcessing = false;
+            StatusMessage = $"Error cloning repository: {ex.Message}";
         }
     }
 
@@ -268,10 +401,55 @@ public partial class MainWindowViewModel : ViewModelBase
             var result = await _programRunner.RunProgramAsync(
                 SelectedSourceFile, SelectedLanguage, CurrentDirectory);
 
-            ProgramOutput = result.success 
-                ? $"✓ Success\n\nOutput:\n{result.output}" 
-                : $"✗ Failed\n\nError:\n{result.error}";
-            
+            var output = new System.Text.StringBuilder();
+
+            if (result.success)
+            {
+                output.AppendLine("✓ Success");
+                output.AppendLine();
+                output.AppendLine("Output:");
+                output.AppendLine(result.output);
+            }
+            else
+            {
+                output.AppendLine("✗ Failed");
+                output.AppendLine();
+                output.AppendLine("Error:");
+                output.AppendLine(result.error);
+            }
+
+            // Check for .txt output files created by the program
+            var outputFiles = _fileManager.FindOutputFiles(CurrentDirectory, new());
+            var txtFiles = outputFiles.Where(f => f.EndsWith(".txt", StringComparison.OrdinalIgnoreCase)).ToList();
+
+            if (txtFiles.Count > 0)
+            {
+                output.AppendLine();
+                output.AppendLine("=".PadRight(60, '='));
+                output.AppendLine("Program Output Files:");
+                output.AppendLine("=".PadRight(60, '='));
+
+                foreach (var txtFile in txtFiles)
+                {
+                    try
+                    {
+                        var filePath = Path.Combine(CurrentDirectory, txtFile);
+                        var fileContent = await File.ReadAllTextAsync(filePath);
+
+                        output.AppendLine();
+                        output.AppendLine($"File: {txtFile}");
+                        output.AppendLine("=".PadRight(60, '='));
+                        output.AppendLine(fileContent);
+                        output.AppendLine("=".PadRight(60, '='));
+                    }
+                    catch (Exception fileEx)
+                    {
+                        output.AppendLine($"Error reading {txtFile}: {fileEx.Message}");
+                    }
+                }
+            }
+
+            ProgramOutput = output.ToString();
             StatusMessage = result.success ? "Program executed successfully" : "Program failed";
         }
         catch (Exception ex)
@@ -419,20 +597,34 @@ public partial class MainWindowViewModel : ViewModelBase
 
     private async void InitializeOllama()
     {
+        await InitializeOllamaAsync();
+    }
+
+    private async Task InitializeOllamaAsync()
+    {
         try
         {
-            _ollamaService = new OllamaGradingService(_config.OllamaModel);
+            var settings = await _localStorage.GetAsync<ApiSettings>("ApiSettings");
+            if (settings != null)
+            {
+                _ollamaService = new OllamaGradingService(settings.OllamaModel, settings.OllamaEndpoint);
+            }
+            else
+            {
+                _ollamaService = new OllamaGradingService(_config.OllamaModel);
+            }
+
             OllamaAvailable = await _ollamaService.IsAvailableAsync();
             StatusMessage = OllamaAvailable
-                ? "Ollama ready"
-                : "Ollama not available - AI grading disabled";
+                ? "AI ready"
+                : "AI not available - grading features disabled";
 
             // Start periodic check for Ollama availability (every 30 seconds)
             _ = Task.Run(async () =>
             {
                 while (true)
                 {
-                    await Task.Delay(30000); // Check every 30 seconds
+                    await Task.Delay(30000);
                     await CheckOllamaAvailability();
                 }
             });
@@ -440,7 +632,7 @@ public partial class MainWindowViewModel : ViewModelBase
         catch
         {
             OllamaAvailable = false;
-            StatusMessage = "Ollama connection failed";
+            StatusMessage = "AI connection failed";
         }
     }
 

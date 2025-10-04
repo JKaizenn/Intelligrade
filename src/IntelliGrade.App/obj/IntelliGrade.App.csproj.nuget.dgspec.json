@@ -76,6 +76,10 @@
             "OllamaSharp": {
               "target": "Package",
               "version": "[3.0.11, )"
+            },
+            "Svg.Skia": {
+              "target": "Package",
+              "version": "[2.0.0.1, )"
             }
           },
           "imports": [

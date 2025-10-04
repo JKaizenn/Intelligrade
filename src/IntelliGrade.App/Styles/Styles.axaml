@@ -21,6 +21,7 @@
         <Setter Property="Foreground" Value="#f8fafc"/>
         <Setter Property="CornerRadius" Value="12"/>
         <Setter Property="Padding" Value="20,12"/>
+        <Setter Property="FontSize" Value="14"/>
         <Setter Property="FontWeight" Value="SemiBold"/>
         <Setter Property="HorizontalAlignment" Value="Stretch"/>
         <Setter Property="HorizontalContentAlignment" Value="Center"/>
@@ -47,6 +48,7 @@
         <Setter Property="Foreground" Value="#f8fafc"/>
         <Setter Property="CornerRadius" Value="12"/>
         <Setter Property="Padding" Value="20,12"/>
+        <Setter Property="FontSize" Value="14"/>
         <Setter Property="FontWeight" Value="SemiBold"/>
         <Setter Property="HorizontalAlignment" Value="Stretch"/>
         <Setter Property="HorizontalContentAlignment" Value="Center"/>
@@ -68,6 +70,7 @@
         <Setter Property="Foreground" Value="#f8fafc"/>
         <Setter Property="CornerRadius" Value="12"/>
         <Setter Property="Padding" Value="20,12"/>
+        <Setter Property="FontSize" Value="14"/>
         <Setter Property="FontWeight" Value="SemiBold"/>
         <Setter Property="HorizontalAlignment" Value="Stretch"/>
         <Setter Property="HorizontalContentAlignment" Value="Center"/>
@@ -89,6 +92,7 @@
         <Setter Property="Foreground" Value="#f8fafc"/>
         <Setter Property="CornerRadius" Value="12"/>
         <Setter Property="Padding" Value="20,12"/>
+        <Setter Property="FontSize" Value="14"/>
         <Setter Property="FontWeight" Value="SemiBold"/>
         <Setter Property="HorizontalAlignment" Value="Stretch"/>
         <Setter Property="HorizontalContentAlignment" Value="Center"/>
@@ -166,6 +170,16 @@
         <Setter Property="Background" Value="#ef4444"/>
     </Style>
 
+    <!-- Window Background (Light) -->
+    <Style Selector="Window">
+        <Setter Property="Background" Value="#e2e8f0"/>
+    </Style>
+
+    <!-- UserControl Background (Light) -->
+    <Style Selector="UserControl">
+        <Setter Property="Background" Value="#f8fafc"/>
+    </Style>
+
     <!-- Text Input Styles -->
     <Style Selector="TextBox">
         <Setter Property="Background" Value="#ffffff"/>
@@ -175,6 +189,9 @@
         <Setter Property="Padding" Value="10,8"/>
         <Setter Property="FontSize" Value="14"/>
         <Setter Property="Foreground" Value="#1e293b"/>
+        <Setter Property="CaretBrush" Value="#1e293b"/>
+        <Setter Property="SelectionBrush" Value="#3b82f6"/>
+        <Setter Property="SelectionForegroundBrush" Value="#ffffff"/>
     </Style>
 
     <Style Selector="TextBox:focus">
@@ -304,7 +321,7 @@
     <Style Selector="TextBlock.welcome-subtitle">
         <Setter Property="FontSize" Value="20"/>
         <Setter Property="FontWeight" Value="Normal"/>
-        <Setter Property="Foreground" Value="#64748b"/>
+        <Setter Property="Foreground" Value="#475569"/>
         <Setter Property="Margin" Value="0,0,0,48"/>
         <Setter Property="TextAlignment" Value="Center"/>
     </Style>

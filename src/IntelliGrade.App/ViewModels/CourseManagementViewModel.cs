@@ -24,29 +24,15 @@ public partial class CourseManagementViewModel : ViewModelBase
     [ObservableProperty] private string? _selectedCourse;
     [ObservableProperty] private bool _hasError = false;
 
-    /// <summary>
-    /// Event raised when a course is successfully added.
-    /// </summary>
     public event EventHandler? CourseAdded;
-
-    /// <summary>
-    /// Event raised when a course is successfully deleted.
-    /// </summary>
     public event EventHandler? CourseDeleted;
 
-    /// <summary>
-    /// Initializes a new instance of the CourseManagementViewModel.
-    /// </summary>
-    /// <param name="rubricDirectory">The directory where course folders are stored.</param>
     public CourseManagementViewModel(string rubricDirectory)
     {
         _rubricDirectory = rubricDirectory;
         LoadCourses();
     }
 
-    /// <summary>
-    /// Loads all existing courses from the rubric directory.
-    /// </summary>
     private void LoadCourses()
     {
         Courses.Clear();
@@ -146,43 +132,25 @@ public partial class CourseManagementViewModel : ViewModelBase
         }
     }
 
-    /// <summary>
-    /// Validates that a course name is safe for file system use.
-    /// Allows only letters, numbers, spaces, hyphens, and underscores.
-    /// </summary>
-    /// <param name="name">The course name to validate.</param>
-    /// <returns>True if the name is valid; otherwise, false.</returns>
     private bool IsValidCourseName(string name)
     {
-        // Allow letters, numbers, spaces, hyphens, underscores
-        // Disallow: <>:"/\|?*
         var invalidChars = Path.GetInvalidFileNameChars();
         return !name.Any(c => invalidChars.Contains(c)) &&
                Regex.IsMatch(name.Trim(), @"^[a-zA-Z0-9\s\-_]+$");
     }
 
-    /// <summary>
-    /// Displays an error message to the user.
-    /// </summary>
-    /// <param name="message">The error message to display.</param>
     private void ShowError(string message)
     {
         ErrorMessage = message;
         HasError = true;
     }
 
-    /// <summary>
-    /// Clears any displayed error messages.
-    /// </summary>
     private void ClearError()
     {
         ErrorMessage = string.Empty;
         HasError = false;
     }
 
-    /// <summary>
-    /// Handles changes to the NewCourseName property and clears errors.
-    /// </summary>
     partial void OnNewCourseNameChanged(string value)
     {
         ClearError();

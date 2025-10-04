@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,21 +16,12 @@ public class OllamaGradingService
     private readonly OllamaApiClient _ollama;
     private readonly string _model;
 
-    /// <summary>
-    /// Initializes a new instance of the OllamaGradingService.
-    /// </summary>
-    /// <param name="model">The Ollama model to use for grading (default: llama3.2:1b)</param>
-    /// <param name="endpoint">The Ollama API endpoint (default: http://localhost:11434)</param>
     public OllamaGradingService(string model = "llama3.2:1b", string endpoint = "http://localhost:11434")
     {
         _model = model;
         _ollama = new OllamaApiClient(endpoint);
     }
 
-    /// <summary>
-    /// Checks if the Ollama service is available and the model is installed.
-    /// </summary>
-    /// <returns>True if available, false otherwise</returns>
     public async Task<bool> IsAvailableAsync()
     {
         try
@@ -46,9 +36,9 @@ public class OllamaGradingService
     }
 
     public async Task<string> AnalyzeCodeAsync(
-        string sourceCode, 
-        string rubric, 
-        string courseName, 
+        string sourceCode,
+        string rubric,
+        string courseName,
         string assignmentName,
         List<string> outputContents)
     {
@@ -72,7 +62,7 @@ public class OllamaGradingService
         return response.ToString();
     }
 
-    private string BuildGradingPrompt(
+    private static string BuildGradingPrompt(
         string sourceCode,
         string rubric,
         string courseName,

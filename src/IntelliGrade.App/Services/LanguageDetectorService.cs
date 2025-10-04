@@ -30,19 +30,19 @@ public class LanguageDetectorService
     public List<LanguageInfo> DetectLanguages(string directory)
     {
         var detected = new List<LanguageInfo>();
-        
+
         foreach (var (_, langInfo) in SupportedLanguages)
         {
             foreach (var ext in langInfo.Extensions)
             {
-                if (Directory.GetFiles(directory, $"*{ext}").Length > 0)
+                if (Directory.GetFiles(directory, $"*{ext}", SearchOption.AllDirectories).Length > 0)
                 {
                     detected.Add(langInfo);
                     break;
                 }
             }
         }
-        
+
         return detected;
     }
 
@@ -51,8 +51,8 @@ public class LanguageDetectorService
         var files = new List<string>();
         foreach (var ext in language.Extensions)
         {
-            files.AddRange(Directory.GetFiles(directory, $"*{ext}"));
+            files.AddRange(Directory.GetFiles(directory, $"*{ext}", SearchOption.AllDirectories));
         }
-        return files.ToArray();
+        return files.Select(f => Path.GetRelativePath(directory, f)).ToArray();
     }
 }

@@ -83,6 +83,8 @@ public partial class RubricImportViewModel : ViewModelBase
                 AllowMultiple = false,
                 FileTypeFilter = new[]
                 {
+                    new FilePickerFileType("Rubric Files") { Patterns = new[] { "*.json", "*.txt", "*.md" } },
+                    new FilePickerFileType("JSON Files") { Patterns = new[] { "*.json" } },
                     new FilePickerFileType("Text Files") { Patterns = new[] { "*.txt", "*.md", "*.rtf" } },
                     new FilePickerFileType("All Files") { Patterns = new[] { "*.*" } }
                 }

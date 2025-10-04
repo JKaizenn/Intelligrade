@@ -30,7 +30,13 @@ build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 [/Users/jforbush/Dev/Intelligrade/Intelligrade/src/IntelliGrade.App/Styles/Styles.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
+[/Users/jforbush/Dev/Intelligrade/Intelligrade/src/IntelliGrade.App/Views/ApiSettingsView.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
 [/Users/jforbush/Dev/Intelligrade/Intelligrade/src/IntelliGrade.App/Views/CourseManagementView.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[/Users/jforbush/Dev/Intelligrade/Intelligrade/src/IntelliGrade.App/Views/GitCloneDialog.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
 [/Users/jforbush/Dev/Intelligrade/Intelligrade/src/IntelliGrade.App/Views/GradingView.axaml]

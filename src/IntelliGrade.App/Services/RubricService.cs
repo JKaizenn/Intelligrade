@@ -13,18 +13,12 @@ namespace IntelliGrade.App.Services;
 /// </summary>
 public class RubricService
 {
-    /// <summary>
-    /// Represents a rating level within a rubric criterion with points and description.
-    /// </summary>
     public class RubricRating
     {
         public decimal Points { get; set; }
         public string Description { get; set; } = string.Empty;
     }
 
-    /// <summary>
-    /// Represents a grading criterion with multiple rating levels.
-    /// </summary>
     public class RubricCriterion
     {
         public string Name { get; set; } = string.Empty;
@@ -32,9 +26,6 @@ public class RubricService
         public RubricRating[] Ratings { get; set; } = Array.Empty<RubricRating>();
     }
 
-    /// <summary>
-    /// Represents a complete rubric with course info and grading criteria.
-    /// </summary>
     public class Rubric
     {
         public string Course { get; set; } = string.Empty;
@@ -43,9 +34,6 @@ public class RubricService
         public RubricCriterion[] Criteria { get; set; } = Array.Empty<RubricCriterion>();
     }
 
-    /// <summary>
-    /// Loads a rubric from a JSON file
-    /// </summary>
     public async Task<Rubric?> LoadRubricAsync(string filePath)
     {
         try
@@ -67,9 +55,6 @@ public class RubricService
         }
     }
 
-    /// <summary>
-    /// Loads rubric from plain text file (backwards compatibility)
-    /// </summary>
     public async Task<string> LoadPlainTextRubricAsync(string filePath)
     {
         try
@@ -85,9 +70,6 @@ public class RubricService
         }
     }
 
-    /// <summary>
-    /// Attempts to load rubric, trying JSON first, then falling back to plain text
-    /// </summary>
     public async Task<string> LoadAndFormatRubricAsync(string filePath)
     {
         // Try JSON format first
@@ -102,9 +84,6 @@ public class RubricService
         return await LoadPlainTextRubricAsync(filePath);
     }
 
-    /// <summary>
-    /// Formats a rubric object into a clear text format optimized for AI grading
-    /// </summary>
     public string FormatRubricForAI(Rubric rubric)
     {
         var sb = new StringBuilder();
@@ -144,9 +123,6 @@ public class RubricService
         return sb.ToString();
     }
 
-    /// <summary>
-    /// Formats a rubric for display in the UI
-    /// </summary>
     public string FormatRubricForDisplay(Rubric rubric)
     {
         var sb = new StringBuilder();

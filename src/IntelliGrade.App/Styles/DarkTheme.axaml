@@ -3,8 +3,17 @@
 
     <!-- Dark Mode Theme -->
 
-    <!-- Window Background -->
+    <!-- Window Background (Dark) -->
+    <Style Selector=".dark Window">
+        <Setter Property="Background" Value="#0f172a"/>
+    </Style>
+
     <Style Selector="Window.dark">
+        <Setter Property="Background" Value="#0f172a"/>
+    </Style>
+
+    <!-- UserControl Background (Dark) -->
+    <Style Selector=".dark UserControl">
         <Setter Property="Background" Value="#0f172a"/>
     </Style>
 
@@ -44,37 +53,44 @@
 
     <!-- Text Input Styles (Dark) -->
     <Style Selector=".dark TextBox">
-        <Setter Property="Background" Value="#0f172a"/>
+        <Setter Property="Background" Value="#1e293b"/>
         <Setter Property="BorderBrush" Value="#475569"/>
         <Setter Property="Foreground" Value="#f8fafc"/>
+        <Setter Property="CaretBrush" Value="#f8fafc"/>
+        <Setter Property="SelectionBrush" Value="#3b82f6"/>
+        <Setter Property="SelectionForegroundBrush" Value="#ffffff"/>
     </Style>
 
     <Style Selector=".dark TextBox:focus">
         <Setter Property="BorderBrush" Value="#3b82f6"/>
+        <Setter Property="Background" Value="#1e293b"/>
     </Style>
 
     <Style Selector=".dark TextBox:pointerover">
         <Setter Property="BorderBrush" Value="#64748b"/>
+        <Setter Property="Background" Value="#1e293b"/>
     </Style>
 
     <!-- ComboBox Styles (Dark) -->
     <Style Selector=".dark ComboBox">
-        <Setter Property="Background" Value="#0f172a"/>
+        <Setter Property="Background" Value="#1e293b"/>
         <Setter Property="BorderBrush" Value="#475569"/>
         <Setter Property="Foreground" Value="#f8fafc"/>
     </Style>
 
     <Style Selector=".dark ComboBox:focus">
         <Setter Property="BorderBrush" Value="#3b82f6"/>
+        <Setter Property="Background" Value="#1e293b"/>
     </Style>
 
     <Style Selector=".dark ComboBox:pointerover">
         <Setter Property="BorderBrush" Value="#64748b"/>
+        <Setter Property="Background" Value="#1e293b"/>
     </Style>
 
     <!-- NumericUpDown Styles (Dark) -->
     <Style Selector=".dark NumericUpDown">
-        <Setter Property="Background" Value="#0f172a"/>
+        <Setter Property="Background" Value="#1e293b"/>
         <Setter Property="BorderBrush" Value="#475569"/>
         <Setter Property="Foreground" Value="#f8fafc"/>
     </Style>
@@ -107,37 +123,36 @@
         <Setter Property="Foreground" Value="#94a3b8"/>
     </Style>
 
-    <!-- Welcome Background (Dark) -->
-    <Style Selector=".dark Border#gradientBackground">
-        <Setter Property="Background">
-            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
-                <GradientStop Color="#0f172a" Offset="0.0"/>
-                <GradientStop Color="#1e293b" Offset="0.5"/>
-                <GradientStop Color="#334155" Offset="1.0"/>
-            </LinearGradientBrush>
-        </Setter>
+    <!-- Welcome Title (Dark) - Bright white for visibility -->
+    <Style Selector=".dark TextBlock.welcome-title">
+        <Setter Property="Foreground" Value="#ffffff"/>
     </Style>
 
-    <!-- Welcome Text Colors (Dark) - Override inline colors -->
-    <Style Selector=".dark #welcomeView TextBlock">
-        <Setter Property="Foreground" Value="#f8fafc"/>
+    <!-- Welcome Subtitle (Dark) - Light gray for good contrast -->
+    <Style Selector=".dark TextBlock.welcome-subtitle">
+        <Setter Property="Foreground" Value="#e2e8f0"/>
     </Style>
 
-    <!-- Feature Card Style (Dark) -->
+    <!-- Feature Title (Dark) - White for visibility -->
+    <Style Selector=".dark TextBlock.feature-title">
+        <Setter Property="Foreground" Value="#ffffff"/>
+    </Style>
+
+    <!-- Feature Card Style (Dark) - Darker cards on dark background -->
     <Style Selector=".dark Border.feature-card">
-        <Setter Property="Background" Value="#1e293b"/>
-        <Setter Property="BorderBrush" Value="#475569"/>
+        <Setter Property="Background" Value="#0f172a"/>
+        <Setter Property="BorderBrush" Value="#334155"/>
         <Setter Property="BoxShadow" Value="0 4 6 -1 #00000040, 0 2 4 -2 #00000025"/>
     </Style>
 
     <Style Selector=".dark Border.feature-card:pointerover">
-        <Setter Property="Background" Value="#334155"/>
-        <Setter Property="BorderBrush" Value="#64748b"/>
+        <Setter Property="Background" Value="#1e293b"/>
+        <Setter Property="BorderBrush" Value="#475569"/>
         <Setter Property="BoxShadow" Value="0 10 15 -3 #00000050, 0 4 6 -4 #00000030"/>
     </Style>
 
     <Style Selector=".dark Border.feature-card TextBlock">
-        <Setter Property="Foreground" Value="#f8fafc"/>
+        <Setter Property="Foreground" Value="#ffffff"/>
     </Style>
 
     <!-- ScrollBar Styles (Dark) -->
