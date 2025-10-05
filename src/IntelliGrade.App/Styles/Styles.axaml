@@ -1,6 +1,11 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+    <!-- Global Font Family - Calibri with fallbacks -->
+    <Style Selector="Window">
+        <Setter Property="FontFamily" Value="Calibri, Helvetica Neue, Arial, sans-serif"/>
+    </Style>
+
     <!-- Color Palette: Slate Gray & Off-White -->
     <!--
         Primary Slate: #475569 (slate-600)
@@ -21,7 +26,7 @@
         <Setter Property="Foreground" Value="#f8fafc"/>
         <Setter Property="CornerRadius" Value="12"/>
         <Setter Property="Padding" Value="20,12"/>
-        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="FontSize" Value="13"/>
         <Setter Property="FontWeight" Value="SemiBold"/>
         <Setter Property="HorizontalAlignment" Value="Stretch"/>
         <Setter Property="HorizontalContentAlignment" Value="Center"/>
@@ -48,7 +53,7 @@
         <Setter Property="Foreground" Value="#f8fafc"/>
         <Setter Property="CornerRadius" Value="12"/>
         <Setter Property="Padding" Value="20,12"/>
-        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="FontSize" Value="13"/>
         <Setter Property="FontWeight" Value="SemiBold"/>
         <Setter Property="HorizontalAlignment" Value="Stretch"/>
         <Setter Property="HorizontalContentAlignment" Value="Center"/>
@@ -70,7 +75,7 @@
         <Setter Property="Foreground" Value="#f8fafc"/>
         <Setter Property="CornerRadius" Value="12"/>
         <Setter Property="Padding" Value="20,12"/>
-        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="FontSize" Value="13"/>
         <Setter Property="FontWeight" Value="SemiBold"/>
         <Setter Property="HorizontalAlignment" Value="Stretch"/>
         <Setter Property="HorizontalContentAlignment" Value="Center"/>
@@ -92,7 +97,7 @@
         <Setter Property="Foreground" Value="#f8fafc"/>
         <Setter Property="CornerRadius" Value="12"/>
         <Setter Property="Padding" Value="20,12"/>
-        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="FontSize" Value="13"/>
         <Setter Property="FontWeight" Value="SemiBold"/>
         <Setter Property="HorizontalAlignment" Value="Stretch"/>
         <Setter Property="HorizontalContentAlignment" Value="Center"/>

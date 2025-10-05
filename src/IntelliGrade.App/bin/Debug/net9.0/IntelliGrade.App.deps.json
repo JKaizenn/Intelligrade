@@ -15,8 +15,7 @@
           "Avalonia.Themes.Fluent": "11.3.6",
           "CommunityToolkit.Mvvm": "8.2.1",
           "MessageBox.Avalonia": "3.1.6",
-          "OllamaSharp": "3.0.11",
-          "Svg.Skia": "2.0.0.1"
+          "OllamaSharp": "3.0.11"
         },
         "runtime": {
           "IntelliGrade.App.dll": {}
@@ -283,14 +282,6 @@
           }
         }
       },
-      "ExCSS/4.2.3": {
-        "runtime": {
-          "lib/net7.0/ExCSS.dll": {
-            "assemblyVersion": "4.2.3.0",
-            "fileVersion": "4.2.3.0"
-          }
-        }
-      },
       "HarfBuzzSharp/8.3.1.1": {
         "dependencies": {
           "HarfBuzzSharp.NativeAssets.Win32": "8.3.1.1",
@@ -444,14 +435,6 @@
           }
         }
       },
-      "ShimSkiaSharp/2.0.0.1": {
-        "runtime": {
-          "lib/net8.0/ShimSkiaSharp.dll": {
-            "assemblyVersion": "2.0.0.1",
-            "fileVersion": "2.0.0.1"
-          }
-        }
-      },
       "SkiaSharp/2.88.9": {
         "dependencies": {
           "SkiaSharp.NativeAssets.Win32": "2.88.9",
@@ -461,18 +444,6 @@
           "lib/net6.0/SkiaSharp.dll": {
             "assemblyVersion": "2.88.0.0",
             "fileVersion": "2.88.9.0"
-          }
-        }
-      },
-      "SkiaSharp.HarfBuzz/2.88.8": {
-        "dependencies": {
-          "HarfBuzzSharp": "8.3.1.1",
-          "SkiaSharp": "2.88.9"
-        },
-        "runtime": {
-          "lib/net6.0/SkiaSharp.HarfBuzz.dll": {
-            "assemblyVersion": "2.88.0.0",
-            "fileVersion": "2.88.8.0"
           }
         }
       },
@@ -529,43 +500,6 @@
             "rid": "win-x86",
             "assetType": "native",
             "fileVersion": "0.0.0.0"
-          }
-        }
-      },
-      "Svg.Custom/2.0.0.1": {
-        "dependencies": {
-          "ExCSS": "4.2.3"
-        },
-        "runtime": {
-          "lib/net8.0/Svg.Custom.dll": {
-            "assemblyVersion": "2.0.0.1",
-            "fileVersion": "2.0.0.1"
-          }
-        }
-      },
-      "Svg.Model/2.0.0.1": {
-        "dependencies": {
-          "ShimSkiaSharp": "2.0.0.1",
-          "Svg.Custom": "2.0.0.1"
-        },
-        "runtime": {
-          "lib/net8.0/Svg.Model.dll": {
-            "assemblyVersion": "2.0.0.1",
-            "fileVersion": "2.0.0.1"
-          }
-        }
-      },
-      "Svg.Skia/2.0.0.1": {
-        "dependencies": {
-          "SkiaSharp": "2.88.9",
-          "SkiaSharp.HarfBuzz": "2.88.8",
-          "Svg.Custom": "2.0.0.1",
-          "Svg.Model": "2.0.0.1"
-        },
-        "runtime": {
-          "lib/net8.0/Svg.Skia.dll": {
-            "assemblyVersion": "2.0.0.1",
-            "fileVersion": "2.0.0.1"
           }
         }
       },
@@ -724,13 +658,6 @@
       "path": "dialoghost.avalonia/0.7.7",
       "hashPath": "dialoghost.avalonia.0.7.7.nupkg.sha512"
     },
-    "ExCSS/4.2.3": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-SyeAfu2wL5247sipJoPUzQfjiwQtfSd8hN4IbgoyVcDx4PP6Dud4znwPRibWQzLtTlUxYYcbf5f4p+EfFC7KtQ==",
-      "path": "excss/4.2.3",
-      "hashPath": "excss.4.2.3.nupkg.sha512"
-    },
     "HarfBuzzSharp/8.3.1.1": {
       "type": "package",
       "serviceable": true,
@@ -801,26 +728,12 @@
       "path": "ollamasharp/3.0.11",
       "hashPath": "ollamasharp.3.0.11.nupkg.sha512"
     },
-    "ShimSkiaSharp/2.0.0.1": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-UcUtnhIlriwCmgThNdCjNqfjX1JCMxrx3xzYrcXovMVoxMWi8ulQAwa21vz2NiyaXkHfu4fYcNH2aeLVYxHq9Q==",
-      "path": "shimskiasharp/2.0.0.1",
-      "hashPath": "shimskiasharp.2.0.0.1.nupkg.sha512"
-    },
     "SkiaSharp/2.88.9": {
       "type": "package",
       "serviceable": true,
       "sha512": "sha512-3MD5VHjXXieSHCleRLuaTXmL2pD0mB7CcOB1x2kA1I4bhptf4e3R27iM93264ZYuAq6mkUyX5XbcxnZvMJYc1Q==",
       "path": "skiasharp/2.88.9",
       "hashPath": "skiasharp.2.88.9.nupkg.sha512"
-    },
-    "SkiaSharp.HarfBuzz/2.88.8": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-ajSyJ2D17R0kZ4FwKwFrJTsYs3D3Y9iRBLhNecROR7dOxC6VTFaMPXJuwQB8KYpAqgmb2JAJFEgZ3i8MaaIw1g==",
-      "path": "skiasharp.harfbuzz/2.88.8",
-      "hashPath": "skiasharp.harfbuzz.2.88.8.nupkg.sha512"
     },
     "SkiaSharp.NativeAssets.Linux/2.88.9": {
       "type": "package",
@@ -849,27 +762,6 @@
       "sha512": "sha512-wb2kYgU7iy84nQLYZwMeJXixvK++GoIuECjU4ECaUKNuflyRlJKyiRhN1MAHswvlvzuvkrjRWlK0Za6+kYQK7w==",
       "path": "skiasharp.nativeassets.win32/2.88.9",
       "hashPath": "skiasharp.nativeassets.win32.2.88.9.nupkg.sha512"
-    },
-    "Svg.Custom/2.0.0.1": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-RDQkecvotRs6Cadg0d8IxoXMSkYzVhrYkBWOlS0cW/Krm7Fzr+/LbXdUuXYRnKDoRoSRzzP9GAKmv5Z9oZTM1w==",
-      "path": "svg.custom/2.0.0.1",
-      "hashPath": "svg.custom.2.0.0.1.nupkg.sha512"
-    },
-    "Svg.Model/2.0.0.1": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-lHAW6yYC62oKAXmTol2f0Ke6je5VkGTilSvnk4ynZ8577o7/eCnvZyPJcoFPryOX+s+6aAUA1rbbcK1JfsQzEA==",
-      "path": "svg.model/2.0.0.1",
-      "hashPath": "svg.model.2.0.0.1.nupkg.sha512"
-    },
-    "Svg.Skia/2.0.0.1": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-yn1+xr8sXV88qdAQbv+O+9Sf8Ymp0SFxDNGvyNWEr8OdyEtBndnzPPW5uHLIxzmsH4JFHaTOpL+wDF8Vj05iFQ==",
-      "path": "svg.skia/2.0.0.1",
-      "hashPath": "svg.skia.2.0.0.1.nupkg.sha512"
     },
     "System.IO.Pipelines/8.0.0": {
       "type": "package",

@@ -80,9 +80,3 @@
 /Users/jforbush/Dev/Intelligrade/Intelligrade/src/IntelliGrade.App/bin/Debug/net9.0/Markdown.Avalonia.dll
 /Users/jforbush/Dev/Intelligrade/Intelligrade/src/IntelliGrade.App/bin/Debug/net9.0/MsBox.Avalonia.dll
 /Users/jforbush/Dev/Intelligrade/Intelligrade/src/IntelliGrade.App/bin/Debug/net9.0/System.Reactive.dll
-/Users/jforbush/Dev/Intelligrade/Intelligrade/src/IntelliGrade.App/bin/Debug/net9.0/ExCSS.dll
-/Users/jforbush/Dev/Intelligrade/Intelligrade/src/IntelliGrade.App/bin/Debug/net9.0/ShimSkiaSharp.dll
-/Users/jforbush/Dev/Intelligrade/Intelligrade/src/IntelliGrade.App/bin/Debug/net9.0/SkiaSharp.HarfBuzz.dll
-/Users/jforbush/Dev/Intelligrade/Intelligrade/src/IntelliGrade.App/bin/Debug/net9.0/Svg.Custom.dll
-/Users/jforbush/Dev/Intelligrade/Intelligrade/src/IntelliGrade.App/bin/Debug/net9.0/Svg.Model.dll
-/Users/jforbush/Dev/Intelligrade/Intelligrade/src/IntelliGrade.App/bin/Debug/net9.0/Svg.Skia.dll

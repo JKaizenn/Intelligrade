@@ -62,7 +62,12 @@
                         ToolTip.Tip="API Settings"
                         VerticalAlignment="Center"
                         Margin="0,0,8,0">
-                    <TextBlock Text="Settings" FontSize="11" FontWeight="SemiBold"/>
+                    <Viewbox Width="20" Height="20">
+                        <Canvas Width="24" Height="24">
+                            <Path Fill="{Binding $parent[Button].Foreground}" Data="M8.75 12a3.25 3.25 0 1 1 6.5 0a3.25 3.25 0 0 1-6.5 0Z"/>
+                            <Path Fill="{Binding $parent[Button].Foreground}" Data="M11.46 1.838a.75.75 0 0 1 1.08 0L15.111 4.5h3.638a.75.75 0 0 1 .75.75v3.638l2.662 2.573a.75.75 0 0 1 0 1.078L19.5 15.111v3.639a.75.75 0 0 1-.75.75h-3.638l-2.573 2.661a.75.75 0 0 1-1.078 0L8.888 19.5H5.25a.75.75 0 0 1-.75-.75v-3.64l-2.661-2.57a.75.75 0 0 1 0-1.078L4.5 8.888V5.25a.75.75 0 0 1 .75-.75h3.638l2.573-2.662ZM12 7.25a4.75 4.75 0 1 0 0 9.5a4.75 4.75 0 0 0 0-9.5Z"/>
+                        </Canvas>
+                    </Viewbox>
                 </Button>
 
                 <!-- Home Button -->
@@ -73,7 +78,11 @@
                         IsVisible="{Binding !ShowWelcomeScreen}"
                         VerticalAlignment="Center"
                         Margin="0,0,8,0">
-                    <TextBlock Text="Home" FontSize="11" FontWeight="SemiBold"/>
+                    <Viewbox Width="20" Height="20">
+                        <Canvas Width="24" Height="24">
+                            <Path Fill="{Binding $parent[Button].Foreground}" Data="M13.558 5.534a2.25 2.25 0 0 0-3.116 0l-4.626 4.44a.748.748 0 0 0-.218.405a27.344 27.344 0 0 0-.121 9.15l.112.721h2.977v-6.211a.75.75 0 0 1 .75-.75h5.368a.75.75 0 0 1 .75.75v6.211h2.977l.112-.72a27.34 27.34 0 0 0-.12-9.152a.748.748 0 0 0-.219-.404l-4.626-4.44ZM9.404 4.452a3.75 3.75 0 0 1 5.192 0l4.627 4.44c.34.326.57.752.655 1.216a28.86 28.86 0 0 1 .127 9.653l-.18 1.157a.983.983 0 0 1-.972.832h-4.169a.75.75 0 0 1-.75-.75v-6.211h-3.868V21a.75.75 0 0 1-.75.75H5.147a.983.983 0 0 1-.972-.832l-.18-1.157a28.86 28.86 0 0 1 .127-9.653c.085-.464.315-.89.655-1.217l4.627-4.44Z"/>
+                        </Canvas>
+                    </Viewbox>
                 </Button>
 
                 <!-- Dark Mode Toggle -->
@@ -82,10 +91,11 @@
                         Command="{Binding ToggleDarkModeCommand}"
                         ToolTip.Tip="Toggle Dark Mode"
                         VerticalAlignment="Center">
-                    <Panel>
-                        <TextBlock Text="Light" FontSize="11" FontWeight="SemiBold" IsVisible="{Binding !IsDarkMode}"/>
-                        <TextBlock Text="Dark" FontSize="11" FontWeight="SemiBold" IsVisible="{Binding IsDarkMode}"/>
-                    </Panel>
+                    <Viewbox Width="20" Height="20">
+                        <Canvas Width="24" Height="24">
+                            <Path Fill="{Binding $parent[Button].Foreground}" Data="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.94-.49-7-3.85-7-7.93s3.05-7.44 7-7.93v15.86z"/>
+                        </Canvas>
+                    </Viewbox>
                 </Button>
             </Grid>
         </Border>

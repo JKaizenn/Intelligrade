@@ -1,40 +1,112 @@
-# IntelliGrade 🤖📚
+# IntelliGrade
 
-A cross-platform desktop application for automated grading of programming assignments. Built with C# and Avalonia UI, IntelliGrade streamlines the grading workflow with intelligent code analysis, multi-language support, and customizable rubrics.
+AI-powered desktop application for automated grading of programming assignments.
 
-## ✨ Features
+## Requirements
 
-### 🖥️ Modern Desktop Experience
-- **Cross-Platform** - Runs natively on Windows, macOS, and Linux
-- **Avalonia UI** - Beautiful, responsive interface with MVVM architecture
-- **Drag & Drop** - Simply drop assignment files to grade them
-- **Real-time Feedback** - Watch as code is analyzed and graded
-- **Dark/Light Theme** - Comfortable viewing in any environment
+- **.NET 9.0** - [Download](https://dotnet.microsoft.com/download/dotnet/9.0)
+- **Ollama** (optional) - [Download](https://ollama.com/) - For AI grading features
+  - Install Ollama and run: `ollama pull llama3.2:1b`
 
-### 🌐 Multi-Language Support
-- **Python** (.py) - CSE 111 Programming with Functions
-- **C#** (.cs) - CSE 210 Programming with Classes  
-- **JavaScript** (.js) - Web development assignments
-- **HTML/CSS** (.html, .css) - Frontend projects
-- **Java, C++, C, PHP, Ruby, Go, Rust** - Additional language support
-- **Automatic Detection** - IntelliGrade identifies the language automatically
+## Quick Start
 
-### 🤖 AI-Powered Analysis
-- **Local AI Processing** - Uses Ollama for privacy-friendly analysis
-- **Rubric-Based Grading** - Strict adherence to assignment criteria
-- **Creativity Detection** - Recognizes and credits additional features
-- **Structured Feedback** - Complete/Developing/Missing format with point breakdowns
-- **Detailed Reports** - Export grading results with full analysis
+### Running from Source
+```bash
+cd src/IntelliGrade.App
+dotnet run
+```
 
-### 📁 Intelligent File Handling
-- **Automatic File Detection** - Finds source files and outputs
-- **Assignment-Specific Data** - Automatically handles required test files
-- **Smart Display** - Syntax highlighting for code review
-- **Safe Execution** - Sandboxed code execution with timeout protection
-- **Batch Processing** - Grade multiple submissions at once
+### Building for Distribution
 
-### 📋 Course Management
-- **Multi-Course Support** - CSE 111, CSE 210, and extensible to any course
-- **Week-Based Organization** - Structured rubrics by course and assignment
-- **Template System** - Easy addition of new courses and assignments
-- **Grade Export** - Export to CSV, JSON, or integrate with LMS
+**macOS:**
+```bash
+./build-macos.sh
+open IntelliGrade.app
+```
+
+**Windows:**
+```powershell
+.\build-windows.ps1
+.\dist\windows\IntelliGrade.App.exe
+```
+
+**Linux:**
+```bash
+./build-linux.sh
+./dist/linux/IntelliGrade.App
+```
+
+## Features
+
+- **Multi-Language Support** - Python, C++, C#, Java, JavaScript, and more
+- **AI Grading** - Automated rubric-based grading with Ollama
+- **Course Management** - Organize assignments by course and language
+- **Custom Rubrics** - JSON-based rubric system
+- **Export Results** - Save grades to JSON or CSV
+- **Dark/Light Theme** - Automatically matches system theme
+
+## Usage
+
+1. **Select Directory** - Choose folder containing student submissions
+2. **Detect Languages** - Automatically identifies programming languages used
+3. **Select Source File** - Pick the submission to grade
+4. **Choose Rubric** - Select the appropriate assignment rubric
+5. **Run Program** - Execute the code to see output
+6. **Analyze with AI** - Get automated feedback based on rubric
+7. **Export** - Save grading results
+
+## Project Structure
+
+```
+Intelligrade/
+├── src/IntelliGrade.App/     # Main application
+│   ├── Models/                # Data models
+│   ├── ViewModels/            # MVVM view models
+│   ├── Views/                 # UI views
+│   ├── Services/              # Business logic
+│   └── Styles/                # UI themes
+├── TestData/                  # Example data
+│   ├── Rubrics/               # Grading rubrics
+│   └── Submissions/           # Sample assignments
+├── build-macos.sh             # macOS build script
+├── build-windows.ps1          # Windows build script
+└── build-linux.sh             # Linux build script
+```
+
+## Rubric Format
+
+Rubrics are stored in `TestData/Rubrics/{Course}/{Language}/` as JSON files:
+
+```json
+{
+  "assignmentName": "Assignment Name",
+  "totalPoints": 100,
+  "criteria": [
+    {
+      "name": "Functionality",
+      "points": 40,
+      "description": "Program runs without errors"
+    }
+  ]
+}
+```
+
+## Grading Scale
+
+Standard BYU-Idaho grading scale:
+- **93-100%** → A
+- **90-92.9%** → A-
+- **87-89.9%** → B+
+- **83-86.9%** → B
+- **80-82.9%** → B-
+- **77-79.9%** → C+
+- **73-76.9%** → C
+- **70-72.9%** → C-
+- **67-69.9%** → D+
+- **63-66.9%** → D
+- **60-62.9%** → D-
+- **Below 60%** → F
+
+## License
+
+MIT License - See LICENSE file for details

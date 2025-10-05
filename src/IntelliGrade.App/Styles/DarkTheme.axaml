@@ -168,4 +168,18 @@
         <Setter Property="Background" Value="#94a3b8"/>
     </Style>
 
+    <!-- Icon Button Styles (Dark) -->
+    <Style Selector=".dark Button.icon">
+        <Setter Property="Foreground" Value="#cbd5e1"/>
+    </Style>
+
+    <Style Selector=".dark Button.icon:pointerover">
+        <Setter Property="Background" Value="#1e293b"/>
+        <Setter Property="Foreground" Value="#f8fafc"/>
+    </Style>
+
+    <Style Selector=".dark Button.icon:pressed">
+        <Setter Property="Background" Value="#334155"/>
+    </Style>
+
 </Styles>

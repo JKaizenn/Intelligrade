@@ -25,7 +25,6 @@
 /Users/jforbush/.nuget/packages/colortextblock.avalonia/11.0.2/lib/net6.0/ColorTextBlock.Avalonia.dll
 /Users/jforbush/.nuget/packages/communitytoolkit.mvvm/8.2.1/lib/net6.0/CommunityToolkit.Mvvm.dll
 /Users/jforbush/.nuget/packages/dialoghost.avalonia/0.7.7/lib/netstandard2.0/DialogHost.Avalonia.dll
-/Users/jforbush/.nuget/packages/excss/4.2.3/lib/net7.0/ExCSS.dll
 /Users/jforbush/.nuget/packages/harfbuzzsharp/8.3.1.1/lib/net8.0/HarfBuzzSharp.dll
 /Users/jforbush/.nuget/packages/markdown.avalonia.tight/11.0.2/lib/net6.0/Markdown.Avalonia.dll
 /Users/jforbush/.nuget/packages/microcom.runtime/0.11.0/lib/net5.0/MicroCom.Runtime.dll
@@ -39,12 +38,7 @@
 /usr/local/share/dotnet/packs/Microsoft.NETCore.App.Ref/9.0.10/ref/net9.0/mscorlib.dll
 /usr/local/share/dotnet/packs/Microsoft.NETCore.App.Ref/9.0.10/ref/net9.0/netstandard.dll
 /Users/jforbush/.nuget/packages/ollamasharp/3.0.11/lib/netstandard2.0/OllamaSharp.dll
-/Users/jforbush/.nuget/packages/shimskiasharp/2.0.0.1/lib/net8.0/ShimSkiaSharp.dll
 /Users/jforbush/.nuget/packages/skiasharp/2.88.9/lib/net6.0/SkiaSharp.dll
-/Users/jforbush/.nuget/packages/skiasharp.harfbuzz/2.88.8/lib/net6.0/SkiaSharp.HarfBuzz.dll
-/Users/jforbush/.nuget/packages/svg.custom/2.0.0.1/lib/net8.0/Svg.Custom.dll
-/Users/jforbush/.nuget/packages/svg.model/2.0.0.1/lib/net8.0/Svg.Model.dll
-/Users/jforbush/.nuget/packages/svg.skia/2.0.0.1/lib/net8.0/Svg.Skia.dll
 /usr/local/share/dotnet/packs/Microsoft.NETCore.App.Ref/9.0.10/ref/net9.0/System.AppContext.dll
 /usr/local/share/dotnet/packs/Microsoft.NETCore.App.Ref/9.0.10/ref/net9.0/System.Buffers.dll
 /usr/local/share/dotnet/packs/Microsoft.NETCore.App.Ref/9.0.10/ref/net9.0/System.Collections.Concurrent.dll

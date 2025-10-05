@@ -47,7 +47,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
     [ObservableProperty] private string _studentName = string.Empty;
     [ObservableProperty] private string _studentId = string.Empty;
-    [ObservableProperty] private decimal _grade;
+    [ObservableProperty] private decimal? _grade = 0;
     [ObservableProperty] private string _instructorFeedback = string.Empty;
 
     [ObservableProperty] private bool _isProcessing;
@@ -378,7 +378,7 @@ public partial class MainWindowViewModel : ViewModelBase
         }
     }
 
-    partial void OnGradeChanged(decimal value)
+    partial void OnGradeChanged(decimal? value)
     {
         OnPropertyChanged(nameof(LetterGrade));
     }
@@ -810,12 +810,14 @@ public partial class MainWindowViewModel : ViewModelBase
         return value?.Replace("\"", "\"\"") ?? "";
     }
 
-    private static string CalculateLetterGrade(decimal grade)
+    private static string CalculateLetterGrade(decimal? grade)
     {
-        // BYU-Idaho Grading Scale
-        return grade switch
+        if (!grade.HasValue || grade.Value < 0)
+            return "-";
+
+        // Standard BYU-Idaho Grading Scale
+        return grade.Value switch
         {
-            >= 97 => "A+",
             >= 93 => "A",
             >= 90 => "A-",
             >= 87 => "B+",

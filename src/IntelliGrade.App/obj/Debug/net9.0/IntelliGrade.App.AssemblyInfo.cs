@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("IntelliGrade.App")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e951558d12f4838dda94c76aaed91e41dad2f22d")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f9337488ad9f4569981ddc826cabb37c47eb8a78")]
 [assembly: System.Reflection.AssemblyProductAttribute("IntelliGrade.App")]
 [assembly: System.Reflection.AssemblyTitleAttribute("IntelliGrade.App")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
