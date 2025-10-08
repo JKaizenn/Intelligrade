@@ -26,45 +26,15 @@
                                TextAlignment="Center"/>
                 </StackPanel>
 
-                <!-- Feature Cards -->
-                <Grid ColumnDefinitions="*,16,*,16,*">
-
-                    <!-- Feature 1 -->
-                    <Border Grid.Column="0" Classes="feature-card">
-                        <TextBlock Text="Fast Execution"
-                                   Classes="feature-title"
-                                   TextAlignment="Center"
-                                   FontSize="16"
-                                   FontWeight="SemiBold"/>
-                    </Border>
-
-                    <!-- Feature 2 -->
-                    <Border Grid.Column="2" Classes="feature-card">
-                        <TextBlock Text="AI Analysis"
-                                   Classes="feature-title"
-                                   TextAlignment="Center"
-                                   FontSize="16"
-                                   FontWeight="SemiBold"/>
-                    </Border>
-
-                    <!-- Feature 3 -->
-                    <Border Grid.Column="4" Classes="feature-card">
-                        <TextBlock Text="Export Results"
-                                   Classes="feature-title"
-                                   TextAlignment="Center"
-                                   FontSize="16"
-                                   FontWeight="SemiBold"/>
-                    </Border>
-
-                </Grid>
-
                 <!-- Get Started Button -->
                 <Button Content="Get Started"
                         Command="{Binding StartGradingCommand}"
                         Classes="primary"
                         Width="200"
                         Height="50"
-                        HorizontalAlignment="Center"/>
+                        HorizontalAlignment="Center"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"/>
 
             </StackPanel>
         </Grid>
