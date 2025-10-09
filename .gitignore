@@ -84,7 +84,7 @@ Desktop.ini
 # Distribution folders
 dist/
 publish/
-IntelliGrade.app/
+/IntelliGrade.app/
 
 # IDE files
 *.swp
