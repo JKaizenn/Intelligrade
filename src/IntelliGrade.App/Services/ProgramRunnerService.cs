@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using IntelliGrade.App.Interfaces;
 using IntelliGrade.App.Models;
 
 namespace IntelliGrade.App.Services;
@@ -10,7 +11,7 @@ namespace IntelliGrade.App.Services;
 /// <summary>
 /// Executes student programs safely with timeout.
 /// </summary>
-public class ProgramRunnerService
+public class ProgramRunnerService : IProgramRunnerService
 {
     private const int TimeoutSeconds = 30;
 

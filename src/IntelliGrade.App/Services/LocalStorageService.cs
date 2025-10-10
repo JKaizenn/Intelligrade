@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
+using IntelliGrade.App.Interfaces;
 
 namespace IntelliGrade.App.Services;
 
 /// <summary>
 /// Provides local storage capabilities for application settings and state
 /// </summary>
-public class LocalStorageService
+public class LocalStorageService : ILocalStorageService
 {
     private readonly string _storageDirectory;
     private readonly string _settingsFile;

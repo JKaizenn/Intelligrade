@@ -2,13 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using IntelliGrade.App.Interfaces;
 
 namespace IntelliGrade.App.Services;
 
 /// <summary>
 /// Manages file operations for assignments.
 /// </summary>
-public class FileManagerService
+public class FileManagerService : IFileManagerService
 {
     public List<string> GetCourses(string rubricDir)
     {

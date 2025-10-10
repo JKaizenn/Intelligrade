@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using IntelliGrade.App.Interfaces;
 using OllamaSharp;
 using OllamaSharp.Models;
 
@@ -11,7 +12,7 @@ namespace IntelliGrade.App.Services;
 /// Provides detailed, evidence-based feedback on student code based on rubric criteria.
 /// Uses structured prompts to ensure consistent, objective grading with specific code references.
 /// </summary>
-public class OllamaGradingService
+public class OllamaGradingService : IOllamaGradingService
 {
     private readonly OllamaApiClient _ollama;
     private readonly string _model;

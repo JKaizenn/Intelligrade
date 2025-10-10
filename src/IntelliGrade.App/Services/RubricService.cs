@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using IntelliGrade.App.Interfaces;
 
 namespace IntelliGrade.App.Services;
 
@@ -11,7 +12,7 @@ namespace IntelliGrade.App.Services;
 /// Supports both JSON and plain text rubric formats with automatic detection.
 /// Provides formatting optimized for both AI analysis and UI display.
 /// </summary>
-public class RubricService
+public class RubricService : IRubricService
 {
     public class RubricRating
     {

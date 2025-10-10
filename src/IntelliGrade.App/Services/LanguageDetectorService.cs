@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using IntelliGrade.App.Interfaces;
 using IntelliGrade.App.Models;
 
 namespace IntelliGrade.App.Services;
@@ -9,7 +10,7 @@ namespace IntelliGrade.App.Services;
 /// Detects programming languages from source files in a directory.
 /// Single Responsibility: Language detection only.
 /// </summary>
-public class LanguageDetectorService
+public class LanguageDetectorService : ILanguageDetectorService
 {
     private static readonly Dictionary<string, LanguageInfo> SupportedLanguages = new()
     {
