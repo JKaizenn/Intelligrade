@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using IntelliGrade.App.Configuration;
 using IntelliGrade.App.Interfaces;
 using IntelliGrade.App.Models;
 
@@ -13,11 +14,24 @@ namespace IntelliGrade.App.Services;
 /// </summary>
 public class ProgramRunnerService : IProgramRunnerService
 {
-    private const int TimeoutSeconds = 30;
+    private readonly ExecutionConfiguration _config;
+
+    public ProgramRunnerService(ExecutionConfiguration? config = null)
+    {
+        _config = config ?? new ExecutionConfiguration();
+    }
 
     public async Task<(bool success, string output, string error)> RunProgramAsync(
         string sourceFile, LanguageInfo language, string workingDirectory)
     {
+        // Validate inputs
+        if (string.IsNullOrWhiteSpace(sourceFile))
+            throw new ArgumentException("Source file cannot be null or whitespace", nameof(sourceFile));
+        if (language == null)
+            throw new ArgumentNullException(nameof(language));
+        if (string.IsNullOrWhiteSpace(workingDirectory))
+            throw new ArgumentException("Working directory cannot be null or whitespace", nameof(workingDirectory));
+
         // For compiled languages, compile first then run
         if (NeedsCompilation(language.Name))
         {
@@ -103,7 +117,7 @@ public class ProgramRunnerService : IProgramRunnerService
             process.BeginOutputReadLine();
             process.BeginErrorReadLine();
 
-            var completed = await Task.Run(() => process.WaitForExit(TimeoutSeconds * 1000));
+            var completed = await Task.Run(() => process.WaitForExit(_config.TimeoutSeconds * 1000));
 
             if (!completed)
             {
