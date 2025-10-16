@@ -273,9 +273,66 @@ Standard BYU-Idaho grading scale:
 - **Windows**: Run PowerShell as Administrator if needed
 - Ensure .NET 9.0 SDK is installed
 
+## Development
+
+### Running Tests
+
+The project includes comprehensive unit tests:
+
+```bash
+# Run all tests
+dotnet test
+
+# Run with detailed output
+dotnet test --verbosity normal
+```
+
+**Test Coverage**: 31 passing tests covering configuration validation and service behavior.
+
+### Architecture
+
+For detailed architecture documentation, design patterns, and development guidelines, see [ARCHITECTURE.md](ARCHITECTURE.md).
+
+### Building from Source
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/JKaizenn/Intelligrade.git
+   cd Intelligrade
+   ```
+
+2. **Restore dependencies**
+   ```bash
+   dotnet restore src/IntelliGrade.App/IntelliGrade.App.csproj
+   ```
+
+3. **Build**
+   ```bash
+   dotnet build src/IntelliGrade.App/IntelliGrade.App.csproj
+   ```
+
+4. **Run**
+   ```bash
+   dotnet run --project src/IntelliGrade.App/IntelliGrade.App.csproj
+   ```
+
+### Code Quality
+
+- ✅ Clean builds with 0 warnings
+- ✅ Interface-based design for testability
+- ✅ Input validation on all public methods
+- ✅ Async/await for responsive UI
+- ✅ MVVM architecture with Avalonia UI
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit issues or pull requests.
+
+**Development Guidelines:**
+- Follow existing code style
+- Add tests for new features
+- Update documentation
+- Keep commits focused and descriptive
 
 ## License
 
