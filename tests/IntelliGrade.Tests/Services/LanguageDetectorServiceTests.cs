@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Linq;
 using FluentAssertions;
@@ -10,7 +11,7 @@ namespace IntelliGrade.Tests.Services;
 /// Unit tests for LanguageDetectorService.
 /// Tests language detection logic without external dependencies.
 /// </summary>
-public class LanguageDetectorServiceTests
+public class LanguageDetectorServiceTests : IDisposable
 {
     private readonly LanguageDetectorService _service;
     private readonly string _testDirectory;
@@ -160,5 +161,6 @@ public class LanguageDetectorServiceTests
         {
             Directory.Delete(_testDirectory, recursive: true);
         }
+        GC.SuppressFinalize(this);
     }
 }
