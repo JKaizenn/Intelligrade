@@ -29,6 +29,9 @@ echo "📋 Copying files..."
 cp -r "$PUBLISH_DIR"/* "$APP_BUNDLE/Contents/MacOS/"
 chmod +x "$APP_BUNDLE/Contents/MacOS/IntelliGrade.App"
 
+echo "🎨 Copying app icon..."
+cp "$PROJECT_DIR/Assets/IntelliGrade.icns" "$APP_BUNDLE/Contents/Resources/"
+
 echo "📝 Creating Info.plist..."
 cat > "$APP_BUNDLE/Contents/Info.plist" << 'EOF'
 <?xml version="1.0" encoding="UTF-8"?>
@@ -47,6 +50,8 @@ cat > "$APP_BUNDLE/Contents/Info.plist" << 'EOF'
     <string>APPL</string>
     <key>CFBundleExecutable</key>
     <string>IntelliGrade.App</string>
+    <key>CFBundleIconFile</key>
+    <string>IntelliGrade.icns</string>
     <key>NSHighResolutionCapable</key>
     <true/>
 </dict>
