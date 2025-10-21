@@ -1,0 +1,36 @@
+# Binary Tree Assignment Rubric - CSE 232
+
+## Requirements (100 points total)
+
+### Tree Implementation (40 points)
+- Correct binary tree structure with proper node implementation (40 points)
+- Tree structure mostly correct with minor issues (30 points)
+- Basic tree structure but missing key features (20 points)
+- Incomplete or incorrect tree implementation (10 points)
+- No working implementation (0 points)
+
+### Tree Operations (30 points)
+- All operations (insert, delete, search, traverse) work correctly (30 points)
+- Most operations work with minor bugs (23 points)
+- Some operations work correctly (15 points)
+- Only basic operations implemented (8 points)
+- Operations fail or not implemented (0 points)
+
+### Traversal Methods (15 points)
+- All traversal methods (in-order, pre-order, post-order) implemented correctly (15 points)
+- Two traversal methods work correctly (10 points)
+- One traversal method works correctly (5 points)
+- No traversal methods working (0 points)
+
+### Code Quality & Documentation (15 points)
+- Excellent code quality with comprehensive documentation (15 points)
+- Good code with adequate documentation (12 points)
+- Acceptable code with minimal documentation (8 points)
+- Poor quality or no documentation (0 points)
+
+## Grading Scale (BYU-Idaho Standard)
+- A: 90-100
+- B: 80-89
+- C: 70-79
+- D: 60-69
+- F: Below 60

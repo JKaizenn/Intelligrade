@@ -379,4 +379,29 @@
         <Setter Property="BoxShadow" Value="0 4 6 -1 #0f172a10, 0 2 4 -2 #0f172a06"/>
     </Style>
 
+    <!-- Message Box Styles -->
+    <Style Selector="Border.message-error">
+        <Setter Property="Background" Value="#fef2f2"/>
+        <Setter Property="BorderBrush" Value="#ef4444"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="6"/>
+        <Setter Property="Padding" Value="16"/>
+    </Style>
+
+    <Style Selector="Border.message-error TextBlock">
+        <Setter Property="Foreground" Value="#dc2626"/>
+    </Style>
+
+    <Style Selector="Border.message-info">
+        <Setter Property="Background" Value="#eff6ff"/>
+        <Setter Property="BorderBrush" Value="#3b82f6"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="6"/>
+        <Setter Property="Padding" Value="16"/>
+    </Style>
+
+    <Style Selector="Border.message-info TextBlock">
+        <Setter Property="Foreground" Value="#1e40af"/>
+    </Style>
+
 </Styles>

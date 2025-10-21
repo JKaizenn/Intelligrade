@@ -182,4 +182,23 @@
         <Setter Property="Background" Value="#334155"/>
     </Style>
 
+    <!-- Message Box Styles (Dark) -->
+    <Style Selector=".dark Border.message-error">
+        <Setter Property="Background" Value="#450a0a"/>
+        <Setter Property="BorderBrush" Value="#ef4444"/>
+    </Style>
+
+    <Style Selector=".dark Border.message-error TextBlock">
+        <Setter Property="Foreground" Value="#fca5a5"/>
+    </Style>
+
+    <Style Selector=".dark Border.message-info">
+        <Setter Property="Background" Value="#172554"/>
+        <Setter Property="BorderBrush" Value="#3b82f6"/>
+    </Style>
+
+    <Style Selector=".dark Border.message-info TextBlock">
+        <Setter Property="Foreground" Value="#93c5fd"/>
+    </Style>
+
 </Styles>

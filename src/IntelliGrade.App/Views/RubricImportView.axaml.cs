@@ -23,7 +23,22 @@ public partial class RubricImportView : Window
                     Close();
                 };
             }
+
+            // Inherit theme from owner window
+            if (Owner is MainWindow mainWindow && mainWindow.DataContext is MainWindowViewModel mainVm)
+            {
+                UpdateWindowClasses(mainVm.IsDarkMode);
+            }
         };
+    }
+
+    private void UpdateWindowClasses(bool isDarkMode)
+    {
+        Classes.Clear();
+        if (isDarkMode)
+        {
+            Classes.Add("dark");
+        }
     }
 
     private void CancelButton_Click(object? sender, RoutedEventArgs e)

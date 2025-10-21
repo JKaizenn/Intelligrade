@@ -127,27 +127,17 @@
 
                 <!-- Error/Status Messages -->
                 <Border IsVisible="{Binding HasError}"
-                        Background="#fef2f2"
-                        BorderBrush="#ef4444"
-                        BorderThickness="1"
-                        CornerRadius="6"
-                        Padding="16">
+                        Classes="message-error">
                     <TextBlock Text="{Binding ErrorMessage}"
-                               Foreground="#dc2626"
                                FontSize="13"
                                TextWrapping="Wrap"
                                FontWeight="SemiBold"/>
                 </Border>
 
                 <Border IsVisible="{Binding IsProcessing}"
-                        Background="#eff6ff"
-                        BorderBrush="#3b82f6"
-                        BorderThickness="1"
-                        CornerRadius="6"
-                        Padding="16">
+                        Classes="message-info">
                     <StackPanel Spacing="8">
                         <TextBlock Text="{Binding StatusMessage}"
-                                   Foreground="#1e40af"
                                    FontSize="13"
                                    FontWeight="SemiBold"/>
                         <ProgressBar IsIndeterminate="True" Height="4"/>
@@ -163,7 +153,7 @@
             <TextBlock Grid.Column="0"
                        Text="{Binding StatusMessage}"
                        VerticalAlignment="Center"
-                       Foreground="#64748b"
+                       Classes="description"
                        FontSize="12"
                        IsVisible="{Binding !IsProcessing}"/>
 
