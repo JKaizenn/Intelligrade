@@ -72,7 +72,8 @@ bld/
 
 # macOS
 .DS_Store
-*.app
+*.app/
+IntelliGrade.app/
 
 # Windows
 Thumbs.db
@@ -84,7 +85,6 @@ Desktop.ini
 # Distribution folders
 dist/
 publish/
-/IntelliGrade.app/
 
 # IDE files
 *.swp
