@@ -80,8 +80,6 @@ dotnet test
 dotnet build src/IntelliGrade.App/IntelliGrade.App.csproj
 ```
 
-See [ARCHITECTURE.md](ARCHITECTURE.md) for technical details.
-
 ## License
 
 MIT License
