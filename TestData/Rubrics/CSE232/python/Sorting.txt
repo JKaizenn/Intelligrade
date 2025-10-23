@@ -1,0 +1,35 @@
+# Sorting Algorithms Assignment Rubric - CSE 232 (Python)
+
+## Requirements (100 points total)
+
+### Algorithm Implementation (50 points)
+- All sorting algorithms correctly implemented and tested (50 points)
+- All algorithms implemented with minor bugs (40 points)
+- Most algorithms work but one or two have significant issues (30 points)
+- Only basic algorithms implemented correctly (20 points)
+- Algorithms fail to sort or have syntax errors (0 points)
+
+### Code Quality & Pythonic Style (20 points)
+- Excellent use of Python features (list comprehensions, generators, etc.) (20 points)
+- Good code with proper naming and structure (15 points)
+- Basic functional code but not Pythonic (10 points)
+- Poor code quality (0 points)
+
+### Test Coverage (15 points)
+- Comprehensive test cases including edge cases (15 points)
+- Good test coverage but missing some edge cases (10 points)
+- Basic test cases only (5 points)
+- No tests or minimal testing (0 points)
+
+### Documentation (15 points)
+- Excellent docstrings and comments explaining algorithm logic (15 points)
+- Good documentation with minor gaps (10 points)
+- Minimal documentation (5 points)
+- No documentation (0 points)
+
+## Grading Scale (BYU-Idaho Standard)
+- A: 90-100
+- B: 80-89
+- C: 70-79
+- D: 60-69
+- F: Below 60

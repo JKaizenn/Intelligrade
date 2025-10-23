@@ -1,0 +1,34 @@
+# Array Methods Assignment Rubric - CSE 232 (JavaScript)
+
+## Requirements (100 points total)
+
+### Functionality (40 points)
+- All array methods work correctly with various inputs (40 points)
+- Most methods work with minor bugs (30 points)
+- Some methods work correctly (20 points)
+- Few or no working methods (0 points)
+
+### Modern JavaScript Features (25 points)
+- Excellent use of ES6+ features (arrow functions, spread, destructuring, etc.) (25 points)
+- Good use of modern JavaScript (20 points)
+- Some modern features used (12 points)
+- No modern features, old-style JavaScript (0 points)
+
+### Code Quality (20 points)
+- Clean, readable code with consistent style (20 points)
+- Good code with minor style issues (15 points)
+- Functional but inconsistent style (10 points)
+- Poor code quality (0 points)
+
+### JSDoc Documentation (15 points)
+- Complete JSDoc comments for all functions (15 points)
+- Good documentation with minor gaps (10 points)
+- Minimal documentation (5 points)
+- No documentation (0 points)
+
+## Grading Scale (BYU-Idaho Standard)
+- A: 90-100
+- B: 80-89
+- C: 70-79
+- D: 60-69
+- F: Below 60
