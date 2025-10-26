@@ -8,7 +8,7 @@
         x:Class="IntelliGrade.App.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/IG-Icon.png"
-        Title="IntelliGrade - Automated Programming Grader"
+        Title="IntelliGrade"
         Width="1920" Height="1080"
         MinWidth="1024" MinHeight="768"
         WindowStartupLocation="CenterScreen">
@@ -124,7 +124,7 @@
                            FontSize="13"
                            VerticalAlignment="Center"/>
                 <TextBlock Grid.Column="2"
-                           Text="v1.0.0"
+                           Text="v0.9.0-beta"
                            Foreground="#64748b"
                            FontSize="11"
                            VerticalAlignment="Center"/>
