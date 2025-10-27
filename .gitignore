@@ -72,8 +72,7 @@ bld/
 
 # macOS
 .DS_Store
-*.app/
-IntelliGrade.app/
+/IntelliGrade.app/
 *.dmg
 dmg_temp/
 temp.dmg
