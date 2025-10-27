@@ -71,8 +71,10 @@ echo -n "APPL????" > "$APP_BUNDLE/Contents/PkgInfo"
 
 echo ""
 # Check if signing identity is available
-SIGN_IDENTITY="Apple Development: Jessen Louis James Forbush (NR5LD2B696)"
-if security find-identity -v -p codesigning | grep -q "$SIGN_IDENTITY"; then
+# Auto-detect any Apple Development certificate
+SIGN_IDENTITY=$(security find-identity -v -p codesigning | grep "Apple Development" | head -n 1 | sed -n 's/.*"\(.*\)".*/\1/p')
+
+if [ -n "$SIGN_IDENTITY" ]; then
     echo "🔐 Code signing the app..."
 
     # Sign all dylibs and executables first
@@ -154,7 +156,7 @@ hdiutil detach "$DEVICE" || true
 hdiutil convert temp.dmg -format UDZO -imagekey zlib-level=9 -o "$DMG_NAME"
 
 # Sign the DMG if signing identity is available
-if security find-identity -v -p codesigning | grep -q "$SIGN_IDENTITY"; then
+if [ -n "$SIGN_IDENTITY" ]; then
     echo "  Signing DMG..."
     codesign --force --sign "$SIGN_IDENTITY" --timestamp "$DMG_NAME"
 
