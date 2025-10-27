@@ -1,10 +1,12 @@
-# Contributing to IntelliGrade
+# Beta Testing IntelliGrade
 
-Thank you for your interest in IntelliGrade! This is a beta release, and your feedback is invaluable.
+Thank you for your interest in IntelliGrade! This is my senior project at BYU-Idaho, and your feedback as a beta tester is invaluable.
 
-## Beta Testing
+**Note:** This is an academic project, so I'm not accepting code contributions at this time. However, your testing, feedback, and feature suggestions are greatly appreciated!
 
-As a beta tester, you're helping shape the future of IntelliGrade. Here's how you can help:
+## How You Can Help
+
+As a beta tester, you're helping refine IntelliGrade for its final release. Here's how:
 
 ### Reporting Bugs
 
@@ -20,13 +22,14 @@ If you encounter a bug, please [open an issue](https://github.com/JKaizenn/Intel
    - IntelliGrade version (v0.9.0-beta)
 6. **Screenshots** - If applicable
 
-### Feature Requests
+### Feature Suggestions
 
-Have an idea for a new feature? [Open an issue](https://github.com/JKaizenn/Intelligrade/issues) and describe:
+Have an idea for improvement? [Open an issue](https://github.com/JKaizenn/Intelligrade/issues) and describe:
 
 - **The problem** - What challenge are you facing?
 - **Proposed solution** - How would you solve it?
 - **Your workflow** - How would you use this feature?
+- **Priority** - How important is this to you?
 
 ### Providing Feedback
 
@@ -35,49 +38,21 @@ Your workflow and use case feedback is incredibly valuable:
 - What types of assignments do you grade?
 - What programming languages do you teach?
 - What features do you use most?
-- What's missing or could be improved?
+- What's confusing or could be clearer?
+- How much time does IntelliGrade save you?
 
-## Development
+### Sharing Your Experience
 
-Want to contribute code? Here's how to get started:
-
-### Setup
-
-1. Fork the repository
-2. Clone your fork: `git clone https://github.com/YOUR_USERNAME/Intelligrade.git`
-3. Install [.NET 9.0](https://dotnet.microsoft.com/download/dotnet/9.0)
-4. Build the project: `dotnet build src/IntelliGrade.App/IntelliGrade.App.csproj`
-5. Run tests: `dotnet test`
-
-### Making Changes
-
-1. Create a new branch: `git checkout -b feature/your-feature-name`
-2. Make your changes
-3. Run tests to ensure everything works
-4. Commit your changes: `git commit -m "Add feature description"`
-5. Push to your fork: `git push origin feature/your-feature-name`
-6. Open a Pull Request
-
-### Code Style
-
-- Use C# naming conventions
-- Add XML documentation comments for public methods
-- Keep methods focused and single-purpose
-- Write tests for new features
-
-### Pull Request Guidelines
-
-- Describe what your PR does
-- Reference any related issues
-- Include screenshots for UI changes
-- Ensure all tests pass
-- Keep PRs focused on a single feature or fix
+If IntelliGrade is helpful, consider:
+- Sharing it with fellow educators
+- Providing a testimonial about your experience
+- Suggesting improvements based on your workflow
 
 ## Questions?
 
-- Open an issue for bugs or features
-- Start a discussion for questions or ideas
+- Open an issue for bugs or feature suggestions
 - Check existing issues before creating new ones
+- Be specific and detailed in your feedback
 
 ## Code of Conduct
 
@@ -85,4 +60,4 @@ Be respectful and constructive. We're all here to make grading easier for educat
 
 ---
 
-Thank you for helping make IntelliGrade better! 🎓
+Thank you for helping make IntelliGrade better for my senior project! 🎓
