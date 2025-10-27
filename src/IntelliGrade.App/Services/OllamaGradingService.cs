@@ -8,7 +8,7 @@ using OllamaSharp.Models;
 namespace IntelliGrade.App.Services;
 
 /// <summary>
-/// Service for AI-powered code analysis and grading using local Ollama models.
+/// Service for AI-assisted code analysis and grading using local Ollama models.
 /// Provides detailed, evidence-based feedback on student code based on rubric criteria.
 /// Uses structured prompts to ensure consistent, objective grading with specific code references.
 /// </summary>

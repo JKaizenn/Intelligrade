@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 namespace IntelliGrade.App.Interfaces;
 
 /// <summary>
-/// Interface for AI-powered code grading service.
+/// Interface for AI-assisted code grading service.
 /// Provides abstraction for AI grading, allowing multiple AI provider implementations.
 /// </summary>
 public interface IOllamaGradingService

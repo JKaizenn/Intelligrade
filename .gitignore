@@ -74,6 +74,9 @@ bld/
 .DS_Store
 *.app/
 IntelliGrade.app/
+*.dmg
+dmg_temp/
+temp.dmg
 
 # Windows
 Thumbs.db
