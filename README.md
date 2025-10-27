@@ -14,10 +14,22 @@
 
 ## Quick Start
 
+### For Beta Testers
+
+**Download the installer for your platform:**
+- **macOS**: Download `IntelliGrade-v0.9.0-beta-macOS.dmg` from [Releases](https://github.com/JKaizenn/Intelligrade/releases)
+- **Windows**: Download `IntelliGrade-v0.9.0-beta-Windows-Setup.exe` from [Releases](https://github.com/JKaizenn/Intelligrade/releases)
+
+**No .NET installation required** - installers include everything you need!
+
+**Optional (for local AI grading):**
+- Install [Ollama](https://ollama.com/) and run `ollama pull llama3.2:1b`
+- Or use OpenAI/Anthropic API keys (configure in Settings)
+
+### For Developers
+
 **Requirements:**
 - [.NET 9.0](https://dotnet.microsoft.com/download/dotnet/9.0)
-- [Ollama](https://ollama.com/) (optional, for local AI grading)
-- OpenAI or Anthropic API keys (optional, for cloud AI grading)
 
 **Run from source:**
 ```bash
@@ -25,15 +37,17 @@ cd src/IntelliGrade.App
 dotnet run
 ```
 
-**Build for your platform:**
+**Build installers:**
 ```bash
-# macOS
+# macOS (creates DMG)
 ./build-macos.sh
+# Output: IntelliGrade-v0.9.0-beta-macOS.dmg
 
-# Windows
+# Windows (creates installer if Inno Setup is installed)
 .\build-windows.ps1
+# Output: dist\IntelliGrade-v0.9.0-beta-Windows-Setup.exe
 
-# Linux
+# Linux (creates AppImage/binary)
 ./build-linux.sh
 ```
 
@@ -160,12 +174,17 @@ Place rubrics in `~/bin/rubrics/{Course}/{Language}/`
 ## Development
 
 ```bash
-# Build
+# Build from source
 dotnet build src/IntelliGrade.App/IntelliGrade.App.csproj
 
 # Run from source
 cd src/IntelliGrade.App
 dotnet run
+
+# Create distributable installers (see Build installers section above)
+./build-macos.sh      # macOS DMG
+.\build-windows.ps1   # Windows Setup.exe
+./build-linux.sh      # Linux binary
 ```
 
 ## Beta Testing & Feedback
