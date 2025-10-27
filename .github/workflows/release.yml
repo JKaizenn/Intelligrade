@@ -18,7 +18,7 @@ jobs:
       with:
         dotnet-version: '9.0.x'
 
-    - name: Build Windows executable
+    - name: Build Windows x64 executable
       run: |
         dotnet publish src/IntelliGrade/IntelliGrade.App.csproj `
           -c Release `
@@ -27,18 +27,45 @@ jobs:
           -p:PublishSingleFile=false `
           -p:PublishTrimmed=false `
           -p:IncludeNativeLibrariesForSelfExtract=true `
-          -o dist/windows
+          -o dist/windows-x64
+
+    - name: Build Windows ARM64 executable
+      run: |
+        dotnet publish src/IntelliGrade/IntelliGrade.App.csproj `
+          -c Release `
+          -r win-arm64 `
+          --self-contained true `
+          -p:PublishSingleFile=false `
+          -p:PublishTrimmed=false `
+          -p:IncludeNativeLibrariesForSelfExtract=true `
+          -o dist/windows-arm64
 
     - name: Install Inno Setup
       run: |
         choco install innosetup -y
 
-    - name: Create Windows installer
+    - name: Create Windows x64 installer
       run: |
+        Copy-Item -Path "dist/windows-x64" -Destination "dist/windows" -Recurse
         & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" scripts\installer.iss
+        Move-Item -Path "dist/IntelliGrade-v0.9.0-beta-Windows-Setup.exe" -Destination "dist/IntelliGrade-v0.9.0-beta-Windows-x64-Setup.exe"
+        Remove-Item -Path "dist/windows" -Recurse -Force
 
-    - name: Upload Windows installer
+    - name: Create Windows ARM64 installer
+      run: |
+        Copy-Item -Path "dist/windows-arm64" -Destination "dist/windows" -Recurse
+        & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" scripts\installer.iss
+        Move-Item -Path "dist/IntelliGrade-v0.9.0-beta-Windows-Setup.exe" -Destination "dist/IntelliGrade-v0.9.0-beta-Windows-ARM64-Setup.exe"
+        Remove-Item -Path "dist/windows" -Recurse -Force
+
+    - name: Upload Windows x64 installer
       uses: actions/upload-artifact@v4
       with:
-        name: IntelliGrade-Windows
-        path: dist/IntelliGrade-v0.9.0-beta-Windows-Setup.exe
+        name: IntelliGrade-Windows-x64
+        path: dist/IntelliGrade-v0.9.0-beta-Windows-x64-Setup.exe
+
+    - name: Upload Windows ARM64 installer
+      uses: actions/upload-artifact@v4
+      with:
+        name: IntelliGrade-Windows-ARM64
+        path: dist/IntelliGrade-v0.9.0-beta-Windows-ARM64-Setup.exe
