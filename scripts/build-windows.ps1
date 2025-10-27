@@ -3,6 +3,10 @@
 
 Write-Host "🔨 Building IntelliGrade for Windows..." -ForegroundColor Green
 
+# Get the script directory and move to project root
+$SCRIPT_DIR = Split-Path -Parent $MyInvocation.MyCommand.Path
+Set-Location (Join-Path $SCRIPT_DIR "..")
+
 # Configuration
 $APP_NAME = "IntelliGrade"
 $VERSION = "0.9.0-beta"
@@ -38,7 +42,7 @@ if (Test-Path $InnoSetupPath) {
     Write-Host "📀 Creating installer with Inno Setup..." -ForegroundColor Cyan
 
     # Run Inno Setup compiler
-    & $InnoSetupPath "installer.iss"
+    & $InnoSetupPath "scripts\installer.iss"
 
     if ($LASTEXITCODE -eq 0) {
         Write-Host ""

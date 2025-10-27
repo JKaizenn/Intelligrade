@@ -41,15 +41,15 @@ dotnet run
 **Build installers:**
 ```bash
 # macOS (creates DMG)
-./build-macos.sh
+./scripts/build-macos.sh
 # Output: IntelliGrade-v0.9.0-beta-macOS.dmg
 
 # Windows (creates installer if Inno Setup is installed)
-.\build-windows.ps1
+.\scripts\build-windows.ps1
 # Output: dist\IntelliGrade-v0.9.0-beta-Windows-Setup.exe
 
 # Linux (creates AppImage/binary)
-./build-linux.sh
+./scripts/build-linux.sh
 ```
 
 ## Using IntelliGrade
@@ -183,9 +183,9 @@ cd src/IntelliGrade
 dotnet run
 
 # Create distributable installers (see Build installers section above)
-./build-macos.sh      # macOS DMG
-.\build-windows.ps1   # Windows Setup.exe
-./build-linux.sh      # Linux binary
+./scripts/build-macos.sh      # macOS DMG
+.\scripts\build-windows.ps1   # Windows Setup.exe
+./scripts/build-linux.sh      # Linux binary
 ```
 
 ## Beta Testing & Feedback

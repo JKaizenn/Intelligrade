@@ -7,6 +7,10 @@ set -e
 
 echo "🔨 Building IntelliGrade for Linux..."
 
+# Get the script directory and move to project root
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+cd "$SCRIPT_DIR/.."
+
 # Configuration
 APP_NAME="IntelliGrade"
 VERSION="1.0.0"

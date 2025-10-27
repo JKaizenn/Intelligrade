@@ -3,6 +3,10 @@ set -e
 
 echo "🔨 Building IntelliGrade for macOS..."
 
+# Get the script directory and move to project root
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+cd "$SCRIPT_DIR/.."
+
 APP_NAME="IntelliGrade"
 VERSION="0.9.0-beta"
 PROJECT_DIR="src/IntelliGrade"
@@ -10,8 +14,7 @@ PUBLISH_DIR="$PROJECT_DIR/bin/Release/net9.0/osx-arm64/publish"
 APP_BUNDLE="$APP_NAME.app"
 DMG_NAME="IntelliGrade-v${VERSION}-macOS.dmg"
 DMG_TEMP="dmg_temp"
-
-cd "$(dirname "$0")"
+ENTITLEMENTS="scripts/entitlements.plist"
 
 echo "🧹 Cleaning previous builds..."
 rm -rf "$APP_BUNDLE"
@@ -78,10 +81,10 @@ if [ -n "$SIGN_IDENTITY" ]; then
     echo "🔐 Code signing the app..."
 
     # Sign all dylibs and executables first
-    find "$APP_BUNDLE/Contents/MacOS" -type f \( -name "*.dylib" -o -perm +111 \) -exec codesign --force --sign "$SIGN_IDENTITY" --timestamp --options runtime --entitlements entitlements.plist {} \; 2>&1 | grep -v "code object is not signed at all"
+    find "$APP_BUNDLE/Contents/MacOS" -type f \( -name "*.dylib" -o -perm +111 \) -exec codesign --force --sign "$SIGN_IDENTITY" --timestamp --options runtime --entitlements "$ENTITLEMENTS" {} \; 2>&1 | grep -v "code object is not signed at all"
 
     # Deep sign the entire app bundle with entitlements
-    codesign --force --deep --sign "$SIGN_IDENTITY" --timestamp --options runtime --entitlements entitlements.plist "$APP_BUNDLE"
+    codesign --force --deep --sign "$SIGN_IDENTITY" --timestamp --options runtime --entitlements "$ENTITLEMENTS" "$APP_BUNDLE"
 
     # Verify the signature
     codesign --verify --verbose "$APP_BUNDLE"

@@ -80,6 +80,7 @@ temp.dmg
 # Windows
 Thumbs.db
 Desktop.ini
+*.exe
 
 # Linux
 *~
