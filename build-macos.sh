@@ -70,6 +70,25 @@ EOF
 echo -n "APPL????" > "$APP_BUNDLE/Contents/PkgInfo"
 
 echo ""
+echo "🔐 Code signing the app..."
+SIGN_IDENTITY="Apple Development: Jessen Louis James Forbush (NR5LD2B696)"
+
+# Sign all dylibs and executables first
+find "$APP_BUNDLE/Contents/MacOS" -type f \( -name "*.dylib" -o -perm +111 \) -exec codesign --force --sign "$SIGN_IDENTITY" --timestamp --options runtime --entitlements entitlements.plist {} \; 2>&1 | grep -v "code object is not signed at all"
+
+# Deep sign the entire app bundle with entitlements
+codesign --force --deep --sign "$SIGN_IDENTITY" --timestamp --options runtime --entitlements entitlements.plist "$APP_BUNDLE"
+
+# Verify the signature
+codesign --verify --verbose "$APP_BUNDLE"
+if [ $? -eq 0 ]; then
+    echo "✅ App successfully signed"
+else
+    echo "❌ Code signing failed"
+    exit 1
+fi
+
+echo ""
 echo "📀 Creating DMG installer..."
 
 # Create temporary DMG directory
@@ -127,6 +146,18 @@ hdiutil detach "$DEVICE" || true
 
 # Convert to compressed final DMG
 hdiutil convert temp.dmg -format UDZO -imagekey zlib-level=9 -o "$DMG_NAME"
+
+# Sign the DMG
+echo "  Signing DMG..."
+codesign --force --sign "$SIGN_IDENTITY" --timestamp "$DMG_NAME"
+
+# Verify DMG signature
+codesign --verify --verbose "$DMG_NAME"
+if [ $? -eq 0 ]; then
+    echo "  ✅ DMG successfully signed"
+else
+    echo "  ❌ DMG signing failed"
+fi
 
 # Cleanup
 rm -f temp.dmg
