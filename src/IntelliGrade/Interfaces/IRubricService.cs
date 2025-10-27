@@ -4,8 +4,7 @@ using IntelliGrade.App.Services;
 namespace IntelliGrade.App.Interfaces;
 
 /// <summary>
-/// Interface for rubric parsing and formatting service.
-/// Provides abstraction for loading and formatting rubrics in multiple formats.
+/// Service for loading and formatting rubrics in JSON or text format.
 /// </summary>
 public interface IRubricService
 {

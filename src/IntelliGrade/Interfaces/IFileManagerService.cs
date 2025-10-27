@@ -4,8 +4,7 @@ using System.Threading.Tasks;
 namespace IntelliGrade.App.Interfaces;
 
 /// <summary>
-/// Interface for file management operations.
-/// Provides abstraction for file and directory operations related to courses and assignments.
+/// Service for managing course and assignment files and directories.
 /// </summary>
 public interface IFileManagerService
 {

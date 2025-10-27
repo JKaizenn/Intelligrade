@@ -3,8 +3,7 @@ using System.Threading.Tasks;
 namespace IntelliGrade.App.Interfaces;
 
 /// <summary>
-/// Interface for local storage operations.
-/// Provides abstraction for persistent storage, enabling different storage backends.
+/// Service for local persistent storage operations.
 /// </summary>
 public interface ILocalStorageService
 {

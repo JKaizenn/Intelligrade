@@ -4,8 +4,7 @@ using IntelliGrade.App.Models;
 namespace IntelliGrade.App.Interfaces;
 
 /// <summary>
-/// Interface for program execution service.
-/// Provides abstraction for safely executing student code with timeout protection.
+/// Service for safely executing student code with timeout protection.
 /// </summary>
 public interface IProgramRunnerService
 {

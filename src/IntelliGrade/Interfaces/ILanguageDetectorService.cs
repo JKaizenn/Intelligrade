@@ -4,8 +4,7 @@ using IntelliGrade.App.Models;
 namespace IntelliGrade.App.Interfaces;
 
 /// <summary>
-/// Interface for language detection service.
-/// Provides abstraction for detecting programming languages in source code directories.
+/// Service for detecting programming languages in source code directories.
 /// </summary>
 public interface ILanguageDetectorService
 {
