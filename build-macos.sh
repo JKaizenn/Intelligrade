@@ -70,22 +70,28 @@ EOF
 echo -n "APPL????" > "$APP_BUNDLE/Contents/PkgInfo"
 
 echo ""
-echo "🔐 Code signing the app..."
+# Check if signing identity is available
 SIGN_IDENTITY="Apple Development: Jessen Louis James Forbush (NR5LD2B696)"
+if security find-identity -v -p codesigning | grep -q "$SIGN_IDENTITY"; then
+    echo "🔐 Code signing the app..."
 
-# Sign all dylibs and executables first
-find "$APP_BUNDLE/Contents/MacOS" -type f \( -name "*.dylib" -o -perm +111 \) -exec codesign --force --sign "$SIGN_IDENTITY" --timestamp --options runtime --entitlements entitlements.plist {} \; 2>&1 | grep -v "code object is not signed at all"
+    # Sign all dylibs and executables first
+    find "$APP_BUNDLE/Contents/MacOS" -type f \( -name "*.dylib" -o -perm +111 \) -exec codesign --force --sign "$SIGN_IDENTITY" --timestamp --options runtime --entitlements entitlements.plist {} \; 2>&1 | grep -v "code object is not signed at all"
 
-# Deep sign the entire app bundle with entitlements
-codesign --force --deep --sign "$SIGN_IDENTITY" --timestamp --options runtime --entitlements entitlements.plist "$APP_BUNDLE"
+    # Deep sign the entire app bundle with entitlements
+    codesign --force --deep --sign "$SIGN_IDENTITY" --timestamp --options runtime --entitlements entitlements.plist "$APP_BUNDLE"
 
-# Verify the signature
-codesign --verify --verbose "$APP_BUNDLE"
-if [ $? -eq 0 ]; then
-    echo "✅ App successfully signed"
+    # Verify the signature
+    codesign --verify --verbose "$APP_BUNDLE"
+    if [ $? -eq 0 ]; then
+        echo "✅ App successfully signed"
+    else
+        echo "❌ Code signing failed"
+        exit 1
+    fi
 else
-    echo "❌ Code signing failed"
-    exit 1
+    echo "⏭️  Skipping code signing (certificate not found)"
+    echo "   App will work locally but may show warnings when distributed"
 fi
 
 echo ""
@@ -147,16 +153,20 @@ hdiutil detach "$DEVICE" || true
 # Convert to compressed final DMG
 hdiutil convert temp.dmg -format UDZO -imagekey zlib-level=9 -o "$DMG_NAME"
 
-# Sign the DMG
-echo "  Signing DMG..."
-codesign --force --sign "$SIGN_IDENTITY" --timestamp "$DMG_NAME"
+# Sign the DMG if signing identity is available
+if security find-identity -v -p codesigning | grep -q "$SIGN_IDENTITY"; then
+    echo "  Signing DMG..."
+    codesign --force --sign "$SIGN_IDENTITY" --timestamp "$DMG_NAME"
 
-# Verify DMG signature
-codesign --verify --verbose "$DMG_NAME"
-if [ $? -eq 0 ]; then
-    echo "  ✅ DMG successfully signed"
+    # Verify DMG signature
+    codesign --verify --verbose "$DMG_NAME"
+    if [ $? -eq 0 ]; then
+        echo "  ✅ DMG successfully signed"
+    else
+        echo "  ❌ DMG signing failed"
+    fi
 else
-    echo "  ❌ DMG signing failed"
+    echo "  ⏭️  Skipping DMG signing (certificate not found)"
 fi
 
 # Cleanup

@@ -1,0 +1,68 @@
+name: Build Release Installers
+
+on:
+  release:
+    types: [created]
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '9.0.x'
+
+    - name: Build Windows executable
+      run: |
+        dotnet publish src/IntelliGrade.App/IntelliGrade.App.csproj `
+          -c Release `
+          -r win-x64 `
+          --self-contained true `
+          -p:PublishSingleFile=false `
+          -p:PublishTrimmed=false `
+          -p:IncludeNativeLibrariesForSelfExtract=true `
+          -o dist/windows
+
+    - name: Install Inno Setup
+      run: |
+        choco install innosetup -y
+
+    - name: Create Windows installer
+      run: |
+        & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer.iss
+
+    - name: Upload Windows installer
+      uses: actions/upload-artifact@v4
+      with:
+        name: IntelliGrade-Windows
+        path: dist/IntelliGrade-v0.9.0-beta-Windows-Setup.exe
+
+  build-macos:
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '9.0.x'
+
+    - name: Build macOS DMG
+      run: |
+        chmod +x build-macos.sh
+        # Build script automatically skips signing if certificate not available
+        ./build-macos.sh
+
+    - name: Upload macOS DMG
+      uses: actions/upload-artifact@v4
+      with:
+        name: IntelliGrade-macOS
+        path: IntelliGrade-v0.9.0-beta-macOS.dmg
