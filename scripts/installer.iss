@@ -19,8 +19,8 @@ AppUpdatesURL={#MyAppURL}
 DefaultDirName={autopf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
-LicenseFile=LICENSE
-OutputDir=dist
+LicenseFile=..\LICENSE
+OutputDir=..\dist
 OutputBaseFilename=IntelliGrade-v{#MyAppVersion}-Windows-Setup
 ; SetupIconFile=src\IntelliGrade.App\Assets\IG-Icon.ico  ; Uncomment if you have a .ico file
 Compression=lzma2/ultra64
@@ -44,9 +44,9 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "dist\windows\IntelliGrade.App.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "dist\windows\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "scripts\launch-debug.bat"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\dist\windows\IntelliGrade.App.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\dist\windows\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "launch-debug.bat"; DestDir: "{app}"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
