@@ -6,7 +6,7 @@ Write-Host "🔨 Building IntelliGrade for Windows..." -ForegroundColor Green
 # Configuration
 $APP_NAME = "IntelliGrade"
 $VERSION = "0.9.0-beta"
-$PROJECT_DIR = "src/IntelliGrade.App"
+$PROJECT_DIR = "src/IntelliGrade"
 $OUTPUT_DIR = "dist/windows"
 
 # Clean previous builds

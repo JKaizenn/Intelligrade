@@ -10,7 +10,7 @@ echo "🔨 Building IntelliGrade for Linux..."
 # Configuration
 APP_NAME="IntelliGrade"
 VERSION="1.0.0"
-PROJECT_DIR="src/IntelliGrade.App"
+PROJECT_DIR="src/IntelliGrade"
 OUTPUT_DIR="dist/linux"
 
 # Clean previous builds

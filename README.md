@@ -33,7 +33,7 @@
 
 **Run from source:**
 ```bash
-cd src/IntelliGrade.App
+cd src/IntelliGrade
 dotnet run
 ```
 
@@ -175,10 +175,10 @@ Place rubrics in `~/bin/rubrics/{Course}/{Language}/`
 
 ```bash
 # Build from source
-dotnet build src/IntelliGrade.App/IntelliGrade.App.csproj
+dotnet build src/IntelliGrade/IntelliGrade.App.csproj
 
 # Run from source
-cd src/IntelliGrade.App
+cd src/IntelliGrade
 dotnet run
 
 # Create distributable installers (see Build installers section above)

@@ -5,7 +5,7 @@ echo "🔨 Building IntelliGrade for macOS..."
 
 APP_NAME="IntelliGrade"
 VERSION="0.9.0-beta"
-PROJECT_DIR="src/IntelliGrade.App"
+PROJECT_DIR="src/IntelliGrade"
 PUBLISH_DIR="$PROJECT_DIR/bin/Release/net9.0/osx-arm64/publish"
 APP_BUNDLE="$APP_NAME.app"
 DMG_NAME="IntelliGrade-v${VERSION}-macOS.dmg"

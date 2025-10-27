@@ -20,7 +20,7 @@ jobs:
 
     - name: Build Windows executable
       run: |
-        dotnet publish src/IntelliGrade.App/IntelliGrade.App.csproj `
+        dotnet publish src/IntelliGrade/IntelliGrade.App.csproj `
           -c Release `
           -r win-x64 `
           --self-contained true `

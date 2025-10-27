@@ -1,0 +1,202 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:IntelliGrade.App.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="600"
+        x:Class="IntelliGrade.App.Views.ApiSettingsView"
+        x:DataType="vm:ApiSettingsViewModel"
+        Title="API Settings"
+        Width="700" Height="600"
+        MinWidth="600" MinHeight="500"
+        WindowStartupLocation="CenterOwner">
+
+    <Design.DataContext>
+        <vm:ApiSettingsViewModel/>
+    </Design.DataContext>
+
+    <Grid RowDefinitions="Auto,*,Auto" Margin="24">
+
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Spacing="8" Margin="0,0,0,24">
+            <TextBlock Text="AI API Configuration"
+                       Classes="section-header"
+                       FontSize="20"/>
+            <TextBlock Text="Configure AI service providers for code analysis and grading"
+                       Classes="description"
+                       TextWrapping="Wrap"/>
+        </StackPanel>
+
+        <!-- Content -->
+        <ScrollViewer Grid.Row="1">
+            <StackPanel Spacing="20">
+
+                <!-- Provider Selection -->
+                <Border Classes="card" Padding="20">
+                    <StackPanel Spacing="12">
+                        <TextBlock Text="AI Provider"
+                                   Classes="label"
+                                   FontSize="16"/>
+                        <ComboBox ItemsSource="{Binding Providers}"
+                                  SelectedItem="{Binding SelectedProvider}"
+                                  HorizontalAlignment="Stretch"/>
+                        <TextBlock Classes="description" FontSize="11" TextWrapping="Wrap">
+                            Select which AI service to use for code analysis
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+
+                <!-- Ollama Settings -->
+                <Border Classes="card" Padding="20">
+                    <StackPanel Spacing="16">
+                        <TextBlock Text="Ollama (Local)"
+                                   Classes="label"
+                                   FontSize="16"/>
+
+                        <CheckBox IsChecked="{Binding UseCustomEndpoint}"
+                                  Content="Use custom Ollama endpoint"
+                                  FontSize="14"/>
+
+                        <StackPanel Spacing="8" IsEnabled="{Binding UseCustomEndpoint}">
+                            <TextBlock Text="Endpoint URL" Classes="label"/>
+                            <TextBox Text="{Binding OllamaEndpoint}"
+                                     Watermark="http://localhost:11434"/>
+                            <TextBlock Classes="description" FontSize="11" TextWrapping="Wrap">
+                                Default: http://localhost:11434 (local Ollama installation)
+                            </TextBlock>
+                        </StackPanel>
+
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="Model Name" Classes="label"/>
+                            <TextBox Text="{Binding OllamaModel}"
+                                     Watermark="llama3.2:1b"/>
+                            <TextBlock Classes="description" FontSize="11" TextWrapping="Wrap">
+                                Common models: llama3.2:1b, llama3.2:3b, codellama, mistral
+                            </TextBlock>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- OpenAI Settings -->
+                <Border Classes="card" Padding="20">
+                    <StackPanel Spacing="16">
+                        <TextBlock Text="OpenAI"
+                                   Classes="label"
+                                   FontSize="16"/>
+
+                        <CheckBox IsChecked="{Binding UseOpenAi}"
+                                  Content="Enable OpenAI integration"
+                                  FontSize="14"/>
+
+                        <StackPanel Spacing="8" IsEnabled="{Binding UseOpenAi}">
+                            <TextBlock Text="API Key" Classes="label"/>
+                            <TextBox Text="{Binding OpenAiApiKey}"
+                                     Watermark="sk-..."
+                                     PasswordChar="•"
+                                     RevealPassword="True"/>
+                            <TextBlock Classes="description" FontSize="11" TextWrapping="Wrap">
+                                Get your API key from platform.openai.com
+                            </TextBlock>
+                        </StackPanel>
+
+                        <StackPanel Spacing="8" IsEnabled="{Binding UseOpenAi}">
+                            <TextBlock Text="Model" Classes="label"/>
+                            <TextBox Text="{Binding OpenAiModel}"
+                                     Watermark="gpt-4"/>
+                            <TextBlock Classes="description" FontSize="11" TextWrapping="Wrap">
+                                Available models: gpt-4, gpt-4-turbo, gpt-3.5-turbo
+                            </TextBlock>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- Anthropic Settings -->
+                <Border Classes="card" Padding="20">
+                    <StackPanel Spacing="16">
+                        <TextBlock Text="Anthropic Claude"
+                                   Classes="label"
+                                   FontSize="16"/>
+
+                        <CheckBox IsChecked="{Binding UseAnthropic}"
+                                  Content="Enable Anthropic integration"
+                                  FontSize="14"/>
+
+                        <StackPanel Spacing="8" IsEnabled="{Binding UseAnthropic}">
+                            <TextBlock Text="API Key" Classes="label"/>
+                            <TextBox Text="{Binding AnthropicApiKey}"
+                                     Watermark="sk-ant-..."
+                                     PasswordChar="•"
+                                     RevealPassword="True"/>
+                            <TextBlock Classes="description" FontSize="11" TextWrapping="Wrap">
+                                Get your API key from console.anthropic.com
+                            </TextBlock>
+                        </StackPanel>
+
+                        <StackPanel Spacing="8" IsEnabled="{Binding UseAnthropic}">
+                            <TextBlock Text="Model" Classes="label"/>
+                            <TextBox Text="{Binding AnthropicModel}"
+                                     Watermark="claude-3-5-sonnet-20241022"/>
+                            <TextBlock Classes="description" FontSize="11" TextWrapping="Wrap">
+                                Available models: claude-3-5-sonnet-20241022, claude-3-opus-20240229
+                            </TextBlock>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- Status Messages -->
+                <Border IsVisible="{Binding HasSuccess}"
+                        Background="#f0fdf4"
+                        BorderBrush="#10b981"
+                        BorderThickness="1"
+                        CornerRadius="6"
+                        Padding="16">
+                    <TextBlock Text="{Binding StatusMessage}"
+                               Foreground="#059669"
+                               FontSize="13"
+                               TextWrapping="Wrap"
+                               FontWeight="SemiBold"/>
+                </Border>
+
+                <Border IsVisible="{Binding HasError}"
+                        Background="#fef2f2"
+                        BorderBrush="#ef4444"
+                        BorderThickness="1"
+                        CornerRadius="6"
+                        Padding="16">
+                    <TextBlock Text="{Binding StatusMessage}"
+                               Foreground="#dc2626"
+                               FontSize="13"
+                               TextWrapping="Wrap"
+                               FontWeight="SemiBold"/>
+                </Border>
+
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Footer Buttons -->
+        <Grid Grid.Row="2" ColumnDefinitions="Auto,*,Auto,Auto" Margin="0,24,0,0">
+
+            <Button Grid.Column="0"
+                    Content="Reset to Defaults"
+                    Command="{Binding ResetToDefaultsCommand}"
+                    Classes="secondary"
+                    MinWidth="160"/>
+
+            <Button Grid.Column="2"
+                    Content="Save"
+                    Command="{Binding SaveSettingsCommand}"
+                    Classes="primary"
+                    Width="100"
+                    Margin="0,0,12,0"/>
+
+            <Button Grid.Column="3"
+                    Content="Close"
+                    Click="CloseButton_Click"
+                    Classes="secondary"
+                    Width="100"/>
+
+        </Grid>
+
+    </Grid>
+
+</Window>

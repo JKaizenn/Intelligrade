@@ -1,0 +1,143 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:IntelliGrade.App.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="500"
+        x:Class="IntelliGrade.App.Views.CourseManagementView"
+        x:DataType="vm:CourseManagementViewModel"
+        Title="Manage Courses"
+        Width="600" Height="500"
+        MinWidth="500" MinHeight="400"
+        WindowStartupLocation="CenterOwner">
+
+    <Design.DataContext>
+        <vm:CourseManagementViewModel/>
+    </Design.DataContext>
+
+    <Grid RowDefinitions="Auto,*,Auto" Margin="20">
+
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Spacing="8" Margin="0,0,0,20">
+            <TextBlock Text="Course Management"
+                       Classes="section-header"
+                       FontSize="18"/>
+            <TextBlock Text="Add or remove courses for organizing your rubrics"
+                       Classes="description"
+                       TextWrapping="Wrap"/>
+        </StackPanel>
+
+        <!-- Content with ScrollViewer for small screens -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,12,*" Margin="0,0,8,0">
+
+                <!-- Add Course Section -->
+                <Border Grid.Row="0" Grid.Column="0" Classes="card" Padding="16">
+                    <StackPanel Spacing="10">
+                        <TextBlock Text="Add New Course"
+                                   Classes="label"
+                                   FontSize="15"/>
+
+                        <TextBox Text="{Binding NewCourseName}"
+                                 Watermark="Enter course name (e.g., CSE 232)"
+                                 MaxLength="50"/>
+
+                        <TextBlock Text="Examples: CSE 232, MATH 101, CS 101"
+                                   Classes="description"
+                                   FontSize="11"
+                                   TextWrapping="Wrap"/>
+
+                        <Button Content="Add Course"
+                                Command="{Binding AddCourseCommand}"
+                                Classes="primary"
+                                HorizontalAlignment="Stretch"
+                                MinHeight="36"/>
+
+                        <!-- Error Message -->
+                        <Border IsVisible="{Binding HasError}"
+                                Background="#fef2f2"
+                                BorderBrush="#ef4444"
+                                BorderThickness="1"
+                                CornerRadius="6"
+                                Padding="10">
+                            <TextBlock Text="{Binding ErrorMessage}"
+                                       Foreground="#dc2626"
+                                       FontSize="12"
+                                       TextWrapping="Wrap"/>
+                        </Border>
+                    </StackPanel>
+                </Border>
+
+                <!-- Existing Courses Section -->
+                <Border Grid.Row="0" Grid.RowSpan="3" Grid.Column="2" Classes="card" Padding="16">
+                    <Grid RowDefinitions="Auto,12,*,12,Auto">
+                        <TextBlock Grid.Row="0"
+                                   Text="Existing Courses"
+                                   Classes="label"
+                                   FontSize="15"/>
+
+                        <Border Grid.Row="2"
+                                BorderBrush="#cbd5e1"
+                                BorderThickness="1"
+                                CornerRadius="6"
+                                MinHeight="150">
+                            <ListBox ItemsSource="{Binding Courses}"
+                                     SelectedItem="{Binding SelectedCourse}">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding}"
+                                                   Padding="8,6"
+                                                   FontSize="13"
+                                                   TextWrapping="Wrap"/>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </Border>
+
+                        <Button Grid.Row="4"
+                                Content="Delete Selected"
+                                Command="{Binding DeleteCourseCommand}"
+                                Classes="danger"
+                                HorizontalAlignment="Stretch"
+                                MinHeight="36"
+                                IsEnabled="{Binding SelectedCourse, Converter={x:Static ObjectConverters.IsNotNull}}"/>
+                    </Grid>
+                </Border>
+
+                <!-- Info Section -->
+                <Border Grid.Row="2" Grid.Column="0" Classes="card" Padding="16" Margin="0,12,0,0">
+                    <StackPanel Spacing="10">
+                        <TextBlock Text="Guidelines"
+                                   Classes="label"
+                                   FontSize="13"/>
+                        <StackPanel Spacing="4">
+                            <TextBlock Classes="description" FontSize="11" TextWrapping="Wrap">
+                                • Use standard course codes (e.g., CSE 232)
+                            </TextBlock>
+                            <TextBlock Classes="description" FontSize="11" TextWrapping="Wrap">
+                                • Avoid special characters (&lt;&gt;:/\|?*)
+                            </TextBlock>
+                            <TextBlock Classes="description" FontSize="11" TextWrapping="Wrap">
+                                • Letters, numbers, spaces, hyphens allowed
+                            </TextBlock>
+                            <TextBlock Classes="description" FontSize="11" TextWrapping="Wrap">
+                                • Cannot delete courses with existing rubrics
+                            </TextBlock>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+            </Grid>
+        </ScrollViewer>
+
+        <!-- Footer Buttons -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="12" Margin="0,24,0,0">
+            <Button Content="Close"
+                    Click="CloseButton_Click"
+                    Classes="secondary"
+                    Width="100"/>
+        </StackPanel>
+
+    </Grid>
+
+</Window>
