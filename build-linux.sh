@@ -39,7 +39,7 @@ cat > "$OUTPUT_DIR/intelligrade.desktop" << EOF
 Version=1.0
 Type=Application
 Name=IntelliGrade
-Comment=AI-Powered Assignment Grading
+Comment=AI-Assisted Assignment Grading
 Exec=$PWD/$OUTPUT_DIR/IntelliGrade.App
 Icon=$PWD/$OUTPUT_DIR/intelligrade
 Terminal=false

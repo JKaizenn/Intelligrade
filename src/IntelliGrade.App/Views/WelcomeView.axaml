@@ -20,7 +20,7 @@
                                FontWeight="Bold"
                                TextAlignment="Center"/>
 
-                    <TextBlock Text="AI-Powered Assignment Grading"
+                    <TextBlock Text="AI-Assisted Assignment Grading"
                                Classes="welcome-subtitle"
                                FontSize="24"
                                TextAlignment="Center"/>

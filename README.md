@@ -160,11 +160,12 @@ Place rubrics in `~/bin/rubrics/{Course}/{Language}/`
 ## Development
 
 ```bash
-# Run tests
-dotnet test
-
 # Build
 dotnet build src/IntelliGrade.App/IntelliGrade.App.csproj
+
+# Run from source
+cd src/IntelliGrade.App
+dotnet run
 ```
 
 ## Beta Testing & Feedback
