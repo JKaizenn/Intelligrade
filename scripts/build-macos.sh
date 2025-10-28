@@ -23,7 +23,7 @@ rm -f "$DMG_NAME"
 rm -rf "$PROJECT_DIR/bin/Release"
 
 echo "📦 Publishing for macOS ARM64 (self-contained)..."
-dotnet publish "$PROJECT_DIR/IntelliGrade.App.csproj" \
+dotnet publish "$PROJECT_DIR/IntelliGrade.csproj" \
     -c Release \
     -r osx-arm64 \
     --self-contained true \
@@ -35,7 +35,7 @@ mkdir -p "$APP_BUNDLE/Contents/Resources"
 
 echo "📋 Copying files..."
 cp -r "$PUBLISH_DIR"/* "$APP_BUNDLE/Contents/MacOS/"
-chmod +x "$APP_BUNDLE/Contents/MacOS/IntelliGrade.App"
+chmod +x "$APP_BUNDLE/Contents/MacOS/IntelliGrade"
 
 echo "🎨 Copying app icon..."
 cp "$PROJECT_DIR/Assets/IntelliGrade.icns" "$APP_BUNDLE/Contents/Resources/"
@@ -59,7 +59,7 @@ cat > "$APP_BUNDLE/Contents/Info.plist" << 'EOF'
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleExecutable</key>
-    <string>IntelliGrade.App</string>
+    <string>IntelliGrade</string>
     <key>CFBundleIconFile</key>
     <string>IntelliGrade.icns</string>
     <key>NSHighResolutionCapable</key>
