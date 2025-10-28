@@ -1,6 +1,6 @@
 # IntelliGrade
 
-<img width="1353" height="849" alt="Screenshot 2025-10-27 at 3 23 03 PM" src="https://github.com/user-attachments/assets/17eedd81-5a00-4371-8cb7-77fc11f31b7c" />
+<img width="1358" height="852" alt="Screenshot 2025-10-28 at 8 58 07 AM" src="https://github.com/user-attachments/assets/02bb18fc-cb63-4c08-941b-dd9e9484805d" />
 
 **Currently in Beta** - Desktop application for grading programming assignments using AI to assist with grading. Looking for testers and feedback!
 
