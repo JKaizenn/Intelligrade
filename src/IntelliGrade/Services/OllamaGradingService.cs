@@ -17,12 +17,21 @@ public class OllamaGradingService : IOllamaGradingService
     private readonly OllamaApiClient _ollama;
     private readonly string _model;
 
+    /// <summary>
+    /// Initializes the grading service with specified Ollama model and endpoint.
+    /// </summary>
+    /// <param name="model">LLM model name (default: llama3.2:1b)</param>
+    /// <param name="endpoint">Ollama API endpoint (default: localhost:11434)</param>
     public OllamaGradingService(string model = "llama3.2:1b", string endpoint = "http://localhost:11434")
     {
         _model = model;
         _ollama = new OllamaApiClient(endpoint);
     }
 
+    /// <summary>
+    /// Checks if Ollama is running and the specified model is available locally.
+    /// </summary>
+    /// <returns>True if Ollama service is accessible and model exists</returns>
     public async Task<bool> IsAvailableAsync()
     {
         try
@@ -36,6 +45,16 @@ public class OllamaGradingService : IOllamaGradingService
         }
     }
 
+    /// <summary>
+    /// Analyzes student code against rubric criteria using AI.
+    /// Generates detailed feedback with specific evidence and suggested scores.
+    /// </summary>
+    /// <param name="sourceCode">Student's source code to evaluate</param>
+    /// <param name="rubric">Grading rubric with criteria and point values</param>
+    /// <param name="courseName">Course name for context</param>
+    /// <param name="assignmentName">Assignment name for context</param>
+    /// <param name="outputContents">Program execution outputs (if any)</param>
+    /// <returns>Structured grading analysis with scores and reasoning</returns>
     public async Task<string> AnalyzeCodeAsync(
         string sourceCode,
         string rubric,
@@ -63,6 +82,10 @@ public class OllamaGradingService : IOllamaGradingService
         return response.ToString();
     }
 
+    /// <summary>
+    /// Constructs the structured prompt for AI grading.
+    /// Includes rubric, code, output, and detailed formatting instructions.
+    /// </summary>
     private static string BuildGradingPrompt(
         string sourceCode,
         string rubric,
