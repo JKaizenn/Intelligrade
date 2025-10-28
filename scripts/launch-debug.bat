@@ -8,7 +8,7 @@ echo If the app doesn't start, you should see an error message below:
 echo ================================================================
 echo.
 
-"%~dp0IntelliGrade.App.exe"
+"%~dp0IntelliGrade.exe"
 
 if errorlevel 1 (
     echo.

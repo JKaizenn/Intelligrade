@@ -5,7 +5,7 @@
 #define MyAppVersion "0.9.0-beta"
 #define MyAppPublisher "IntelliGrade"
 #define MyAppURL "https://github.com/JKaizenn/Intelligrade"
-#define MyAppExeName "IntelliGrade.App.exe"
+#define MyAppExeName "IntelliGrade.exe"
 
 [Setup]
 ; App information
@@ -44,7 +44,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "..\dist\windows\IntelliGrade.App.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\dist\windows\IntelliGrade.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\dist\windows\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "launch-debug.bat"; DestDir: "{app}"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
