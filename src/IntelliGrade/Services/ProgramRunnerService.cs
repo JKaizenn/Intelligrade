@@ -16,11 +16,23 @@ public class ProgramRunnerService : IProgramRunnerService
 {
     private readonly ExecutionConfiguration _config;
 
+    /// <summary>
+    /// Initializes the program runner with execution configuration.
+    /// </summary>
+    /// <param name="config">Configuration for timeouts and execution limits</param>
     public ProgramRunnerService(ExecutionConfiguration? config = null)
     {
         _config = config ?? new ExecutionConfiguration();
     }
 
+    /// <summary>
+    /// Executes a student program with timeout protection.
+    /// Automatically compiles if needed (C++, C, Rust) or runs directly (Python, Java, etc.).
+    /// </summary>
+    /// <param name="sourceFile">Path to source code file</param>
+    /// <param name="language">Programming language metadata</param>
+    /// <param name="workingDirectory">Directory to execute from</param>
+    /// <returns>Tuple of success status, stdout, and stderr</returns>
     public async Task<(bool success, string output, string error)> RunProgramAsync(
         string sourceFile, LanguageInfo language, string workingDirectory)
     {
@@ -42,11 +54,17 @@ public class ProgramRunnerService : IProgramRunnerService
         return await RunScriptAsync(sourceFile, language, workingDirectory);
     }
 
+    /// <summary>
+    /// Determines if language requires compilation before execution.
+    /// </summary>
     private bool NeedsCompilation(string languageName)
     {
         return languageName is "cpp" or "c" or "rust" or "csharp";
     }
 
+    /// <summary>
+    /// Compiles source code, then executes the resulting binary.
+    /// </summary>
     private async Task<(bool success, string output, string error)> CompileAndRunAsync(
         string sourceFile, LanguageInfo language, string workingDirectory)
     {
@@ -85,6 +103,10 @@ public class ProgramRunnerService : IProgramRunnerService
         return await ExecuteProgramAsync(interpreter, arguments, workingDirectory, "");
     }
 
+    /// <summary>
+    /// Core execution method with timeout protection.
+    /// Captures stdout/stderr and enforces configured timeout limit.
+    /// </summary>
     private async Task<(bool success, string output, string error)> ExecuteProgramAsync(
         string fileName, string arguments, string workingDirectory, string outputPrefix)
     {

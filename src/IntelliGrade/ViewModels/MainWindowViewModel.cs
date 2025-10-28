@@ -15,6 +15,10 @@ using IntelliGrade.App.Services;
 
 namespace IntelliGrade.App.ViewModels;
 
+/// <summary>
+/// Main application view model coordinating the grading workflow.
+/// Manages course selection, code execution, AI analysis, and grade recording.
+/// </summary>
 public partial class MainWindowViewModel : ViewModelBase
 {
     private readonly LanguageDetectorService _languageDetector = new();
@@ -321,6 +325,10 @@ public partial class MainWindowViewModel : ViewModelBase
         }
     }
 
+    /// <summary>
+    /// Scans current directory for programming languages and source files.
+    /// Auto-selects if only one language is found.
+    /// </summary>
     [RelayCommand]
     private void DetectLanguages()
     {
@@ -383,6 +391,10 @@ public partial class MainWindowViewModel : ViewModelBase
         OnPropertyChanged(nameof(LetterGrade));
     }
 
+    /// <summary>
+    /// Executes the selected source file with timeout protection.
+    /// Automatically compiles if needed, captures output for grading analysis.
+    /// </summary>
     [RelayCommand]
     private async Task RunProgramAsync()
     {
@@ -463,6 +475,10 @@ public partial class MainWindowViewModel : ViewModelBase
         }
     }
 
+    /// <summary>
+    /// Analyzes source code using local Ollama LLM against rubric criteria.
+    /// Generates detailed feedback with evidence-based scoring suggestions.
+    /// </summary>
     [RelayCommand]
     private async Task AnalyzeCodeAsync()
     {
@@ -525,6 +541,10 @@ public partial class MainWindowViewModel : ViewModelBase
         }
     }
 
+    /// <summary>
+    /// Removes selected source file and associated output files after confirmation.
+    /// Useful for moving to the next student submission.
+    /// </summary>
     [RelayCommand]
     private async Task CleanupFilesAsync()
     {
