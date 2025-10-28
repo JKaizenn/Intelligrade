@@ -74,8 +74,8 @@ echo -n "APPL????" > "$APP_BUNDLE/Contents/PkgInfo"
 
 echo ""
 # Check if signing identity is available
-# Auto-detect any Apple Development certificate
-SIGN_IDENTITY=$(security find-identity -v -p codesigning | grep "Apple Development" | head -n 1 | sed -n 's/.*"\(.*\)".*/\1/p')
+# Auto-detect Developer ID Application certificate for distribution
+SIGN_IDENTITY=$(security find-identity -v -p codesigning | grep "Developer ID Application" | head -n 1 | sed -n 's/.*"\(.*\)".*/\1/p')
 
 if [ -n "$SIGN_IDENTITY" ]; then
     echo "🔐 Code signing the app..."
@@ -169,6 +169,23 @@ if [ -n "$SIGN_IDENTITY" ]; then
         echo "  ✅ DMG successfully signed"
     else
         echo "  ❌ DMG signing failed"
+    fi
+
+    # Notarize if credentials are available
+    echo ""
+    echo "🍎 Notarizing with Apple..."
+    if xcrun notarytool submit "$DMG_NAME" --keychain-profile "notarization-profile" --wait 2>/dev/null; then
+        echo "  ✅ Notarization successful"
+        echo "  Stapling notarization ticket..."
+        xcrun stapler staple "$DMG_NAME"
+        echo "  ✅ DMG notarized and stapled"
+    else
+        echo "  ⚠️  Notarization failed or credentials not set up"
+        echo "  To set up notarization, run:"
+        echo "  xcrun notarytool store-credentials \"notarization-profile\" \\"
+        echo "    --apple-id \"your-apple-id@email.com\" \\"
+        echo "    --team-id \"YOUR_TEAM_ID\" \\"
+        echo "    --password \"app-specific-password\""
     fi
 else
     echo "  ⏭️  Skipping DMG signing (certificate not found)"
