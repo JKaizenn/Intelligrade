@@ -187,7 +187,8 @@
                                                Maximum="100"
                                                Increment="1"
                                                FormatString="F0"
-                                               HorizontalAlignment="Stretch"/>
+                                               HorizontalAlignment="Stretch"
+                                               Classes="grade"/>
                             </StackPanel>
 
                             <!-- Letter Grade Display -->

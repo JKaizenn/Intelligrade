@@ -110,7 +110,62 @@
     <Style Selector=".dark NumericUpDown">
         <Setter Property="Background" Value="#1e293b"/>
         <Setter Property="BorderBrush" Value="#475569"/>
-        <Setter Property="Foreground" Value="#f8fafc"/>
+        <Setter Property="Foreground" Value="#ffffff"/>
+    </Style>
+
+    <Style Selector=".dark NumericUpDown /template/ RepeatButton#PART_SpinUp">
+        <Setter Property="Foreground" Value="#ffffff"/>
+    </Style>
+
+    <Style Selector=".dark NumericUpDown /template/ RepeatButton#PART_SpinDown">
+        <Setter Property="Foreground" Value="#ffffff"/>
+    </Style>
+
+    <Style Selector=".dark NumericUpDown /template/ RepeatButton#PART_SpinUp /template/ ContentPresenter">
+        <Setter Property="TextElement.Foreground" Value="#ffffff"/>
+    </Style>
+
+    <Style Selector=".dark NumericUpDown /template/ RepeatButton#PART_SpinDown /template/ ContentPresenter">
+        <Setter Property="TextElement.Foreground" Value="#ffffff"/>
+    </Style>
+
+    <Style Selector=".dark NumericUpDown /template/ RepeatButton#PART_SpinUp Path">
+        <Setter Property="Fill" Value="#ffffff"/>
+    </Style>
+
+    <Style Selector=".dark NumericUpDown /template/ RepeatButton#PART_SpinDown Path">
+        <Setter Property="Fill" Value="#ffffff"/>
+    </Style>
+
+    <Style Selector=".dark NumericUpDown:pointerover /template/ RepeatButton Path">
+        <Setter Property="Fill" Value="#cbd5e1"/>
+    </Style>
+
+    <Style Selector=".dark NumericUpDown /template/ RepeatButton Viewbox">
+        <Setter Property="(TextElement.Foreground)" Value="#ffffff"/>
+    </Style>
+
+    <Style Selector=".dark NumericUpDown /template/ ButtonSpinner#PART_Spinner RepeatButton">
+        <Setter Property="Foreground" Value="#ffffff"/>
+    </Style>
+
+    <Style Selector=".dark NumericUpDown /template/ ButtonSpinner#PART_Spinner RepeatButton Path">
+        <Setter Property="Fill" Value="#ffffff"/>
+    </Style>
+
+    <!-- Specific Grade NumericUpDown Styles (Dark) -->
+    <Style Selector=".dark NumericUpDown.grade /template/ ButtonSpinner RepeatButton Path">
+        <Setter Property="Fill" Value="#ffffff"/>
+        <Setter Property="Stroke" Value="#ffffff"/>
+    </Style>
+
+    <Style Selector=".dark NumericUpDown.grade /template/ ButtonSpinner RepeatButton">
+        <Setter Property="Foreground" Value="#ffffff"/>
+        <Setter Property="Background" Value="Transparent"/>
+    </Style>
+
+    <Style Selector=".dark NumericUpDown.grade /template/ ButtonSpinner RepeatButton:pointerover Path">
+        <Setter Property="Fill" Value="#cbd5e1"/>
     </Style>
 
     <!-- Separator Style (Dark) -->
