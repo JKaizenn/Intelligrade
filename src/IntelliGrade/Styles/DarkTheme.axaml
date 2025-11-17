@@ -36,7 +36,21 @@
     <Style Selector=".dark TextBox.code">
         <Setter Property="Background" Value="#0f172a"/>
         <Setter Property="BorderBrush" Value="#475569"/>
-        <Setter Property="Foreground" Value="#e2e8f0"/>
+        <Setter Property="Foreground" Value="#ffffff"/>
+    </Style>
+
+    <Style Selector=".dark TextBox.code /template/ Border#PART_BorderElement">
+        <Setter Property="Background" Value="#0f172a"/>
+    </Style>
+
+    <Style Selector=".dark TextBox.code:focus /template/ Border#PART_BorderElement">
+        <Setter Property="Background" Value="#475569"/>
+        <Setter Property="BorderBrush" Value="#3b82f6"/>
+    </Style>
+
+    <Style Selector=".dark TextBox.code:pointerover /template/ Border#PART_BorderElement">
+        <Setter Property="Background" Value="#334155"/>
+        <Setter Property="BorderBrush" Value="#64748b"/>
     </Style>
 
     <!-- Header Border Style (Dark) -->
@@ -55,20 +69,24 @@
     <Style Selector=".dark TextBox">
         <Setter Property="Background" Value="#1e293b"/>
         <Setter Property="BorderBrush" Value="#475569"/>
-        <Setter Property="Foreground" Value="#f8fafc"/>
-        <Setter Property="CaretBrush" Value="#f8fafc"/>
+        <Setter Property="Foreground" Value="#ffffff"/>
+        <Setter Property="CaretBrush" Value="#ffffff"/>
         <Setter Property="SelectionBrush" Value="#3b82f6"/>
         <Setter Property="SelectionForegroundBrush" Value="#ffffff"/>
     </Style>
 
-    <Style Selector=".dark TextBox:focus">
-        <Setter Property="BorderBrush" Value="#3b82f6"/>
+    <Style Selector=".dark TextBox /template/ Border#PART_BorderElement">
         <Setter Property="Background" Value="#1e293b"/>
     </Style>
 
-    <Style Selector=".dark TextBox:pointerover">
+    <Style Selector=".dark TextBox:focus /template/ Border#PART_BorderElement">
+        <Setter Property="Background" Value="#475569"/>
+        <Setter Property="BorderBrush" Value="#3b82f6"/>
+    </Style>
+
+    <Style Selector=".dark TextBox:pointerover /template/ Border#PART_BorderElement">
+        <Setter Property="Background" Value="#334155"/>
         <Setter Property="BorderBrush" Value="#64748b"/>
-        <Setter Property="Background" Value="#1e293b"/>
     </Style>
 
     <!-- ComboBox Styles (Dark) -->
@@ -105,12 +123,24 @@
         <Setter Property="Foreground" Value="#94a3b8"/>
     </Style>
 
+    <Style Selector=".dark TabItem /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="TextElement.Foreground" Value="#94a3b8"/>
+    </Style>
+
     <Style Selector=".dark TabItem:selected">
         <Setter Property="Foreground" Value="#3b82f6"/>
     </Style>
 
+    <Style Selector=".dark TabItem:selected /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="TextElement.Foreground" Value="#3b82f6"/>
+    </Style>
+
     <Style Selector=".dark TabItem:pointerover">
         <Setter Property="Foreground" Value="#cbd5e1"/>
+    </Style>
+
+    <Style Selector=".dark TabItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="TextElement.Foreground" Value="#cbd5e1"/>
     </Style>
 
     <!-- Section Header Style (Dark) -->

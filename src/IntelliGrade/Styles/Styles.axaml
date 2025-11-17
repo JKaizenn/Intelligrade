@@ -141,9 +141,23 @@
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="BorderBrush" Value="#cbd5e1" />
         <Setter Property="Background" Value="#ffffff" />
-        <Setter Property="Foreground" Value="#1e293b" />
+        <Setter Property="Foreground" Value="#000000" />
         <Setter Property="CornerRadius" Value="6" />
         <Setter Property="Padding" Value="12" />
+    </Style>
+
+    <Style Selector="TextBox.code /template/ Border#PART_BorderElement">
+        <Setter Property="Background" Value="#ffffff" />
+    </Style>
+
+    <Style Selector="TextBox.code:focus /template/ Border#PART_BorderElement">
+        <Setter Property="Background" Value="#ffffff" />
+        <Setter Property="BorderBrush" Value="#3b82f6" />
+    </Style>
+
+    <Style Selector="TextBox.code:pointerover /template/ Border#PART_BorderElement">
+        <Setter Property="Background" Value="#f1f5f9" />
+        <Setter Property="BorderBrush" Value="#94a3b8" />
     </Style>
 
     <!--  Header Border Style  -->
@@ -192,19 +206,25 @@
         <Setter Property="CornerRadius" Value="6" />
         <Setter Property="Padding" Value="10,8" />
         <Setter Property="FontSize" Value="14" />
-        <Setter Property="Foreground" Value="#1e293b" />
-        <Setter Property="CaretBrush" Value="#1e293b" />
+        <Setter Property="Foreground" Value="#000000" />
+        <Setter Property="CaretBrush" Value="#000000" />
         <Setter Property="SelectionBrush" Value="#3b82f6" />
         <Setter Property="SelectionForegroundBrush" Value="#ffffff" />
     </Style>
 
-    <Style Selector="TextBox:focus">
+    <Style Selector="TextBox:focus /template/ Border#PART_BorderElement">
+        <Setter Property="Background" Value="#ffffff" />
         <Setter Property="BorderBrush" Value="#3b82f6" />
         <Setter Property="BorderThickness" Value="2" />
     </Style>
 
-    <Style Selector="TextBox:pointerover">
+    <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
+        <Setter Property="Background" Value="#f1f5f9" />
         <Setter Property="BorderBrush" Value="#94a3b8" />
+    </Style>
+
+    <Style Selector="TextBox /template/ Border#PART_BorderElement">
+        <Setter Property="Background" Value="#ffffff" />
     </Style>
 
     <!--  ComboBox Styles  -->
@@ -290,12 +310,24 @@
         <Setter Property="Padding" Value="16,10" />
     </Style>
 
+    <Style Selector="TabItem /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="TextElement.Foreground" Value="#64748b" />
+    </Style>
+
     <Style Selector="TabItem:selected">
         <Setter Property="Foreground" Value="#3b82f6" />
     </Style>
 
+    <Style Selector="TabItem:selected /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="TextElement.Foreground" Value="#3b82f6" />
+    </Style>
+
     <Style Selector="TabItem:pointerover">
-        <Setter Property="Foreground" Value="#475569" />
+        <Setter Property="Foreground" Value="#1e293b" />
+    </Style>
+
+    <Style Selector="TabItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="TextElement.Foreground" Value="#1e293b" />
     </Style>
 
     <!--  Section Header Style  -->

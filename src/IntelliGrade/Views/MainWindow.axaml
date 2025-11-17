@@ -7,6 +7,7 @@
         mc:Ignorable="d" d:DesignWidth="1920" d:DesignHeight="1080"
         x:Class="IntelliGrade.App.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
+        x:Name="MainWindowRoot"
         Icon="/Assets/IG-Icon.png"
         Title="IntelliGrade"
         Width="1920" Height="1080"
