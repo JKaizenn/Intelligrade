@@ -128,7 +128,7 @@
                            VerticalAlignment="Center"
                            TextTrimming="CharacterEllipsis"/>
                 <TextBlock Grid.Column="2"
-                           Text="v0.9.0-beta"
+                           Text="v1.0-beta"
                            Foreground="{DynamicResource TextMuted}"
                            FontSize="11"
                            VerticalAlignment="Center"
