@@ -61,6 +61,7 @@ public partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty] private bool _showWelcomeScreen = true;
 
     public string LetterGrade => CalculateLetterGrade(Grade);
+    public double Percentage => Grade.HasValue ? (double)Grade.Value : 0.0;
 
     public MainWindowViewModel()
     {
