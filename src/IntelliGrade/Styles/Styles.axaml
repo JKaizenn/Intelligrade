@@ -194,6 +194,25 @@
         <Setter Property="Foreground" Value="{DynamicResource TextOnDark}"/>
     </Style>
 
+    <Style Selector="TextBlock.section-header">
+        <Setter Property="FontSize" Value="20"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimary}"/>
+    </Style>
+
+    <Style Selector="TextBlock.description">
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="Foreground" Value="{DynamicResource TextSecondary}"/>
+        <Setter Property="LineHeight" Value="18"/>
+    </Style>
+
+    <Style Selector="TextBlock.label">
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="FontWeight" Value="Medium"/>
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimary}"/>
+        <Setter Property="Margin" Value="0,0,0,6"/>
+    </Style>
+
     <!-- TextBox -->
     <Style Selector="TextBox">
         <Setter Property="Background" Value="{DynamicResource InputBackground}"/>
