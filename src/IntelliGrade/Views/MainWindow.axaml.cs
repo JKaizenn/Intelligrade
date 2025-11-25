@@ -31,10 +31,6 @@ public partial class MainWindow : Window
 
                 // Set confirmation dialog handler
                 vm.ShowConfirmationDialog = ShowConfirmation;
-
-                // Subscribe to dark mode changes to update window classes
-                vm.PropertyChanged += OnViewModelPropertyChanged;
-                UpdateWindowClasses(vm.IsDarkMode);
             }
         };
     }

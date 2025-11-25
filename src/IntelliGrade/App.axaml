@@ -9,7 +9,11 @@
     </Application.DataTemplates>
   
     <Application.Resources>
-        <ResourceInclude Source="/Styles/Theme.axaml"/>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="/Styles/Theme.axaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </Application.Resources>
 
     <Application.Styles>
