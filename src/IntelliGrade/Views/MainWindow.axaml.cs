@@ -74,23 +74,6 @@ public partial class MainWindow : Window
         }
     }
 
-    private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
-    {
-        if (e.PropertyName == nameof(MainWindowViewModel.IsDarkMode) && sender is MainWindowViewModel vm)
-        {
-            UpdateWindowClasses(vm.IsDarkMode);
-        }
-    }
-
-    private void UpdateWindowClasses(bool isDarkMode)
-    {
-        Classes.Clear();
-        if (isDarkMode)
-        {
-            Classes.Add("dark");
-        }
-    }
-
     private async Task<bool> ShowConfirmation(string title, string message)
     {
         var box = MessageBoxManager.GetMessageBoxStandard(
