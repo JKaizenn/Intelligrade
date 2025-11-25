@@ -1,10 +1,10 @@
 using System.Threading.Tasks;
-using IntelliGrade.App.Services;
+using IntelliGrade.App.Models;
 
 namespace IntelliGrade.App.Interfaces;
 
 /// <summary>
-/// Service for loading and formatting rubrics in JSON or text format.
+/// Service for loading, saving, and formatting rubrics in JSON or text format.
 /// </summary>
 public interface IRubricService
 {
@@ -13,7 +13,14 @@ public interface IRubricService
     /// </summary>
     /// <param name="filePath">Path to JSON rubric file</param>
     /// <returns>Parsed rubric or null if parsing fails</returns>
-    Task<RubricService.Rubric?> LoadRubricAsync(string filePath);
+    Task<Rubric?> LoadRubricAsync(string filePath);
+
+    /// <summary>
+    /// Saves a rubric to a JSON file.
+    /// </summary>
+    /// <param name="rubric">Rubric to save</param>
+    /// <param name="filePath">Destination file path</param>
+    Task SaveRubricAsync(Rubric rubric, string filePath);
 
     /// <summary>
     /// Loads a plain text rubric from file.
@@ -35,12 +42,12 @@ public interface IRubricService
     /// </summary>
     /// <param name="rubric">Rubric object to format</param>
     /// <returns>Formatted string optimized for AI</returns>
-    string FormatRubricForAI(RubricService.Rubric rubric);
+    string FormatRubricForAI(Rubric rubric);
 
     /// <summary>
     /// Formats a rubric object for UI display.
     /// </summary>
     /// <param name="rubric">Rubric object to format</param>
     /// <returns>Formatted string optimized for human reading</returns>
-    string FormatRubricForDisplay(RubricService.Rubric rubric);
+    string FormatRubricForDisplay(Rubric rubric);
 }

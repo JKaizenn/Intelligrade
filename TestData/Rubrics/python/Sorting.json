@@ -1,0 +1,53 @@
+{
+  "name": "Sorting Algorithms",
+  "course": "CSE 232",
+  "language": "python",
+  "totalPoints": 100,
+  "criteria": [
+    {
+      "name": "Algorithm Implementation",
+      "maxPoints": 50,
+      "description": "All sorting algorithms correctly implemented and tested",
+      "levels": [
+        { "label": "Complete", "points": 50, "description": "All sorting algorithms correctly implemented and tested" },
+        { "label": "Minor Issues", "points": 40, "description": "All algorithms implemented with minor bugs" },
+        { "label": "Partial", "points": 30, "description": "Most algorithms work but one or two have significant issues" },
+        { "label": "Basic", "points": 20, "description": "Only basic algorithms implemented correctly" },
+        { "label": "Incomplete", "points": 0, "description": "Algorithms fail to sort or have syntax errors" }
+      ]
+    },
+    {
+      "name": "Code Quality & Pythonic Style",
+      "maxPoints": 20,
+      "description": "Use of Python features and code structure",
+      "levels": [
+        { "label": "Excellent", "points": 20, "description": "Excellent use of Python features (list comprehensions, generators, etc.)" },
+        { "label": "Good", "points": 15, "description": "Good code with proper naming and structure" },
+        { "label": "Basic", "points": 10, "description": "Basic functional code but not Pythonic" },
+        { "label": "Poor", "points": 0, "description": "Poor code quality" }
+      ]
+    },
+    {
+      "name": "Test Coverage",
+      "maxPoints": 15,
+      "description": "Quality and comprehensiveness of test cases",
+      "levels": [
+        { "label": "Comprehensive", "points": 15, "description": "Comprehensive test cases including edge cases" },
+        { "label": "Good", "points": 10, "description": "Good test coverage but missing some edge cases" },
+        { "label": "Basic", "points": 5, "description": "Basic test cases only" },
+        { "label": "Missing", "points": 0, "description": "No tests or minimal testing" }
+      ]
+    },
+    {
+      "name": "Documentation",
+      "maxPoints": 15,
+      "description": "Docstrings and comments explaining algorithm logic",
+      "levels": [
+        { "label": "Excellent", "points": 15, "description": "Excellent docstrings and comments explaining algorithm logic" },
+        { "label": "Good", "points": 10, "description": "Good documentation with minor gaps" },
+        { "label": "Minimal", "points": 5, "description": "Minimal documentation" },
+        { "label": "Missing", "points": 0, "description": "No documentation" }
+      ]
+    }
+  ]
+}

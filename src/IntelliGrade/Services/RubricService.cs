@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using IntelliGrade.App.Interfaces;
+using IntelliGrade.App.Models;
 
 namespace IntelliGrade.App.Services;
 
@@ -14,26 +15,6 @@ namespace IntelliGrade.App.Services;
 /// </summary>
 public class RubricService : IRubricService
 {
-    public class RubricRating
-    {
-        public decimal Points { get; set; }
-        public string Description { get; set; } = string.Empty;
-    }
-
-    public class RubricCriterion
-    {
-        public string Name { get; set; } = string.Empty;
-        public decimal MaxPoints { get; set; }
-        public RubricRating[] Ratings { get; set; } = Array.Empty<RubricRating>();
-    }
-
-    public class Rubric
-    {
-        public string Course { get; set; } = string.Empty;
-        public string Assignment { get; set; } = string.Empty;
-        public decimal TotalPoints { get; set; }
-        public RubricCriterion[] Criteria { get; set; } = Array.Empty<RubricCriterion>();
-    }
 
     public async Task<Rubric?> LoadRubricAsync(string filePath)
     {
@@ -54,6 +35,18 @@ public class RubricService : IRubricService
         {
             return null;
         }
+    }
+
+    public async Task SaveRubricAsync(Rubric rubric, string filePath)
+    {
+        var options = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            WriteIndented = true
+        };
+
+        var json = JsonSerializer.Serialize(rubric, options);
+        await File.WriteAllTextAsync(filePath, json);
     }
 
     public async Task<string> LoadPlainTextRubricAsync(string filePath)
@@ -90,28 +83,34 @@ public class RubricService : IRubricService
         var sb = new StringBuilder();
 
         sb.AppendLine($"COURSE: {rubric.Course}");
-        sb.AppendLine($"ASSIGNMENT: {rubric.Assignment}");
+        sb.AppendLine($"ASSIGNMENT: {rubric.Name}");
+        sb.AppendLine($"LANGUAGE: {rubric.Language}");
         sb.AppendLine($"TOTAL POINTS: {rubric.TotalPoints}");
         sb.AppendLine();
         sb.AppendLine("GRADING CRITERIA:");
         sb.AppendLine("=".PadRight(80, '='));
 
-        for (int i = 0; i < rubric.Criteria.Length; i++)
+        for (int i = 0; i < rubric.Criteria.Count; i++)
         {
             var criterion = rubric.Criteria[i];
             sb.AppendLine();
             sb.AppendLine($"CRITERION {i + 1}: {criterion.Name}");
             sb.AppendLine($"Maximum Points: {criterion.MaxPoints}");
-            sb.AppendLine();
-            sb.AppendLine("Rating Levels:");
 
-            for (int j = 0; j < criterion.Ratings.Length; j++)
+            if (!string.IsNullOrWhiteSpace(criterion.Description))
             {
-                var rating = criterion.Ratings[j];
-                sb.AppendLine($"  [{rating.Points}/{criterion.MaxPoints} points] {rating.Description}");
+                sb.AppendLine($"Description: {criterion.Description}");
             }
 
-            if (i < rubric.Criteria.Length - 1)
+            sb.AppendLine();
+            sb.AppendLine("Scoring Levels:");
+
+            foreach (var level in criterion.Levels)
+            {
+                sb.AppendLine($"  [{level.Points}/{criterion.MaxPoints} points] {level.Label}: {level.Description}");
+            }
+
+            if (i < rubric.Criteria.Count - 1)
             {
                 sb.AppendLine();
                 sb.AppendLine("-".PadRight(80, '-'));
@@ -128,7 +127,8 @@ public class RubricService : IRubricService
     {
         var sb = new StringBuilder();
 
-        sb.AppendLine($"{rubric.Course} - {rubric.Assignment}");
+        sb.AppendLine($"{rubric.Course} - {rubric.Name}");
+        sb.AppendLine($"Language: {rubric.Language}");
         sb.AppendLine($"Total Points: {rubric.TotalPoints}");
         sb.AppendLine();
 
@@ -136,9 +136,14 @@ public class RubricService : IRubricService
         {
             sb.AppendLine($"• {criterion.Name} ({criterion.MaxPoints} pts)");
 
-            foreach (var rating in criterion.Ratings)
+            if (!string.IsNullOrWhiteSpace(criterion.Description))
             {
-                sb.AppendLine($"    {rating.Points} pts: {rating.Description}");
+                sb.AppendLine($"  {criterion.Description}");
+            }
+
+            foreach (var level in criterion.Levels)
+            {
+                sb.AppendLine($"    {level.Points} pts - {level.Label}: {level.Description}");
             }
 
             sb.AppendLine();

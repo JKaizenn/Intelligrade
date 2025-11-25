@@ -1,7 +1,10 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using IntelliGrade.App.Models;
 using OllamaSharp;
 using OllamaSharp.Models;
 
@@ -31,16 +34,18 @@ public class RubricConverterService
         catch { return null; }
     }
 
-    public string? ConvertSimpleRubric(string plainTextRubric, string courseName, string assignmentName)
+    public string? ConvertSimpleRubric(string plainTextRubric, string courseName, string assignmentName, string language = "")
     {
         try
         {
-            var rubric = new RubricService.Rubric
+            var criteria = ParseCriteria(plainTextRubric);
+            var rubric = new Rubric
             {
                 Course = courseName,
-                Assignment = assignmentName,
-                TotalPoints = ExtractTotalPoints(plainTextRubric),
-                Criteria = ParseCriteria(plainTextRubric)
+                Name = assignmentName,
+                Language = language,
+                TotalPoints = (int)ExtractTotalPoints(plainTextRubric),
+                Criteria = criteria.ToList()
             };
 
             var options = new JsonSerializerOptions
@@ -155,9 +160,9 @@ RULES:
         return 100; // Default
     }
 
-    private RubricService.RubricCriterion[] ParseCriteria(string rubric)
+    private Criterion[] ParseCriteria(string rubric)
     {
-        var criteria = new System.Collections.Generic.List<RubricService.RubricCriterion>();
+        var criteria = new List<Criterion>();
 
         // Split by common section delimiters
         var sections = Regex.Split(rubric, @"\n\s*\n|\r\n\s*\r\n");
@@ -175,7 +180,7 @@ RULES:
         return criteria.Count > 0 ? criteria.ToArray() : CreateDefaultCriteria();
     }
 
-    private RubricService.RubricCriterion? ParseCriterion(string section)
+    private Criterion? ParseCriterion(string section)
     {
         // Look for criterion name at the start
         var lines = section.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
@@ -183,47 +188,50 @@ RULES:
             return null;
 
         var name = lines[0].Trim();
-        var ratings = new System.Collections.Generic.List<RubricService.RubricRating>();
+        var levels = new List<CriterionLevel>();
 
         // Look for point values
         foreach (var line in lines)
         {
             var pointMatch = Regex.Match(line, @"(\d+)\s*(?:points?|pts?)");
-            if (pointMatch.Success && decimal.TryParse(pointMatch.Groups[1].Value, out var points))
+            if (pointMatch.Success && int.TryParse(pointMatch.Groups[1].Value, out var points))
             {
-                ratings.Add(new RubricService.RubricRating
+                levels.Add(new CriterionLevel
                 {
+                    Label = $"{points} pts",
                     Points = points,
                     Description = line.Trim()
                 });
             }
         }
 
-        if (ratings.Count == 0)
+        if (levels.Count == 0)
             return null;
 
-        return new RubricService.RubricCriterion
+        return new Criterion
         {
             Name = name,
-            MaxPoints = ratings.Count > 0 ? ratings[0].Points : 0,
-            Ratings = ratings.ToArray()
+            MaxPoints = levels.Count > 0 ? levels[0].Points : 0,
+            Description = string.Empty,
+            Levels = levels
         };
     }
 
-    private RubricService.RubricCriterion[] CreateDefaultCriteria()
+    private Criterion[] CreateDefaultCriteria()
     {
         return new[]
         {
-            new RubricService.RubricCriterion
+            new Criterion
             {
                 Name = "Overall Quality",
                 MaxPoints = 100,
-                Ratings = new[]
+                Description = "General code quality and completeness",
+                Levels = new List<CriterionLevel>
                 {
-                    new RubricService.RubricRating { Points = 100, Description = "Excellent work" },
-                    new RubricService.RubricRating { Points = 80, Description = "Good work with minor issues" },
-                    new RubricService.RubricRating { Points = 60, Description = "Acceptable work with several issues" },
-                    new RubricService.RubricRating { Points = 0, Description = "Incomplete or does not meet requirements" }
+                    new CriterionLevel { Label = "Excellent", Points = 100, Description = "Excellent work" },
+                    new CriterionLevel { Label = "Good", Points = 80, Description = "Good work with minor issues" },
+                    new CriterionLevel { Label = "Acceptable", Points = 60, Description = "Acceptable work with several issues" },
+                    new CriterionLevel { Label = "Incomplete", Points = 0, Description = "Incomplete or does not meet requirements" }
                 }
             }
         };
