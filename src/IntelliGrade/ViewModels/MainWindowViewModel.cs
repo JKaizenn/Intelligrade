@@ -54,6 +54,7 @@ public partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty] private string _studentId = string.Empty;
     [ObservableProperty] private decimal? _grade = 0;
     [ObservableProperty] private string _instructorFeedback = string.Empty;
+    [ObservableProperty] private GradingSessionViewModel? _gradingSession;
 
     [ObservableProperty] private bool _isProcessing;
     [ObservableProperty] private bool _ollamaAvailable;
@@ -575,6 +576,13 @@ public partial class MainWindowViewModel : ViewModelBase
                 sb.AppendLine(response.Summary);
 
                 AiAnalysis = sb.ToString();
+
+                // Create GradingSessionViewModel with rubric and AI response
+                GradingSession = new GradingSessionViewModel(rubric, response);
+                GradingSession.StudentName = StudentName;
+                GradingSession.StudentId = StudentId;
+                GradingSession.AssignmentName = SelectedAssignment ?? rubric.Name;
+                GradingSession.SourceFile = SelectedSourceFile ?? string.Empty;
             }
             else
             {

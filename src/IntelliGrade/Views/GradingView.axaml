@@ -1,6 +1,7 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:IntelliGrade.App.ViewModels"
+             xmlns:converters="using:IntelliGrade.App.Converters"
              x:Class="IntelliGrade.App.Views.GradingView"
              x:DataType="vm:MainWindowViewModel">
 
@@ -209,23 +210,120 @@
                                 </Grid>
                             </Border>
 
-                            <!-- Simple Grade Entry -->
-                            <Border Classes="card" Padding="16">
-                                <StackPanel Spacing="12">
-                                    <TextBlock Text="Grade Entry" Classes="label" FontSize="16"/>
-                                    <Grid ColumnDefinitions="Auto,*">
+                            <!-- AI Assistance Actions -->
+                            <Border Classes="card" Padding="16" IsVisible="{Binding GradingSession, Converter={x:Static converters:ObjectNullConverter.Instance}}">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                        <TextBlock Text="AI Grading Assistance" FontWeight="SemiBold"/>
+                                        <TextBlock Text="Run AI Analysis to get per-criterion suggestions"
+                                                   FontSize="12"
+                                                   Foreground="{DynamicResource TextSecondary}"/>
+                                    </StackPanel>
+                                    <Button Grid.Column="1"
+                                            Content="Analyze with AI"
+                                            Command="{Binding AnalyzeCodeCommand}"
+                                            Classes="primary"
+                                            Padding="16,8"/>
+                                </Grid>
+                            </Border>
+
+                            <!-- Per-Criterion Grading -->
+                            <Border Classes="card" Padding="16" IsVisible="{Binding GradingSession, Converter={x:Static converters:ObjectNotNullConverter.Instance}}">
+                                <StackPanel Spacing="16">
+                                    <Grid ColumnDefinitions="*,Auto">
                                         <TextBlock Grid.Column="0"
-                                                   Text="Score (0-100):"
-                                                   VerticalAlignment="Center"
-                                                   Margin="0,0,12,0"/>
-                                        <NumericUpDown Grid.Column="1"
-                                                       Value="{Binding Grade}"
-                                                       Minimum="0"
-                                                       Maximum="100"
-                                                       Increment="1"
-                                                       FormatString="F0"
-                                                       HorizontalAlignment="Stretch"/>
+                                                   Text="Per-Criterion Grading"
+                                                   FontSize="16"
+                                                   FontWeight="SemiBold"/>
+                                        <Button Grid.Column="1"
+                                                Content="Apply All AI Suggestions"
+                                                Command="{Binding GradingSession.ApplyAllAiSuggestionsCommand}"
+                                                Classes="secondary"
+                                                Padding="12,6"/>
                                     </Grid>
+
+                                    <!-- Criteria List -->
+                                    <ItemsControl ItemsSource="{Binding GradingSession.CriteriaGrades}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border Classes="card" Padding="12" Background="{DynamicResource Surface}" Margin="0,0,0,12">
+                                                    <StackPanel Spacing="8">
+                                                        <!-- Criterion Header -->
+                                                        <Grid ColumnDefinitions="*,Auto">
+                                                            <TextBlock Grid.Column="0"
+                                                                       Text="{Binding Criterion.Name}"
+                                                                       FontWeight="SemiBold"/>
+                                                            <TextBlock Grid.Column="1"
+                                                                       Foreground="{DynamicResource TextSecondary}">
+                                                                <Run Text="/"/><Run Text="{Binding Criterion.MaxPoints}"/><Run Text=" pts"/>
+                                                            </TextBlock>
+                                                        </Grid>
+
+                                                        <!-- AI Suggestion -->
+                                                        <Border Background="{DynamicResource InputBackground}"
+                                                                Padding="12"
+                                                                CornerRadius="4"
+                                                                IsVisible="{Binding AiSuggestion, Converter={x:Static converters:ObjectNotNullConverter.Instance}}">
+                                                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                                                <!-- Confidence Indicator Dot -->
+                                                                <Border Grid.Column="0"
+                                                                        Width="12"
+                                                                        Height="12"
+                                                                        CornerRadius="6"
+                                                                        VerticalAlignment="Center"
+                                                                        Margin="0,0,8,0">
+                                                                    <Border.Background>
+                                                                        <SolidColorBrush Color="{Binding AiSuggestion.Confidence, Converter={x:Static converters:ConfidenceColorConverter.Instance}}"/>
+                                                                    </Border.Background>
+                                                                </Border>
+
+                                                                <!-- AI Suggestion Details -->
+                                                                <StackPanel Grid.Column="1" Spacing="4">
+                                                                    <TextBlock FontWeight="SemiBold">
+                                                                        <Run Text="AI Suggestion: "/>
+                                                                        <Run Text="{Binding AiSuggestion.SuggestedScore}"/>
+                                                                        <Run Text="/"/>
+                                                                        <Run Text="{Binding AiSuggestion.MaxPoints}"/>
+                                                                        <Run Text=" (" FontSize="11"/>
+                                                                        <Run Text="{Binding AiSuggestion.Confidence}" FontSize="11"/>
+                                                                        <Run Text=" Confidence)" FontSize="11"/>
+                                                                    </TextBlock>
+                                                                    <TextBlock Text="{Binding AiSuggestion.Reasoning}"
+                                                                               FontSize="12"
+                                                                               TextWrapping="Wrap"
+                                                                               Foreground="{DynamicResource TextSecondary}"/>
+                                                                </StackPanel>
+
+                                                                <!-- Apply AI Button -->
+                                                                <Button Grid.Column="2"
+                                                                        Content="Apply"
+                                                                        Command="{Binding ApplyAiCommand}"
+                                                                        Classes="secondary"
+                                                                        Padding="8,4"
+                                                                        Margin="8,0,0,0"
+                                                                        VerticalAlignment="Top"/>
+                                                            </Grid>
+                                                        </Border>
+
+                                                        <!-- Instructor Score Input -->
+                                                        <Grid ColumnDefinitions="Auto,*">
+                                                            <TextBlock Grid.Column="0"
+                                                                       Text="Your Score:"
+                                                                       VerticalAlignment="Center"
+                                                                       Margin="0,0,8,0"/>
+                                                            <NumericUpDown Grid.Column="1"
+                                                                           Value="{Binding InstructorScore}"
+                                                                           Minimum="0"
+                                                                           Maximum="{Binding Criterion.MaxPoints}"
+                                                                           Increment="1"
+                                                                           FormatString="F0"
+                                                                           HorizontalAlignment="Stretch"/>
+                                                        </Grid>
+                                                    </StackPanel>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
                                 </StackPanel>
                             </Border>
 

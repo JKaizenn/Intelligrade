@@ -1,4 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using IntelliGrade.App.DTOs;
 using IntelliGrade.App.Models;
 
@@ -67,6 +68,12 @@ public partial class CriterionGradeViewModel : ObservableObject
             InstructorScore = AiSuggestion.SuggestedScore;
         }
     }
+
+    /// <summary>
+    /// Command to apply AI suggestion (wraps ApplyAiSuggestion method).
+    /// </summary>
+    [RelayCommand]
+    private void ApplyAi() => ApplyAiSuggestion();
 
     /// <summary>
     /// Clears the instructor score and feedback.
