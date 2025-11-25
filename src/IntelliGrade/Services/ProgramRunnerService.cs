@@ -147,7 +147,19 @@ public class ProgramRunnerService : IProgramRunnerService
                 return (false, "", "Program execution timeout");
             }
 
-            return (process.ExitCode == 0, outputBuilder.ToString(), errorBuilder.ToString());
+            // Ensure all async output/error reading completes
+            process.WaitForExit();
+
+            var output = outputBuilder.ToString();
+            var error = errorBuilder.ToString();
+
+            // If no error message but non-zero exit code, add generic error
+            if (process.ExitCode != 0 && string.IsNullOrWhiteSpace(error))
+            {
+                error = $"Program exited with code {process.ExitCode}";
+            }
+
+            return (process.ExitCode == 0, output, error);
         }
         catch (Exception ex)
         {
