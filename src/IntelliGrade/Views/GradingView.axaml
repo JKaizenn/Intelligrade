@@ -132,7 +132,7 @@
         <Border Grid.Column="1"
                 Classes="card"
                 Margin="8,0,0,0">
-            <TabControl>
+            <TabControl MaxHeight="{Binding $parent[Grid].Bounds.Height}">
 
                 <!-- Source Code Tab -->
                 <TabItem Header="Source Code">
