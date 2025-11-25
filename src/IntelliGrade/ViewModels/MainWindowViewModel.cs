@@ -501,30 +501,85 @@ public partial class MainWindowViewModel : ViewModelBase
                 SelectedCourse ?? "default",
                 SelectedLanguage?.Name ?? "default");
 
-            // Try JSON first, then .txt
+            // Try to load rubric
             var jsonPath = Path.Combine(rubricDir, $"{SelectedAssignment ?? "default"}.json");
-            var txtPath = Path.Combine(rubricDir, $"{SelectedAssignment ?? "default"}.txt");
+            var rubric = await _rubricService.LoadRubricAsync(jsonPath);
 
-            string rubricPath = File.Exists(jsonPath) ? jsonPath : txtPath;
-            string formattedRubric;
-
-            if (File.Exists(rubricPath))
+            if (rubric == null)
             {
-                // Load and format rubric for AI (uses special formatting for JSON)
-                formattedRubric = await _rubricService.LoadAndFormatRubricAsync(rubricPath);
-            }
-            else
-            {
-                formattedRubric = "General code quality assessment";
+                // Create a default rubric if none found
+                rubric = new Models.Rubric
+                {
+                    Name = SelectedAssignment ?? "Unknown Assignment",
+                    Course = SelectedCourse ?? "Unknown Course",
+                    Language = SelectedLanguage?.Name ?? "Unknown",
+                    TotalPoints = 100,
+                    Criteria = new List<Models.Criterion>
+                    {
+                        new Models.Criterion
+                        {
+                            Name = "Overall Quality",
+                            MaxPoints = 100,
+                            Description = "General code quality assessment",
+                            Levels = new List<Models.CriterionLevel>
+                            {
+                                new Models.CriterionLevel { Label = "Excellent", Points = 100, Description = "Excellent work" },
+                                new Models.CriterionLevel { Label = "Good", Points = 80, Description = "Good work with minor issues" },
+                                new Models.CriterionLevel { Label = "Fair", Points = 60, Description = "Fair work with several issues" },
+                                new Models.CriterionLevel { Label = "Poor", Points = 0, Description = "Does not meet requirements" }
+                            }
+                        }
+                    }
+                };
             }
 
-            var analysis = await _ollamaService.AnalyzeCodeAsync(
-                SourceCode, formattedRubric,
+            var response = await _ollamaService.AnalyzeCodeAsync(
+                SourceCode,
+                rubric,
                 SelectedCourse ?? "Unknown",
                 SelectedAssignment ?? "Unknown",
                 new List<string>());
 
-            AiAnalysis = analysis;
+            // Format response for display
+            if (response.Success)
+            {
+                var sb = new System.Text.StringBuilder();
+                sb.AppendLine($"AI GRADING ANALYSIS");
+                sb.AppendLine($"Overall Confidence: {response.OverallConfidence}");
+                sb.AppendLine($"Recommended Total: {response.RecommendedTotal}/{response.MaxPossible}");
+                sb.AppendLine();
+                sb.AppendLine("CRITERION BREAKDOWN:");
+                sb.AppendLine("=".PadRight(80, '='));
+
+                foreach (var suggestion in response.Suggestions)
+                {
+                    sb.AppendLine();
+                    sb.AppendLine($"• {suggestion.CriterionName}");
+                    sb.AppendLine($"  Score: {suggestion.SuggestedScore}/{suggestion.MaxPoints} ({suggestion.RatingLevel})");
+                    sb.AppendLine($"  Confidence: {suggestion.Confidence}");
+                    sb.AppendLine($"  Reasoning: {suggestion.Reasoning}");
+
+                    if (suggestion.Evidence.Count > 0)
+                    {
+                        sb.AppendLine("  Evidence:");
+                        foreach (var evidence in suggestion.Evidence)
+                        {
+                            sb.AppendLine($"    - {evidence}");
+                        }
+                    }
+                }
+
+                sb.AppendLine();
+                sb.AppendLine("SUMMARY:");
+                sb.AppendLine(response.Summary);
+
+                AiAnalysis = sb.ToString();
+            }
+            else
+            {
+                AiAnalysis = $"Analysis failed: {response.ErrorMessage}";
+            }
+
             StatusMessage = "Analysis complete";
         }
         catch (Exception ex)

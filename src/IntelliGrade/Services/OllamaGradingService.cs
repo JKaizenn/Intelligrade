@@ -1,7 +1,13 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using IntelliGrade.App.DTOs;
 using IntelliGrade.App.Interfaces;
+using IntelliGrade.App.Models;
 using OllamaSharp;
 using OllamaSharp.Models;
 
@@ -55,40 +61,56 @@ public class OllamaGradingService : IOllamaGradingService
     /// <param name="assignmentName">Assignment name for context</param>
     /// <param name="outputContents">Program execution outputs (if any)</param>
     /// <returns>Structured grading analysis with scores and reasoning</returns>
-    public async Task<string> AnalyzeCodeAsync(
+    public async Task<AiGradingResponse> AnalyzeCodeAsync(
         string sourceCode,
-        string rubric,
+        Rubric rubric,
         string courseName,
         string assignmentName,
         List<string> outputContents)
     {
-        var prompt = BuildGradingPrompt(sourceCode, rubric, courseName, assignmentName, outputContents);
-        
-        var response = new System.Text.StringBuilder();
-        var request = new GenerateRequest
+        try
         {
-            Model = _model,
-            Prompt = prompt
-        };
+            var prompt = BuildGradingPrompt(sourceCode, rubric, courseName, assignmentName, outputContents);
 
-        await foreach (var chunk in _ollama.Generate(request))
-        {
-            if (chunk?.Response != null)
+            var response = new StringBuilder();
+            var request = new GenerateRequest
             {
-                response.Append(chunk.Response);
+                Model = _model,
+                Prompt = prompt
+            };
+
+            await foreach (var chunk in _ollama.Generate(request))
+            {
+                if (chunk?.Response != null)
+                {
+                    response.Append(chunk.Response);
+                }
             }
+
+            var aiText = response.ToString();
+
+            // Try JSON parsing first, fallback to text parsing
+            var result = TryParseJsonResponse(aiText, rubric) ?? ParseTextResponse(aiText, rubric);
+
+            return result;
         }
-        
-        return response.ToString();
+        catch (Exception ex)
+        {
+            return new AiGradingResponse
+            {
+                Success = false,
+                ErrorMessage = $"AI grading failed: {ex.Message}",
+                MaxPossible = rubric.TotalPoints
+            };
+        }
     }
 
     /// <summary>
-    /// Constructs the structured prompt for AI grading.
-    /// Includes rubric, code, output, and detailed formatting instructions.
+    /// Constructs the structured prompt for AI grading requesting JSON output.
     /// </summary>
     private static string BuildGradingPrompt(
         string sourceCode,
-        string rubric,
+        Rubric rubric,
         string courseName,
         string assignmentName,
         List<string> outputContents)
@@ -97,52 +119,199 @@ public class OllamaGradingService : IOllamaGradingService
             ? $"\n\nPROGRAM OUTPUT:\n{string.Join("\n\n", outputContents)}"
             : "";
 
+        var criteriaSection = new StringBuilder();
+        for (int i = 0; i < rubric.Criteria.Count; i++)
+        {
+            var criterion = rubric.Criteria[i];
+            criteriaSection.AppendLine($"\nCRITERION {i + 1}: {criterion.Name}");
+            criteriaSection.AppendLine($"Max Points: {criterion.MaxPoints}");
+            if (!string.IsNullOrWhiteSpace(criterion.Description))
+                criteriaSection.AppendLine($"Description: {criterion.Description}");
+
+            criteriaSection.AppendLine("Scoring Levels:");
+            foreach (var level in criterion.Levels)
+            {
+                criteriaSection.AppendLine($"  - {level.Label} ({level.Points} pts): {level.Description}");
+            }
+        }
+
         return $@"You are a grading assistant for {courseName} - {assignmentName}.
 
-YOUR SINGLE TASK: Analyze the student's code against each rubric criterion and suggest appropriate scores with detailed reasoning.
+TASK: Analyze student code against rubric criteria and provide structured grading suggestions.
 
 === RUBRIC CRITERIA ===
-{rubric}
+{criteriaSection}
 
 === STUDENT'S CODE ===
 {sourceCode}
 {outputSection}
 
-=== YOUR GRADING INSTRUCTIONS ===
+=== OUTPUT FORMAT ===
 
-For EACH criterion in the rubric above:
-1. Carefully examine the student's code for evidence related to that criterion
-2. Compare what you find against the rating descriptions in the rubric
-3. Select the most appropriate rating level based on the evidence
-4. Provide specific reasoning that references actual code elements
+Respond with VALID JSON matching this structure:
 
-GRADING FORMAT (use exactly this format):
+{{
+  ""suggestions"": [
+    {{
+      ""criterionName"": ""[exact criterion name from rubric]"",
+      ""suggestedScore"": [points as integer],
+      ""maxPoints"": [max points as integer],
+      ""confidence"": ""High"" | ""Medium"" | ""Low"",
+      ""ratingLevel"": ""[which level label applies]"",
+      ""reasoning"": ""[2-3 sentences explaining why this score fits]"",
+      ""evidence"": [
+        ""[specific code element/line/feature]"",
+        ""[another piece of evidence]""
+      ]
+    }}
+  ],
+  ""recommendedTotal"": [sum of suggested scores],
+  ""maxPossible"": {rubric.TotalPoints},
+  ""summary"": ""[2-3 sentences on strengths and improvement areas]"",
+  ""overallConfidence"": ""High"" | ""Medium"" | ""Low""
+}}
 
-CRITERION: [Criterion Name]
-SUGGESTED SCORE: [Points]/[Max Points]
-RATING LEVEL: [The rating description that matches]
-REASONING: [Detailed explanation with specific evidence from the code]
-EVIDENCE:
-- [Specific code element, line, or feature supporting your assessment]
-- [Another piece of evidence]
-- [Continue listing concrete evidence]
-
-[Repeat for each criterion]
-
----
-RECOMMENDED TOTAL: [Sum of suggested points]
-MAXIMUM POSSIBLE: [Total max points from rubric]
-
-SUMMARY:
-[2-3 sentences summarizing the main strengths and areas for improvement]
+=== CONFIDENCE LEVELS ===
+- High: Clear evidence matching specific rubric level
+- Medium: Evidence present but ambiguous between levels
+- Low: Limited evidence, uncertain assessment
 
 === CRITICAL RULES ===
-- ONLY evaluate based on what the rubric explicitly mentions
-- Provide SPECIFIC evidence from the code (mention actual functions, variables, patterns)
-- If code quality is not in the rubric, do NOT comment on it
-- Match your score to the rating description that best fits the evidence
-- Be OBJECTIVE - base everything on observable facts in the code
-- Do NOT invent criteria not in the rubric
-- Focus ONLY on grading - no pleasantries or meta-commentary";
+- Output ONLY valid JSON (no markdown, no explanations)
+- Evaluate ONLY what rubric explicitly mentions
+- Reference SPECIFIC code elements in evidence
+- Match scores to rubric level descriptions
+- Be OBJECTIVE - base on observable code facts
+- Do NOT invent criteria not in rubric";
+    }
+
+    /// <summary>
+    /// Attempts to parse AI response as JSON.
+    /// </summary>
+    private AiGradingResponse? TryParseJsonResponse(string aiText, Rubric rubric)
+    {
+        try
+        {
+            // Extract JSON from response (AI might wrap it in markdown)
+            var jsonMatch = Regex.Match(aiText, @"\{[\s\S]*\}", RegexOptions.Multiline);
+            if (!jsonMatch.Success)
+                return null;
+
+            var json = jsonMatch.Value;
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
+
+            var response = JsonSerializer.Deserialize<AiGradingResponse>(json, options);
+            if (response == null)
+                return null;
+
+            response.Success = true;
+            return response;
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Fallback parser for text-formatted AI responses.
+    /// </summary>
+    private AiGradingResponse ParseTextResponse(string aiText, Rubric rubric)
+    {
+        var suggestions = new List<AiCriterionSuggestion>();
+
+        // Parse each criterion section
+        var criterionPattern = @"CRITERION:\s*(.+?)\s*\n.*?SUGGESTED SCORE:\s*(\d+)/(\d+).*?\n.*?RATING LEVEL:\s*(.+?)\s*\n.*?REASONING:\s*(.+?)(?=\nEVIDENCE:|CRITERION:|RECOMMENDED TOTAL:|$)";
+        var matches = Regex.Matches(aiText, criterionPattern, RegexOptions.Singleline | RegexOptions.IgnoreCase);
+
+        foreach (Match match in matches)
+        {
+            var criterionName = match.Groups[1].Value.Trim();
+            var score = int.Parse(match.Groups[2].Value);
+            var maxPoints = int.Parse(match.Groups[3].Value);
+            var ratingLevel = match.Groups[4].Value.Trim();
+            var reasoning = match.Groups[5].Value.Trim();
+
+            // Extract evidence
+            var evidencePattern = @"-\s*(.+?)(?=\n-|\nCRITERION:|\nRECOMMENDED TOTAL:|$)";
+            var evidenceMatches = Regex.Matches(aiText, evidencePattern, RegexOptions.Singleline);
+            var evidence = evidenceMatches.Cast<Match>()
+                .Select(m => m.Groups[1].Value.Trim())
+                .Where(e => !string.IsNullOrWhiteSpace(e))
+                .ToList();
+
+            // Determine confidence based on evidence quality
+            var confidence = DetermineConfidence(evidence.Count, reasoning.Length, score, maxPoints);
+
+            suggestions.Add(new AiCriterionSuggestion
+            {
+                CriterionName = criterionName,
+                SuggestedScore = score,
+                MaxPoints = maxPoints,
+                Confidence = confidence,
+                RatingLevel = ratingLevel,
+                Reasoning = reasoning,
+                Evidence = evidence
+            });
+        }
+
+        // Extract total and summary
+        var totalMatch = Regex.Match(aiText, @"RECOMMENDED TOTAL:\s*(\d+)", RegexOptions.IgnoreCase);
+        var recommendedTotal = totalMatch.Success ? int.Parse(totalMatch.Groups[1].Value) : suggestions.Sum(s => s.SuggestedScore);
+
+        var summaryMatch = Regex.Match(aiText, @"SUMMARY:\s*(.+?)(?=\n===|$)", RegexOptions.Singleline | RegexOptions.IgnoreCase);
+        var summary = summaryMatch.Success ? summaryMatch.Groups[1].Value.Trim() : "AI grading analysis completed.";
+
+        return new AiGradingResponse
+        {
+            Suggestions = suggestions,
+            RecommendedTotal = recommendedTotal,
+            MaxPossible = rubric.TotalPoints,
+            Summary = summary,
+            OverallConfidence = CalculateOverallConfidence(suggestions),
+            Success = true
+        };
+    }
+
+    /// <summary>
+    /// Determines confidence level for a single criterion based on evidence quality.
+    /// </summary>
+    private AiConfidence DetermineConfidence(int evidenceCount, int reasoningLength, int score, int maxPoints)
+    {
+        // High confidence: Multiple evidence items, detailed reasoning, clear score match
+        if (evidenceCount >= 3 && reasoningLength > 100 && (score == 0 || score == maxPoints))
+            return AiConfidence.High;
+
+        // Low confidence: Minimal evidence or very short reasoning
+        if (evidenceCount < 2 || reasoningLength < 50)
+            return AiConfidence.Low;
+
+        // Medium confidence: Everything else
+        return AiConfidence.Medium;
+    }
+
+    /// <summary>
+    /// Calculates overall confidence from individual criterion confidences.
+    /// </summary>
+    private AiConfidence CalculateOverallConfidence(List<AiCriterionSuggestion> suggestions)
+    {
+        if (suggestions.Count == 0)
+            return AiConfidence.Low;
+
+        var highCount = suggestions.Count(s => s.Confidence == AiConfidence.High);
+        var lowCount = suggestions.Count(s => s.Confidence == AiConfidence.Low);
+
+        // Overall high if majority are high confidence
+        if (highCount > suggestions.Count / 2.0)
+            return AiConfidence.High;
+
+        // Overall low if any are low confidence
+        if (lowCount > 0)
+            return AiConfidence.Low;
+
+        return AiConfidence.Medium;
     }
 }
