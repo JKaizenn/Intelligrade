@@ -10,7 +10,7 @@ public class GradingRecord
     public string Assignment { get; set; } = string.Empty;
     public string? SourceFile { get; set; }
     public DateTime GradedAt { get; set; } = DateTime.Now;
-    
+
     public List<CriterionScore> Scores { get; set; } = new();
     public int TotalScore { get; set; }
     public int MaxPossible { get; set; }
