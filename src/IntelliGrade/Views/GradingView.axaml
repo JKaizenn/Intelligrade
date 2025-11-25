@@ -11,9 +11,8 @@
                 Classes="card"
                 Width="356"
                 Margin="0,0,8,0">
-            <Grid ColumnDefinitions="*,Auto">
-                <ScrollViewer Grid.Column="0" Grid.ColumnSpan="2">
-                    <StackPanel Spacing="16" Margin="0,0,16,0">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel Spacing="16" Margin="16">
 
                     <!-- Directory Selection -->
                     <StackPanel>
@@ -43,13 +42,11 @@
                             <Button Grid.Column="0"
                                     Content="Manage Courses"
                                     Command="{Binding ManageCoursesCommand}"
-                                    Classes="secondary"
-                                    Padding="8,10"/>
+                                    Classes="secondary"/>
                             <Button Grid.Column="2"
                                     Content="Import Rubric"
                                     Command="{Binding ImportRubricCommand}"
-                                    Classes="secondary"
-                                    Padding="8,10"/>
+                                    Classes="secondary"/>
                         </Grid>
                     </StackPanel>
 
@@ -64,23 +61,17 @@
                                   HorizontalAlignment="Stretch"/>
                     </StackPanel>
 
-                    <!-- Language Detection -->
+                    <!-- Language Selection -->
                     <StackPanel>
                         <TextBlock Text="Programming Language" Classes="label"/>
                         <ComboBox ItemsSource="{Binding DetectedLanguages}"
                                   SelectedItem="{Binding SelectedLanguage}"
                                   PlaceholderText="Detect languages..."
-                                  HorizontalAlignment="Stretch"
-                                  Margin="0,0,0,10">
-                            <ComboBox.ItemTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding DisplayName}"/>
-                                </DataTemplate>
-                            </ComboBox.ItemTemplate>
-                        </ComboBox>
+                                  HorizontalAlignment="Stretch"/>
                         <Button Content="Detect Languages"
                                 Command="{Binding DetectLanguagesCommand}"
-                                HorizontalAlignment="Stretch"/>
+                                Margin="0,8,0,0"
+                                Classes="secondary"/>
                     </StackPanel>
 
                     <!-- Source File Selection -->
@@ -123,16 +114,15 @@
                                 Classes="danger"/>
                     </StackPanel>
 
-                    </StackPanel>
-                </ScrollViewer>
-            </Grid>
+                </StackPanel>
+            </ScrollViewer>
         </Border>
 
         <!-- Right Panel: Content Tabs -->
         <Border Grid.Column="1"
                 Classes="card"
                 Margin="8,0,0,0">
-            <TabControl MaxHeight="{Binding $parent[Grid].Bounds.Height}">
+            <TabControl>
 
                 <!-- Source Code Tab -->
                 <TabItem Header="Source Code">
@@ -164,8 +154,8 @@
 
                 <!-- Grading Tab -->
                 <TabItem Header="Grading">
-                    <ScrollViewer Padding="16">
-                        <StackPanel Spacing="20" MaxWidth="800">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel Spacing="20" MaxWidth="800" Margin="16">
 
                             <!-- Student Info -->
                             <Border Classes="card" Padding="16">
@@ -219,101 +209,30 @@
                                 </Grid>
                             </Border>
 
-                            <!-- AI Assistance Actions -->
+                            <!-- Simple Grade Entry -->
                             <Border Classes="card" Padding="16">
-                                <Grid ColumnDefinitions="*,Auto">
-                                    <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                                        <TextBlock Text="AI Grading Assistance" FontWeight="SemiBold"/>
-                                        <TextBlock Text="Review AI suggestions below and adjust as needed"
-                                                   FontSize="12"
-                                                   Foreground="{DynamicResource TextSecondary}"/>
-                                    </StackPanel>
-                                    <Button Grid.Column="1"
-                                            Content="Apply All AI Suggestions"
-                                            Classes="secondary"
-                                            Padding="16,8"/>
-                                </Grid>
-                            </Border>
-
-                            <!-- Criteria Grading (Placeholder for now) -->
-                            <Border Classes="card" Padding="16">
-                                <StackPanel Spacing="16">
-                                    <TextBlock Text="Per-Criterion Grading"
-                                               FontSize="16"
-                                               FontWeight="SemiBold"/>
-
-                                    <TextBlock Text="Per-criterion grading interface will be integrated here when GradingSessionViewModel is connected."
-                                               FontStyle="Italic"
-                                               Foreground="{DynamicResource TextSecondary}"
-                                               TextWrapping="Wrap"/>
-
-                                    <!-- Example Criterion Template -->
-                                    <Border Classes="card" Padding="12" Background="{DynamicResource Surface}">
-                                        <StackPanel Spacing="8">
-                                            <Grid ColumnDefinitions="*,Auto">
-                                                <TextBlock Grid.Column="0"
-                                                           Text="Example Criterion Name"
-                                                           FontWeight="SemiBold"/>
-                                                <TextBlock Grid.Column="1"
-                                                           Text="/ 50 pts"
-                                                           Foreground="{DynamicResource TextSecondary}"/>
-                                            </Grid>
-
-                                            <!-- AI Suggestion -->
-                                            <Border Background="{DynamicResource InputBackground}"
-                                                    Padding="12"
-                                                    CornerRadius="4">
-                                                <Grid ColumnDefinitions="Auto,*">
-                                                    <Border Grid.Column="0"
-                                                            Width="12"
-                                                            Height="12"
-                                                            CornerRadius="6"
-                                                            Background="#10b981"
-                                                            VerticalAlignment="Center"
-                                                            Margin="0,0,8,0"/>
-                                                    <StackPanel Grid.Column="1" Spacing="4">
-                                                        <TextBlock FontWeight="SemiBold">
-                                                            <Run Text="AI Suggestion: 45/50"/>
-                                                            <Run Text="(High Confidence)"
-                                                                 FontSize="11"
-                                                                 Foreground="#10b981"/>
-                                                        </TextBlock>
-                                                        <TextBlock Text="Reasoning: Example reasoning from AI analysis"
-                                                                   FontSize="12"
-                                                                   TextWrapping="Wrap"
-                                                                   Foreground="{DynamicResource TextSecondary}"/>
-                                                    </StackPanel>
-                                                </Grid>
-                                            </Border>
-
-                                            <!-- Score Input -->
-                                            <Grid ColumnDefinitions="Auto,*,Auto">
-                                                <TextBlock Grid.Column="0"
-                                                           Text="Your Score:"
-                                                           VerticalAlignment="Center"
-                                                           Margin="0,0,8,0"/>
-                                                <NumericUpDown Grid.Column="1"
-                                                               Minimum="0"
-                                                               Maximum="50"
-                                                               Value="45"
-                                                               HorizontalAlignment="Stretch"/>
-                                                <Button Grid.Column="2"
-                                                        Content="Apply AI"
-                                                        Classes="secondary"
-                                                        Padding="8,4"
-                                                        Margin="8,0,0,0"/>
-                                            </Grid>
-                                        </StackPanel>
-                                    </Border>
+                                <StackPanel Spacing="12">
+                                    <TextBlock Text="Grade Entry" Classes="label" FontSize="16"/>
+                                    <Grid ColumnDefinitions="Auto,*">
+                                        <TextBlock Grid.Column="0"
+                                                   Text="Score (0-100):"
+                                                   VerticalAlignment="Center"
+                                                   Margin="0,0,12,0"/>
+                                        <NumericUpDown Grid.Column="1"
+                                                       Value="{Binding Grade}"
+                                                       Minimum="0"
+                                                       Maximum="100"
+                                                       Increment="1"
+                                                       FormatString="F0"
+                                                       HorizontalAlignment="Stretch"/>
+                                    </Grid>
                                 </StackPanel>
                             </Border>
-
-                            <Separator/>
 
                             <!-- Overall Feedback -->
                             <Border Classes="card" Padding="16">
                                 <StackPanel Spacing="12">
-                                    <TextBlock Text="Overall Instructor Feedback" Classes="label" FontSize="16"/>
+                                    <TextBlock Text="Instructor Feedback" Classes="label" FontSize="16"/>
                                     <TextBox Text="{Binding InstructorFeedback}"
                                              AcceptsReturn="True"
                                              TextWrapping="Wrap"
@@ -338,6 +257,9 @@
                                     </Grid>
                                 </StackPanel>
                             </Border>
+
+                            <!-- Bottom spacer to ensure export section is visible -->
+                            <Panel Height="20"/>
 
                         </StackPanel>
                     </ScrollViewer>
