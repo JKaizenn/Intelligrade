@@ -314,4 +314,142 @@ Respond with VALID JSON matching this structure:
 
         return AiConfidence.Medium;
     }
+
+    /// <summary>
+    /// Performs advanced code quality analysis for complexity, potential bugs, security issues, and code smells.
+    /// This is separate from rubric grading and provides additional insights for instructor consideration.
+    /// </summary>
+    /// <param name="sourceCode">Source code to analyze</param>
+    /// <param name="language">Programming language name</param>
+    /// <returns>Advanced analysis results, or null if analysis fails</returns>
+    public async Task<AdvancedAnalysis?> AnalyzeCodeQualityAsync(string sourceCode, string language)
+    {
+        try
+        {
+            var prompt = BuildCodeQualityPrompt(sourceCode, language);
+
+            var response = new StringBuilder();
+            var request = new GenerateRequest
+            {
+                Model = _model,
+                Prompt = prompt
+            };
+
+            await foreach (var chunk in _ollama.Generate(request))
+            {
+                if (chunk?.Response != null)
+                {
+                    response.Append(chunk.Response);
+                }
+            }
+
+            var aiText = response.ToString();
+
+            // Try to parse JSON response
+            var jsonMatch = Regex.Match(aiText, @"\{[\s\S]*\}", RegexOptions.Multiline);
+            if (!jsonMatch.Success)
+                return null;
+
+            var json = jsonMatch.Value;
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
+
+            var analysis = JsonSerializer.Deserialize<AdvancedAnalysis>(json, options);
+            return analysis;
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Builds the AI prompt for advanced code quality analysis.
+    /// Focuses on complexity, bugs, security, and maintainability.
+    /// </summary>
+    private static string BuildCodeQualityPrompt(string sourceCode, string language)
+    {
+        return $@"You are a code quality analyzer. Analyze the following {language} code and identify issues:
+
+=== CODE TO ANALYZE ===
+{sourceCode}
+
+=== ANALYSIS TASKS ===
+
+1. CYCLOMATIC COMPLEXITY:
+   - Count decision points: if, while, for, switch, &&, ||, ?:, catch
+   - Calculate complexity score
+   - Rate as Low (1-10), Medium (11-20), or High (21+)
+
+2. POTENTIAL BUGS:
+   - Off-by-one errors in loops
+   - Null/undefined reference risks
+   - Uninitialized variables
+   - Logic errors (wrong operators, missing conditions)
+   - Resource leaks (unclosed files, connections)
+   - Integer overflow/underflow
+
+3. SECURITY ISSUES:
+   - SQL injection vulnerabilities
+   - Command injection risks
+   - Hardcoded credentials or secrets
+   - Unsafe file operations
+   - Missing input validation
+   - Insecure random number generation
+   - Path traversal vulnerabilities
+
+4. CODE SMELLS:
+   - Long methods (>50 lines)
+   - Deep nesting (>3 levels)
+   - Duplicate code blocks
+   - Magic numbers or hardcoded strings
+   - Poor variable/function naming
+   - Dead/unreachable code
+   - God classes/functions doing too much
+
+=== OUTPUT FORMAT ===
+
+Respond with VALID JSON only (no markdown, no explanations):
+
+{{
+  ""cyclomaticComplexity"": <number>,
+  ""complexityRating"": ""Low"" | ""Medium"" | ""High"",
+  ""potentialBugs"": [
+    {{
+      ""category"": ""Brief category name"",
+      ""description"": ""What the issue is"",
+      ""severity"": ""Info"" | ""Warning"" | ""Error"",
+      ""lineReference"": ""line X"" or ""lines X-Y"",
+      ""suggestion"": ""How to fix it""
+    }}
+  ],
+  ""securityIssues"": [
+    {{
+      ""category"": ""Security category"",
+      ""description"": ""What the vulnerability is"",
+      ""severity"": ""Warning"" | ""Error"",
+      ""lineReference"": ""line X"",
+      ""suggestion"": ""How to fix it""
+    }}
+  ],
+  ""codeSmells"": [
+    {{
+      ""category"": ""Smell type"",
+      ""description"": ""What the issue is"",
+      ""severity"": ""Info"" | ""Warning"",
+      ""lineReference"": ""line X or function name"",
+      ""suggestion"": ""How to improve""
+    }}
+  ]
+}}
+
+IMPORTANT:
+- Output ONLY valid JSON
+- Be specific - reference actual code elements
+- Severity: Error = must fix, Warning = should fix, Info = consider
+- Empty arrays are OK if no issues found
+- Focus on objective, verifiable issues";
+    }
 }

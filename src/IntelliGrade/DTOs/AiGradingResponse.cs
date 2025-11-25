@@ -14,4 +14,10 @@ public class AiGradingResponse
     public AiConfidence OverallConfidence { get; set; } = AiConfidence.Medium;
     public bool Success { get; set; }
     public string? ErrorMessage { get; set; }
+
+    /// <summary>
+    /// Optional advanced code quality analysis (complexity, bugs, security, smells).
+    /// Null if advanced analysis was not requested or failed.
+    /// </summary>
+    public AdvancedAnalysis? AdvancedAnalysis { get; set; }
 }

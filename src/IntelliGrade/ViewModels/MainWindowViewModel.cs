@@ -11,6 +11,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using IntelliGrade.App.DTOs;
 using IntelliGrade.App.Models;
 using IntelliGrade.App.Services;
 
@@ -55,6 +56,7 @@ public partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty] private decimal? _grade = 0;
     [ObservableProperty] private string _instructorFeedback = string.Empty;
     [ObservableProperty] private GradingSessionViewModel? _gradingSession;
+    [ObservableProperty] private AdvancedAnalysis? _advancedAnalysis;
 
     [ObservableProperty] private bool _isProcessing;
     [ObservableProperty] private bool _ollamaAvailable;
@@ -595,6 +597,54 @@ public partial class MainWindowViewModel : ViewModelBase
         {
             AiAnalysis = $"Analysis error: {ex.Message}";
             StatusMessage = "Analysis failed";
+        }
+        finally
+        {
+            IsProcessing = false;
+        }
+    }
+
+    /// <summary>
+    /// Performs advanced code quality analysis including complexity, bugs, security, and code smells.
+    /// This analysis is separate from rubric grading and provides additional insights.
+    /// </summary>
+    [RelayCommand]
+    private async Task AnalyzeCodeQualityAsync()
+    {
+        if (_ollamaService == null || !OllamaAvailable)
+        {
+            StatusMessage = "Ollama not available. Please install Ollama and run: ollama pull llama3.2:1b";
+            return;
+        }
+
+        if (string.IsNullOrEmpty(SourceCode) || SelectedLanguage == null)
+        {
+            StatusMessage = "No source code to analyze";
+            return;
+        }
+
+        IsProcessing = true;
+        StatusMessage = "Analyzing code quality...";
+
+        try
+        {
+            var analysis = await _ollamaService.AnalyzeCodeQualityAsync(SourceCode, SelectedLanguage.Name);
+
+            if (analysis != null)
+            {
+                AdvancedAnalysis = analysis;
+                StatusMessage = "Code quality analysis complete";
+            }
+            else
+            {
+                StatusMessage = "Code quality analysis failed - could not parse AI response";
+                AdvancedAnalysis = null;
+            }
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = $"Analysis error: {ex.Message}";
+            AdvancedAnalysis = null;
         }
         finally
         {

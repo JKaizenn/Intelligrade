@@ -148,8 +148,185 @@
 
                 <!-- AI Analysis Tab -->
                 <TabItem Header="AI Analysis">
-                    <ScrollViewer Padding="16">
-                        <TextBox Text="{Binding AiAnalysis}" Classes="code"/>
+                    <ScrollViewer Padding="16" VerticalScrollBarVisibility="Auto">
+                        <StackPanel Spacing="16">
+                            <!-- Rubric-Based Analysis -->
+                            <TextBox Text="{Binding AiAnalysis}" Classes="code"/>
+
+                            <!-- Code Quality Analysis Button -->
+                            <Border Classes="card" Padding="16" Margin="0,8,0,0">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                        <TextBlock Text="Advanced Code Quality Analysis" FontWeight="SemiBold"/>
+                                        <TextBlock Text="Analyze complexity, bugs, security issues, and code smells"
+                                                   FontSize="12"
+                                                   Foreground="{DynamicResource TextSecondary}"/>
+                                    </StackPanel>
+                                    <Button Grid.Column="1"
+                                            Content="Analyze Code Quality"
+                                            Command="{Binding AnalyzeCodeQualityCommand}"
+                                            IsEnabled="{Binding !IsProcessing}"
+                                            Classes="secondary"
+                                            Padding="16,8"/>
+                                </Grid>
+                            </Border>
+
+                            <!-- Advanced Analysis Results -->
+                            <Border Classes="card" Padding="16"
+                                    IsVisible="{Binding AdvancedAnalysis, Converter={x:Static converters:ObjectNotNullConverter.Instance}}">
+                                <StackPanel Spacing="12">
+                                    <TextBlock Text="Code Quality Report" FontSize="16" FontWeight="SemiBold"/>
+
+                                    <!-- Complexity -->
+                                    <Border Background="{DynamicResource InputBackground}" Padding="12" CornerRadius="4">
+                                        <StackPanel>
+                                            <TextBlock FontWeight="SemiBold">
+                                                <Run Text="Cyclomatic Complexity: "/>
+                                                <Run Text="{Binding AdvancedAnalysis.CyclomaticComplexity}"/>
+                                                <Run Text=" ("/>
+                                                <Run Text="{Binding AdvancedAnalysis.ComplexityRating}"/>
+                                                <Run Text=")"/>
+                                            </TextBlock>
+                                            <TextBlock FontSize="11" Foreground="{DynamicResource TextSecondary}">
+                                                Low: 1-10 | Medium: 11-20 | High: 21+
+                                            </TextBlock>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <!-- Potential Bugs -->
+                                    <Expander Header="{Binding AdvancedAnalysis.PotentialBugs.Count, StringFormat='Potential Bugs ({0})'}"
+                                              IsExpanded="True">
+                                        <ItemsControl ItemsSource="{Binding AdvancedAnalysis.PotentialBugs}" Margin="8,8,0,0">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Border Background="{DynamicResource Surface}"
+                                                            Padding="12"
+                                                            CornerRadius="4"
+                                                            Margin="0,0,0,8">
+                                                        <StackPanel Spacing="4">
+                                                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                                                <TextBlock Grid.Column="0"
+                                                                           Text="{Binding Category}"
+                                                                           FontWeight="SemiBold"/>
+                                                                <Border Grid.Column="2"
+                                                                        Background="{DynamicResource ErrorBackground}"
+                                                                        CornerRadius="3"
+                                                                        Padding="6,2">
+                                                                    <TextBlock Text="{Binding Severity}"
+                                                                               FontSize="11"
+                                                                               Foreground="{DynamicResource ErrorForeground}"/>
+                                                                </Border>
+                                                            </Grid>
+                                                            <TextBlock Text="{Binding Description}"
+                                                                       TextWrapping="Wrap"
+                                                                       FontSize="13"/>
+                                                            <TextBlock Text="{Binding LineReference}"
+                                                                       FontSize="11"
+                                                                       Foreground="{DynamicResource TextSecondary}"
+                                                                       IsVisible="{Binding LineReference, Converter={x:Static converters:ObjectNotNullConverter.Instance}}"/>
+                                                            <TextBlock FontSize="12"
+                                                                       Foreground="{DynamicResource AccentColor}"
+                                                                       IsVisible="{Binding Suggestion, Converter={x:Static converters:ObjectNotNullConverter.Instance}}">
+                                                                <Run Text="Suggestion: "/>
+                                                                <Run Text="{Binding Suggestion}"/>
+                                                            </TextBlock>
+                                                        </StackPanel>
+                                                    </Border>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </Expander>
+
+                                    <!-- Security Issues -->
+                                    <Expander Header="{Binding AdvancedAnalysis.SecurityIssues.Count, StringFormat='Security Issues ({0})'}"
+                                              IsExpanded="True">
+                                        <ItemsControl ItemsSource="{Binding AdvancedAnalysis.SecurityIssues}" Margin="8,8,0,0">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Border Background="{DynamicResource Surface}"
+                                                            Padding="12"
+                                                            CornerRadius="4"
+                                                            Margin="0,0,0,8">
+                                                        <StackPanel Spacing="4">
+                                                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                                                <TextBlock Grid.Column="0"
+                                                                           Text="{Binding Category}"
+                                                                           FontWeight="SemiBold"/>
+                                                                <Border Grid.Column="2"
+                                                                        Background="{DynamicResource ErrorBackground}"
+                                                                        CornerRadius="3"
+                                                                        Padding="6,2">
+                                                                    <TextBlock Text="{Binding Severity}"
+                                                                               FontSize="11"
+                                                                               Foreground="{DynamicResource ErrorForeground}"/>
+                                                                </Border>
+                                                            </Grid>
+                                                            <TextBlock Text="{Binding Description}"
+                                                                       TextWrapping="Wrap"
+                                                                       FontSize="13"/>
+                                                            <TextBlock Text="{Binding LineReference}"
+                                                                       FontSize="11"
+                                                                       Foreground="{DynamicResource TextSecondary}"
+                                                                       IsVisible="{Binding LineReference, Converter={x:Static converters:ObjectNotNullConverter.Instance}}"/>
+                                                            <TextBlock FontSize="12"
+                                                                       Foreground="{DynamicResource AccentColor}"
+                                                                       IsVisible="{Binding Suggestion, Converter={x:Static converters:ObjectNotNullConverter.Instance}}">
+                                                                <Run Text="Suggestion: "/>
+                                                                <Run Text="{Binding Suggestion}"/>
+                                                            </TextBlock>
+                                                        </StackPanel>
+                                                    </Border>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </Expander>
+
+                                    <!-- Code Smells -->
+                                    <Expander Header="{Binding AdvancedAnalysis.CodeSmells.Count, StringFormat='Code Smells ({0})'}"
+                                              IsExpanded="False">
+                                        <ItemsControl ItemsSource="{Binding AdvancedAnalysis.CodeSmells}" Margin="8,8,0,0">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Border Background="{DynamicResource Surface}"
+                                                            Padding="12"
+                                                            CornerRadius="4"
+                                                            Margin="0,0,0,8">
+                                                        <StackPanel Spacing="4">
+                                                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                                                <TextBlock Grid.Column="0"
+                                                                           Text="{Binding Category}"
+                                                                           FontWeight="SemiBold"/>
+                                                                <Border Grid.Column="2"
+                                                                        Background="{DynamicResource InputBackground}"
+                                                                        CornerRadius="3"
+                                                                        Padding="6,2">
+                                                                    <TextBlock Text="{Binding Severity}"
+                                                                               FontSize="11"
+                                                                               Foreground="{DynamicResource TextPrimary}"/>
+                                                                </Border>
+                                                            </Grid>
+                                                            <TextBlock Text="{Binding Description}"
+                                                                       TextWrapping="Wrap"
+                                                                       FontSize="13"/>
+                                                            <TextBlock Text="{Binding LineReference}"
+                                                                       FontSize="11"
+                                                                       Foreground="{DynamicResource TextSecondary}"
+                                                                       IsVisible="{Binding LineReference, Converter={x:Static converters:ObjectNotNullConverter.Instance}}"/>
+                                                            <TextBlock FontSize="12"
+                                                                       Foreground="{DynamicResource AccentColor}"
+                                                                       IsVisible="{Binding Suggestion, Converter={x:Static converters:ObjectNotNullConverter.Instance}}">
+                                                                <Run Text="Suggestion: "/>
+                                                                <Run Text="{Binding Suggestion}"/>
+                                                            </TextBlock>
+                                                        </StackPanel>
+                                                    </Border>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </Expander>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
                     </ScrollViewer>
                 </TabItem>
 
