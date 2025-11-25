@@ -60,4 +60,4 @@ Be respectful and constructive. We're all here to make grading easier for educat
 
 ---
 
-Thank you for helping make IntelliGrade better for my senior project! 🎓
+Thank you for helping make IntelliGrade better for my senior project!

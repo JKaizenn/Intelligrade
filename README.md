@@ -6,12 +6,12 @@
 
 ## Features
 
-- 🤖 **AI Grading** - Automated code analysis with Ollama, OpenAI, or Anthropic (bring your own API keys)
-- 🔄 **Code Execution** - Run and test student programs safely
-- 📝 **Rubric Support** - JSON and markdown/text-based grading criteria
-- 🌐 **Multi-Language** - Python, C++, Java, JavaScript, C#, Rust, Go, and more
-- 📊 **Export** - CSV and JSON export for gradebooks
-- 🌍 **Cross-Platform** - macOS, Windows, Linux
+- **AI Grading** - Automated code analysis with local Ollama AI
+- **Code Execution** - Run and test student programs safely
+- **Rubric Support** - JSON and markdown/text-based grading criteria
+- **Multi-Language** - Python, C++, Java, JavaScript, C#, Rust, Go, and more
+- **Export** - CSV and JSON export for gradebooks
+- **Cross-Platform** - macOS, Windows, Linux
 
 ## Quick Start
 
@@ -23,9 +23,8 @@
 
 **No .NET installation required** - installers include everything you need!
 
-**Optional (for local AI grading):**
+**Optional (for AI grading):**
 - Install [Ollama](https://ollama.com/) and run `ollama pull llama3.2:1b`
-- Or use OpenAI/Anthropic API keys (configure in Settings)
 
 ### For Developers
 
@@ -57,7 +56,7 @@ dotnet run
 ### Navigation
 
 The app has a simple layout:
-- **Top Bar** - Settings (⚙️), Home (🏠), and Dark Mode toggle buttons
+- **Top Bar** - Settings, Home, and Dark Mode toggle buttons
 - **Main Area** - Grading interface with tabs for different views
 - **Status Bar** - Shows current operation status
 
@@ -99,7 +98,7 @@ The app has a simple layout:
 
 ### Managing Courses and Rubrics
 
-- Click the **Settings (⚙️)** button in the top-right
+- Click the **Settings** button in the top-right
 - Use "Manage Courses" to add/remove courses
 - Use "Import Rubric" to add new grading rubrics
 
@@ -110,22 +109,7 @@ The app has a simple layout:
 1. Install [Ollama](https://ollama.com/)
 2. Pull a model: `ollama pull llama3.2:1b`
 3. IntelliGrade will automatically detect Ollama if it's running
-
-### Using OpenAI
-
-1. Get your API key from [OpenAI Platform](https://platform.openai.com/)
-2. Click Settings (⚙️) → Enter your OpenAI API key
-3. Select your preferred model (e.g., gpt-4, gpt-3.5-turbo)
-4. Enable "Use OpenAI"
-
-### Using Anthropic Claude
-
-1. Get your API key from [Anthropic Console](https://console.anthropic.com/)
-2. Click Settings (⚙️) → Enter your Anthropic API key
-3. Select your preferred model (e.g., claude-3-5-sonnet-20241022)
-4. Enable "Use Anthropic"
-
-**Note:** You are responsible for any costs associated with API usage. API keys are stored locally and never shared.
+4. Optionally configure custom endpoint in Settings if using a remote Ollama instance
 
 ## Rubric Format
 
@@ -201,4 +185,4 @@ MIT License
 
 ---
 
-Built with ❤️ for educators
+Built for educators

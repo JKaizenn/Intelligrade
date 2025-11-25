@@ -6,7 +6,7 @@ using IntelliGrade.App.Models;
 namespace IntelliGrade.App.Interfaces;
 
 /// <summary>
-/// Service for AI-assisted code grading using Ollama, OpenAI, or Anthropic.
+/// Service for AI-assisted code grading using Ollama.
 /// </summary>
 public interface IOllamaGradingService
 {
