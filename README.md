@@ -126,10 +126,11 @@ Place rubrics in `~/bin/rubrics/{Course}/{Language}/`
     {
       "name": "Functionality",
       "maxPoints": 40,
-      "ratings": [
-        { "points": 40, "description": "Works perfectly" },
-        { "points": 20, "description": "Partial functionality" },
-        { "points": 0, "description": "Doesn't work" }
+      "description": "Program functionality and correctness",
+      "levels": [
+        { "label": "Complete", "points": 40, "description": "Works perfectly" },
+        { "label": "Partial", "points": 20, "description": "Partial functionality" },
+        { "label": "Missing", "points": 0, "description": "Doesn't work" }
       ]
     }
   ]

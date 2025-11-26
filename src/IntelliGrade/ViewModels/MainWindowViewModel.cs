@@ -63,6 +63,12 @@ public partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty] private bool _isDarkMode;
     [ObservableProperty] private bool _showWelcomeScreen = true;
 
+    // Analysis mode selection
+    [ObservableProperty] private IReadOnlyList<AnalysisModeConfig> _availableModes = AnalysisModeConfigs.All;
+    [ObservableProperty] private AnalysisModeConfig _selectedMode = AnalysisModeConfigs.Balanced;
+    [ObservableProperty] private int _analysisProgress;
+    [ObservableProperty] private bool _showAnalysisProgress;
+
     public string LetterGrade => CalculateLetterGrade(Grade);
     public double Percentage => Grade.HasValue ? (double)Grade.Value : 0.0;
 
@@ -390,6 +396,30 @@ public partial class MainWindowViewModel : ViewModelBase
     partial void OnGradeChanged(decimal? value)
     {
         OnPropertyChanged(nameof(LetterGrade));
+        OnPropertyChanged(nameof(Percentage));
+    }
+
+    partial void OnGradingSessionChanged(GradingSessionViewModel? value)
+    {
+        if (value != null)
+        {
+            // Subscribe to property changes in the grading session
+            value.PropertyChanged += (s, e) =>
+            {
+                if (e.PropertyName == nameof(GradingSessionViewModel.TotalScore) ||
+                    e.PropertyName == nameof(GradingSessionViewModel.Percentage) ||
+                    e.PropertyName == nameof(GradingSessionViewModel.LetterGrade))
+                {
+                    // Update the main view model's Grade property to reflect the session's total
+                    Grade = value.TotalScore;
+                    OnPropertyChanged(nameof(LetterGrade));
+                    OnPropertyChanged(nameof(Percentage));
+                }
+            };
+
+            // Initialize Grade with the session's current total
+            Grade = value.TotalScore;
+        }
     }
 
     /// <summary>
@@ -496,7 +526,9 @@ public partial class MainWindowViewModel : ViewModelBase
         }
 
         IsProcessing = true;
-        StatusMessage = "Analyzing with AI...";
+        ShowAnalysisProgress = true;
+        AnalysisProgress = 0;
+        StatusMessage = $"Analyzing with {SelectedMode.DisplayName} mode...";
         AiAnalysis = "Analyzing...";
 
         try
@@ -537,12 +569,13 @@ public partial class MainWindowViewModel : ViewModelBase
                 };
             }
 
-            var response = await _ollamaService.AnalyzeCodeAsync(
+            var response = await _ollamaService.AnalyzeWithModeAsync(
                 SourceCode,
                 rubric,
                 SelectedCourse ?? "Unknown",
                 SelectedAssignment ?? "Unknown",
-                new List<string>());
+                new List<string>(),
+                SelectedMode);
 
             // Format response for display
             if (response.Success)
@@ -556,16 +589,16 @@ public partial class MainWindowViewModel : ViewModelBase
                 // Show warning if no suggestions returned
                 if (response.Suggestions.Count == 0)
                 {
-                    sb.AppendLine("⚠️ WARNING: AI returned no criterion suggestions.");
+                    sb.AppendLine("WARNING: AI returned no criterion suggestions.");
                     sb.AppendLine();
                     sb.AppendLine("Debug Information:");
-                    sb.AppendLine($"  • Rubric Name: {rubric.Name}");
-                    sb.AppendLine($"  • Rubric Criteria Count: {rubric.Criteria.Count}");
-                    sb.AppendLine($"  • Expected Max Points: {rubric.TotalPoints}");
-                    sb.AppendLine($"  • AI Response Success: {response.Success}");
-                    sb.AppendLine($"  • Parser Used: {response.ParserUsed ?? "Unknown"}");
+                    sb.AppendLine($"  - Rubric Name: {rubric.Name}");
+                    sb.AppendLine($"  - Rubric Criteria Count: {rubric.Criteria.Count}");
+                    sb.AppendLine($"  - Expected Max Points: {rubric.TotalPoints}");
+                    sb.AppendLine($"  - AI Response Success: {response.Success}");
+                    sb.AppendLine($"  - Parser Used: {response.ParserUsed ?? "Unknown"}");
                     if (!string.IsNullOrEmpty(response.ErrorMessage))
-                        sb.AppendLine($"  • Error Message: {response.ErrorMessage}");
+                        sb.AppendLine($"  - Error Message: {response.ErrorMessage}");
 
                     sb.AppendLine();
                     sb.AppendLine("Rubric Criteria Expected:");
@@ -597,10 +630,10 @@ public partial class MainWindowViewModel : ViewModelBase
 
                     sb.AppendLine();
                     sb.AppendLine("Possible Causes:");
-                    sb.AppendLine("  • AI response didn't match expected JSON or text format");
-                    sb.AppendLine("  • Criterion names in AI response don't match rubric");
-                    sb.AppendLine("  • AI model may need more specific prompting");
-                    sb.AppendLine("  • Try re-running the analysis or check the rubric file");
+                    sb.AppendLine("  - AI response didn't match expected JSON or text format");
+                    sb.AppendLine("  - Criterion names in AI response don't match rubric");
+                    sb.AppendLine("  - AI model may need more specific prompting");
+                    sb.AppendLine("  - Try re-running the analysis or check the rubric file");
                     sb.AppendLine();
                 }
 
@@ -610,7 +643,7 @@ public partial class MainWindowViewModel : ViewModelBase
                 foreach (var suggestion in response.Suggestions)
                 {
                     sb.AppendLine();
-                    sb.AppendLine($"• {suggestion.CriterionName}");
+                    sb.AppendLine($"{suggestion.CriterionName}");
                     sb.AppendLine($"  Score: {suggestion.SuggestedScore}/{suggestion.MaxPoints} ({suggestion.RatingLevel})");
                     sb.AppendLine($"  Confidence: {suggestion.Confidence}");
                     sb.AppendLine($"  Reasoning: {suggestion.Reasoning}");
@@ -643,7 +676,10 @@ public partial class MainWindowViewModel : ViewModelBase
                 AiAnalysis = $"Analysis failed: {response.ErrorMessage}";
             }
 
-            StatusMessage = "Analysis complete";
+            var advancedInfo = response.AdvancedAnalysis != null
+                ? " (includes advanced analysis)"
+                : "";
+            StatusMessage = $"Analysis complete - {response.Suggestions.Count} criteria evaluated{advancedInfo}";
         }
         catch (Exception ex)
         {
@@ -653,6 +689,7 @@ public partial class MainWindowViewModel : ViewModelBase
         finally
         {
             IsProcessing = false;
+            ShowAnalysisProgress = false;
         }
     }
 
@@ -790,12 +827,28 @@ public partial class MainWindowViewModel : ViewModelBase
             var settings = await _localStorage.GetAsync<ApiSettings>("ApiSettings");
             if (settings != null)
             {
-                _ollamaService = new OllamaGradingService(settings.OllamaModel, settings.OllamaEndpoint);
+                _ollamaService = new OllamaGradingService(
+                    model: settings.OllamaModel,
+                    endpoint: settings.UseCustomEndpoint ? settings.OllamaEndpoint : "http://localhost:11434",
+                    timeoutSeconds: 90);
             }
             else
             {
-                _ollamaService = new OllamaGradingService(_config.OllamaModel);
+                _ollamaService = new OllamaGradingService(
+                    model: _config.OllamaModel,
+                    timeoutSeconds: 90);
             }
+
+            // Subscribe to progress updates
+            _ollamaService.OnProgressUpdate += (tokenCount) =>
+            {
+                // Update UI on main thread
+                Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+                {
+                    AnalysisProgress = tokenCount;
+                    StatusMessage = $"Analyzing... ({tokenCount} tokens)";
+                });
+            };
 
             OllamaAvailable = await _ollamaService.IsAvailableAsync();
             StatusMessage = OllamaAvailable

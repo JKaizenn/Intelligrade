@@ -104,10 +104,51 @@
                                 IsEnabled="{Binding !IsProcessing}"
                                 Classes="primary"/>
 
+                        <!-- AI Analysis Mode Selection -->
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="AI Analysis Mode" Classes="label" FontSize="12"/>
+                            <ComboBox ItemsSource="{Binding AvailableModes}"
+                                      SelectedItem="{Binding SelectedMode}"
+                                      HorizontalAlignment="Stretch"
+                                      IsEnabled="{Binding !IsProcessing}">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <StackPanel Grid.Column="0">
+                                                <TextBlock Text="{Binding DisplayName}"
+                                                           FontWeight="SemiBold"
+                                                           FontSize="13"/>
+                                                <TextBlock Text="{Binding Description}"
+                                                           FontSize="10"
+                                                           Foreground="{DynamicResource TextSecondary}"/>
+                                            </StackPanel>
+                                            <TextBlock Grid.Column="1"
+                                                       Text="{Binding EstimatedTime}"
+                                                       FontSize="10"
+                                                       Foreground="{DynamicResource TextSecondary}"
+                                                       VerticalAlignment="Center"
+                                                       Margin="6,0,0,0"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </StackPanel>
+
                         <Button Content="Analyze with AI"
                                 Command="{Binding AnalyzeCodeCommand}"
                                 IsEnabled="{Binding !IsProcessing}"
                                 Classes="secondary"/>
+
+                        <!-- Progress indicator (visible during analysis) -->
+                        <StackPanel IsVisible="{Binding ShowAnalysisProgress}"
+                                    Spacing="4">
+                            <ProgressBar IsIndeterminate="True" Height="3"/>
+                            <TextBlock Text="{Binding StatusMessage}"
+                                       FontSize="11"
+                                       Foreground="{DynamicResource TextSecondary}"
+                                       HorizontalAlignment="Center"
+                                       TextWrapping="Wrap"/>
+                        </StackPanel>
 
                         <Button Content="Cleanup Files"
                                 Command="{Binding CleanupFilesCommand}"

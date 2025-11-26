@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using IntelliGrade.App.DTOs;
 using IntelliGrade.App.Interfaces;
@@ -22,16 +23,40 @@ public class OllamaGradingService : IOllamaGradingService
 {
     private readonly OllamaApiClient _ollama;
     private readonly string _model;
+    private readonly int _timeoutSeconds;
+
+    /// <summary>
+    /// Determines if the current model is a small model (1b, 3b, or under 1b parameters).
+    /// Small models need simplified prompts for better performance.
+    /// </summary>
+    private bool IsSmallModel =>
+        _model.Contains(":1b") ||
+        _model.Contains(":3b") ||
+        _model.Contains("0.6b") ||
+        _model.Contains("0.5b") ||
+        _model.Contains(":1B") ||
+        _model.Contains(":3B");
+
+    /// <summary>
+    /// Event raised when AI generation progress updates.
+    /// Reports the current number of tokens generated.
+    /// </summary>
+    public event Action<int>? OnProgressUpdate;
 
     /// <summary>
     /// Initializes the grading service with specified Ollama model and endpoint.
     /// </summary>
     /// <param name="model">LLM model name (default: llama3.2:1b)</param>
     /// <param name="endpoint">Ollama API endpoint (default: localhost:11434)</param>
-    public OllamaGradingService(string model = "llama3.2:1b", string endpoint = "http://localhost:11434")
+    /// <param name="timeoutSeconds">Request timeout in seconds (default: 90)</param>
+    public OllamaGradingService(
+        string model = "llama3.2:1b",
+        string endpoint = "http://localhost:11434",
+        int timeoutSeconds = 90)
     {
         _model = model;
         _ollama = new OllamaApiClient(endpoint);
+        _timeoutSeconds = timeoutSeconds;
     }
 
     /// <summary>
@@ -68,34 +93,56 @@ public class OllamaGradingService : IOllamaGradingService
         string assignmentName,
         List<string> outputContents)
     {
+        using var cts = new System.Threading.CancellationTokenSource(TimeSpan.FromSeconds(_timeoutSeconds));
+
         try
         {
-            var prompt = BuildGradingPrompt(sourceCode, rubric, courseName, assignmentName, outputContents);
+            var prompt = IsSmallModel
+                ? BuildLiteGradingPrompt(sourceCode, rubric, courseName, assignmentName, outputContents)
+                : BuildGradingPrompt(sourceCode, rubric, courseName, assignmentName, outputContents);
 
             var response = new StringBuilder();
             var request = new GenerateRequest
             {
                 Model = _model,
-                Prompt = prompt
+                Prompt = prompt,
+                Options = new RequestOptions
+                {
+                    NumPredict = IsSmallModel ? 800 : 1500,
+                    NumCtx = IsSmallModel ? 2048 : 4096,
+                    Temperature = IsSmallModel ? 0.2f : 0.3f,
+                    TopP = 0.9f,
+                    RepeatPenalty = 1.1f
+                }
             };
 
-            await foreach (var chunk in _ollama.Generate(request))
+            var tokenCount = 0;
+            await foreach (var chunk in _ollama.Generate(request, cts.Token))
             {
                 if (chunk?.Response != null)
                 {
                     response.Append(chunk.Response);
+                    tokenCount++;
+
+                    // Report progress every 10 tokens to avoid UI thrashing
+                    if (tokenCount % 10 == 0)
+                    {
+                        OnProgressUpdate?.Invoke(tokenCount);
+                    }
                 }
             }
 
             var aiText = response.ToString();
 
             // Try JSON parsing first, fallback to text parsing
-            var result = TryParseJsonResponse(aiText, rubric);
+            var result = IsSmallModel
+                ? TryParseLiteJsonResponse(aiText, rubric) ?? TryParseJsonResponse(aiText, rubric)
+                : TryParseJsonResponse(aiText, rubric);
 
             if (result != null)
             {
                 result.RawAiResponse = aiText;
-                result.ParserUsed = "JSON";
+                result.ParserUsed = IsSmallModel ? "LiteJSON" : "JSON";
             }
             else
             {
@@ -105,6 +152,15 @@ public class OllamaGradingService : IOllamaGradingService
             }
 
             return result;
+        }
+        catch (System.OperationCanceledException)
+        {
+            return new AiGradingResponse
+            {
+                Success = false,
+                ErrorMessage = $"AI analysis timed out after {_timeoutSeconds} seconds. Try using a smaller model or simpler code.",
+                MaxPossible = rubric.TotalPoints
+            };
         }
         catch (Exception ex)
         {
@@ -198,6 +254,50 @@ Respond with VALID JSON matching this structure:
     }
 
     /// <summary>
+    /// Builds a simplified prompt optimized for small language models (1b-3b parameters).
+    /// Reduces token count by omitting detailed level descriptions.
+    /// </summary>
+    private static string BuildLiteGradingPrompt(
+        string sourceCode,
+        Rubric rubric,
+        string courseName,
+        string assignmentName,
+        List<string> outputContents)
+    {
+        var outputSection = outputContents.Count > 0
+            ? $"\n\nOUTPUT:\n{string.Join("\n", outputContents.Take(500))}"
+            : "";
+
+        // Simplified criteria list - just names and max points
+        var criteriaList = string.Join("\n", rubric.Criteria.Select(c =>
+            $"- {c.Name}: {c.MaxPoints} points"));
+
+        // Truncate source code if too long (keep first 150 lines)
+        var codeLines = sourceCode.Split('\n');
+        var truncatedCode = codeLines.Length > 150
+            ? string.Join("\n", codeLines.Take(150)) + "\n... (truncated)"
+            : sourceCode;
+
+        return $@"Grade this {courseName} {assignmentName} code.
+
+CRITERIA (Total: {rubric.TotalPoints} points):
+{criteriaList}
+
+CODE:
+{truncatedCode}
+{outputSection}
+
+Respond with JSON only:
+{{
+  ""scores"": [
+    {{""criterion"": ""[name]"", ""score"": [points], ""reason"": ""[1 sentence]""}}
+  ],
+  ""total"": [sum],
+  ""summary"": ""[1-2 sentences]""
+}}";
+    }
+
+    /// <summary>
     /// Attempts to parse AI response as JSON.
     /// </summary>
     private AiGradingResponse? TryParseJsonResponse(string aiText, Rubric rubric)
@@ -238,6 +338,8 @@ Respond with VALID JSON matching this structure:
                 return null;
             }
 
+            // Recalculate total from suggestions to fix any AI miscalculation
+            response.RecommendedTotal = response.Suggestions.Sum(s => s.SuggestedScore);
             response.Success = true;
             return response;
         }
@@ -371,6 +473,87 @@ Respond with VALID JSON matching this structure:
     }
 
     /// <summary>
+    /// Attempts to parse the simplified JSON response from lite prompts.
+    /// </summary>
+    private AiGradingResponse? TryParseLiteJsonResponse(string aiText, Rubric rubric)
+    {
+        try
+        {
+            var extractedJson = ExtractJsonObject(aiText);
+            if (extractedJson == null)
+                return null;
+
+            using var doc = JsonDocument.Parse(extractedJson);
+            var root = doc.RootElement;
+
+            var suggestions = new List<AiCriterionSuggestion>();
+
+            if (root.TryGetProperty("scores", out var scoresElement))
+            {
+                foreach (var scoreItem in scoresElement.EnumerateArray())
+                {
+                    var criterionName = scoreItem.GetProperty("criterion").GetString() ?? "";
+
+                    // Handle score as either number or array
+                    int score = 0;
+                    if (scoreItem.TryGetProperty("score", out var scoreEl))
+                    {
+                        if (scoreEl.ValueKind == JsonValueKind.Number)
+                        {
+                            score = scoreEl.GetInt32();
+                        }
+                        else if (scoreEl.ValueKind == JsonValueKind.Array && scoreEl.GetArrayLength() > 0)
+                        {
+                            // AI sometimes returns score as an array - take first element
+                            score = scoreEl[0].GetInt32();
+                        }
+                    }
+
+                    var reason = scoreItem.TryGetProperty("reason", out var reasonEl)
+                        ? reasonEl.GetString() ?? ""
+                        : "";
+
+                    // Find matching criterion from rubric
+                    var criterion = rubric.Criteria.FirstOrDefault(c =>
+                        c.Name.Equals(criterionName, StringComparison.OrdinalIgnoreCase));
+
+                    suggestions.Add(new AiCriterionSuggestion
+                    {
+                        CriterionName = criterionName,
+                        SuggestedScore = score,
+                        MaxPoints = criterion?.MaxPoints ?? score,
+                        Confidence = AiConfidence.Medium,
+                        RatingLevel = "Auto",
+                        Reasoning = reason,
+                        Evidence = new List<string>()
+                    });
+                }
+            }
+
+            var summary = root.TryGetProperty("summary", out var summaryEl)
+                ? summaryEl.GetString() ?? ""
+                : "";
+
+            // Calculate total from suggestions instead of trusting AI's total
+            var calculatedTotal = suggestions.Sum(s => s.SuggestedScore);
+
+            return new AiGradingResponse
+            {
+                Success = true,
+                Suggestions = suggestions,
+                RecommendedTotal = calculatedTotal,
+                MaxPossible = rubric.TotalPoints,
+                Summary = summary,
+                OverallConfidence = AiConfidence.Medium
+            };
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    /// <summary>
     /// Determines confidence level for a single criterion based on evidence quality.
     /// </summary>
     private AiConfidence DetermineConfidence(int evidenceCount, int reasoningLength, int score, int maxPoints)
@@ -418,6 +601,8 @@ Respond with VALID JSON matching this structure:
     /// <returns>Advanced analysis results, or null if analysis fails</returns>
     public async Task<AdvancedAnalysis?> AnalyzeCodeQualityAsync(string sourceCode, string language)
     {
+        using var cts = new System.Threading.CancellationTokenSource(TimeSpan.FromSeconds(_timeoutSeconds));
+
         try
         {
             var prompt = BuildCodeQualityPrompt(sourceCode, language);
@@ -426,32 +611,51 @@ Respond with VALID JSON matching this structure:
             var request = new GenerateRequest
             {
                 Model = _model,
-                Prompt = prompt
+                Prompt = prompt,
+                Options = new RequestOptions
+                {
+                    NumPredict = 1000,
+                    NumCtx = 4096,
+                    Temperature = 0.2f,
+                    TopP = 0.9f,
+                    RepeatPenalty = 1.1f
+                }
             };
 
-            await foreach (var chunk in _ollama.Generate(request))
+            var tokenCount = 0;
+            await foreach (var chunk in _ollama.Generate(request, cts.Token))
             {
                 if (chunk?.Response != null)
                 {
                     response.Append(chunk.Response);
+                    tokenCount++;
+
+                    // Report progress every 10 tokens
+                    if (tokenCount % 10 == 0)
+                    {
+                        OnProgressUpdate?.Invoke(tokenCount);
+                    }
                 }
             }
 
             var aiText = response.ToString();
 
             // Try to parse JSON response
-            var jsonMatch = Regex.Match(aiText, @"\{[\s\S]*\}", RegexOptions.Multiline);
-            if (!jsonMatch.Success)
+            var extractedJson = ExtractJsonObject(aiText);
+            if (extractedJson == null)
                 return null;
 
-            var json = jsonMatch.Value;
             var options = new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
             };
 
-            var analysis = JsonSerializer.Deserialize<AdvancedAnalysis>(json, options);
+            var analysis = JsonSerializer.Deserialize<AdvancedAnalysis>(extractedJson, options);
             return analysis;
+        }
+        catch (System.OperationCanceledException)
+        {
+            return null;  // Timeout returns null for optional advanced analysis
         }
         catch
         {
@@ -461,89 +665,159 @@ Respond with VALID JSON matching this structure:
 
     /// <summary>
     /// Builds the AI prompt for advanced code quality analysis.
-    /// Focuses on complexity, bugs, security, and maintainability.
+    /// Simplified for better performance with smaller models.
     /// </summary>
     private static string BuildCodeQualityPrompt(string sourceCode, string language)
     {
-        return $@"You are a code quality analyzer. Analyze the following {language} code and identify issues:
+        // Truncate very long code
+        var codeLines = sourceCode.Split('\n');
+        var truncatedCode = codeLines.Length > 200
+            ? string.Join("\n", codeLines.Take(200)) + "\n... (truncated)"
+            : sourceCode;
 
-=== CODE TO ANALYZE ===
-{sourceCode}
+        return $@"Analyze this {language} code for quality issues.
 
-=== ANALYSIS TASKS ===
+CODE:
+{truncatedCode}
 
-1. CYCLOMATIC COMPLEXITY:
-   - Count decision points: if, while, for, switch, &&, ||, ?:, catch
-   - Calculate complexity score
-   - Rate as Low (1-10), Medium (11-20), or High (21+)
+Identify:
+1. Cyclomatic complexity (count decision points, rate Low/Medium/High)
+2. Potential bugs (off-by-one, null risks, logic errors)
+3. Security issues (injection, hardcoded secrets, unsafe operations)
+4. Code smells (long methods, deep nesting, magic numbers)
 
-2. POTENTIAL BUGS:
-   - Off-by-one errors in loops
-   - Null/undefined reference risks
-   - Uninitialized variables
-   - Logic errors (wrong operators, missing conditions)
-   - Resource leaks (unclosed files, connections)
-   - Integer overflow/underflow
-
-3. SECURITY ISSUES:
-   - SQL injection vulnerabilities
-   - Command injection risks
-   - Hardcoded credentials or secrets
-   - Unsafe file operations
-   - Missing input validation
-   - Insecure random number generation
-   - Path traversal vulnerabilities
-
-4. CODE SMELLS:
-   - Long methods (>50 lines)
-   - Deep nesting (>3 levels)
-   - Duplicate code blocks
-   - Magic numbers or hardcoded strings
-   - Poor variable/function naming
-   - Dead/unreachable code
-   - God classes/functions doing too much
-
-=== OUTPUT FORMAT ===
-
-Respond with VALID JSON only (no markdown, no explanations):
-
+Respond with JSON only:
 {{
-  ""cyclomaticComplexity"": <number>,
-  ""complexityRating"": ""Low"" | ""Medium"" | ""High"",
-  ""potentialBugs"": [
-    {{
-      ""category"": ""Brief category name"",
-      ""description"": ""What the issue is"",
-      ""severity"": ""Info"" | ""Warning"" | ""Error"",
-      ""lineReference"": ""line X"" or ""lines X-Y"",
-      ""suggestion"": ""How to fix it""
-    }}
-  ],
-  ""securityIssues"": [
-    {{
-      ""category"": ""Security category"",
-      ""description"": ""What the vulnerability is"",
-      ""severity"": ""Warning"" | ""Error"",
-      ""lineReference"": ""line X"",
-      ""suggestion"": ""How to fix it""
-    }}
-  ],
-  ""codeSmells"": [
-    {{
-      ""category"": ""Smell type"",
-      ""description"": ""What the issue is"",
-      ""severity"": ""Info"" | ""Warning"",
-      ""lineReference"": ""line X or function name"",
-      ""suggestion"": ""How to improve""
-    }}
-  ]
-}}
+  ""cyclomaticComplexity"": [number],
+  ""complexityRating"": ""Low|Medium|High"",
+  ""potentialBugs"": [{{""description"": ""..."", ""severity"": ""Warning|Error""}}],
+  ""securityIssues"": [{{""description"": ""..."", ""severity"": ""Warning|Error""}}],
+  ""codeSmells"": [{{""description"": ""..."", ""severity"": ""Info|Warning""}}]
+}}";
+    }
 
-IMPORTANT:
-- Output ONLY valid JSON
-- Be specific - reference actual code elements
-- Severity: Error = must fix, Warning = should fix, Info = consider
-- Empty arrays are OK if no issues found
-- Focus on objective, verifiable issues";
+    /// <summary>
+    /// Analyzes code using the specified analysis mode configuration.
+    /// This is the preferred method for grading with mode selection.
+    /// </summary>
+    /// <param name="sourceCode">Student's source code</param>
+    /// <param name="rubric">Grading rubric</param>
+    /// <param name="courseName">Course name</param>
+    /// <param name="assignmentName">Assignment name</param>
+    /// <param name="outputContents">Program outputs (if any)</param>
+    /// <param name="modeConfig">Analysis mode configuration</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>Grading response with optional advanced analysis</returns>
+    public async Task<AiGradingResponse> AnalyzeWithModeAsync(
+        string sourceCode,
+        Rubric rubric,
+        string courseName,
+        string assignmentName,
+        List<string> outputContents,
+        AnalysisModeConfig modeConfig,
+        CancellationToken cancellationToken = default)
+    {
+        using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        cts.CancelAfter(TimeSpan.FromSeconds(modeConfig.TimeoutSeconds));
+
+        try
+        {
+            // Build appropriate prompt based on mode
+            var prompt = modeConfig.UseLitePrompt
+                ? BuildLiteGradingPrompt(sourceCode, rubric, courseName, assignmentName, outputContents)
+                : BuildGradingPrompt(sourceCode, rubric, courseName, assignmentName, outputContents);
+
+            var response = new StringBuilder();
+            var request = new GenerateRequest
+            {
+                Model = _model,
+                Prompt = prompt,
+                Options = new RequestOptions
+                {
+                    NumPredict = modeConfig.MaxTokens,
+                    NumCtx = modeConfig.ContextWindow,
+                    Temperature = modeConfig.Temperature,
+                    TopP = 0.9f,
+                    RepeatPenalty = 1.1f
+                }
+            };
+
+            // Track progress
+            var tokenCount = 0;
+            await foreach (var chunk in _ollama.Generate(request, cts.Token))
+            {
+                if (chunk?.Response != null)
+                {
+                    response.Append(chunk.Response);
+                    tokenCount++;
+
+                    // Report progress every 10 tokens
+                    if (tokenCount % 10 == 0)
+                    {
+                        OnProgressUpdate?.Invoke(tokenCount);
+                    }
+                }
+            }
+
+            var aiText = response.ToString();
+
+            // Parse response based on prompt type
+            AiGradingResponse? result;
+            string parserUsed;
+
+            if (modeConfig.UseLitePrompt)
+            {
+                result = TryParseLiteJsonResponse(aiText, rubric);
+                parserUsed = result != null ? "LiteJSON" : "Text";
+            }
+            else
+            {
+                result = TryParseJsonResponse(aiText, rubric);
+                parserUsed = result != null ? "JSON" : "Text";
+            }
+
+            // Fallback to text parsing
+            if (result == null)
+            {
+                result = ParseTextResponse(aiText, rubric);
+            }
+
+            result.RawAiResponse = aiText;
+            result.ParserUsed = parserUsed;
+
+            // Run advanced analysis if mode requires it
+            if (modeConfig.IncludeAdvancedAnalysis && result.Success)
+            {
+                try
+                {
+                    var advancedAnalysis = await AnalyzeCodeQualityAsync(sourceCode, "code");
+                    result.AdvancedAnalysis = advancedAnalysis;
+                }
+                catch
+                {
+                    // Advanced analysis is optional - don't fail if it errors
+                }
+            }
+
+            return result;
+        }
+        catch (OperationCanceledException)
+        {
+            return new AiGradingResponse
+            {
+                Success = false,
+                ErrorMessage = $"Analysis timed out after {modeConfig.TimeoutSeconds} seconds. Try Fast mode for quicker results.",
+                MaxPossible = rubric.TotalPoints
+            };
+        }
+        catch (Exception ex)
+        {
+            return new AiGradingResponse
+            {
+                Success = false,
+                ErrorMessage = $"AI analysis failed: {ex.Message}",
+                MaxPossible = rubric.TotalPoints
+            };
+        }
     }
 }
