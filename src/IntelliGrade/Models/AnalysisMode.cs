@@ -116,15 +116,15 @@ public static class AnalysisModeConfigs
         DisplayName = "Fast",
         Description = "Quick scores with brief feedback",
         Icon = "",
-        RecommendedModel = "qwen2.5-coder:1.5b",
-        FallbackModel = "qwen2.5-coder:0.5b",
-        MaxTokens = 600,
-        ContextWindow = 2048,
+        RecommendedModel = "qwen3:4b",
+        FallbackModel = "qwen3:1.7b",
+        MaxTokens = 800,
+        ContextWindow = 4096,
         Temperature = 0.1f,
         UseLitePrompt = true,
         IncludeAdvancedAnalysis = false,
-        TimeoutSeconds = 45,
-        EstimatedTime = "5-15 sec"
+        TimeoutSeconds = 60,
+        EstimatedTime = "10-20 sec"
     };
 
     /// <summary>
@@ -136,15 +136,15 @@ public static class AnalysisModeConfigs
         DisplayName = "Balanced",
         Description = "Full feedback with detailed reasoning",
         Icon = "",
-        RecommendedModel = "qwen2.5-coder:7b",
-        FallbackModel = "qwen2.5-coder:1.5b",
-        MaxTokens = 1200,
-        ContextWindow = 4096,
-        Temperature = 0.3f,
+        RecommendedModel = "qwen3-coder:30b",
+        FallbackModel = "qwen3:8b",
+        MaxTokens = 1500,
+        ContextWindow = 8192,
+        Temperature = 0.2f,
         UseLitePrompt = false,
         IncludeAdvancedAnalysis = false,
-        TimeoutSeconds = 90,
-        EstimatedTime = "15-30 sec"
+        TimeoutSeconds = 120,
+        EstimatedTime = "20-40 sec"
     };
 
     /// <summary>
@@ -156,15 +156,15 @@ public static class AnalysisModeConfigs
         DisplayName = "Detailed",
         Description = "Deep analysis with bugs, security, complexity",
         Icon = "",
-        RecommendedModel = "qwen2.5-coder:14b",
-        FallbackModel = "qwen2.5-coder:7b",
-        MaxTokens = 2000,
-        ContextWindow = 8192,
-        Temperature = 0.4f,
+        RecommendedModel = "qwen3:14b",
+        FallbackModel = "qwen3-coder:30b",
+        MaxTokens = 2500,
+        ContextWindow = 16384,
+        Temperature = 0.3f,
         UseLitePrompt = false,
         IncludeAdvancedAnalysis = true,
         TimeoutSeconds = 180,
-        EstimatedTime = "45-90 sec"
+        EstimatedTime = "60-120 sec"
     };
 
     /// <summary>

@@ -72,6 +72,14 @@ public partial class MainWindowViewModel : ViewModelBase
     public string LetterGrade => CalculateLetterGrade(Grade);
     public double Percentage => Grade.HasValue ? (double)Grade.Value : 0.0;
 
+    /// <summary>
+    /// Returns the header border color based on AI availability.
+    /// Green when AI is online, red when offline.
+    /// </summary>
+    public Avalonia.Media.IBrush HeaderBorderBrush => OllamaAvailable
+        ? new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#10b981")) // Green
+        : new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#ef4444")); // Red
+
     public MainWindowViewModel()
     {
         LoadCourses();
@@ -397,6 +405,11 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         OnPropertyChanged(nameof(LetterGrade));
         OnPropertyChanged(nameof(Percentage));
+    }
+
+    partial void OnOllamaAvailableChanged(bool value)
+    {
+        OnPropertyChanged(nameof(HeaderBorderBrush));
     }
 
     partial void OnGradingSessionChanged(GradingSessionViewModel? value)

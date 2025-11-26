@@ -58,7 +58,7 @@ public class GradingConfiguration
             "bin",
             "rubrics");
 
-        DefaultModel = defaultModel ?? "llama3.2:1b";
+        DefaultModel = defaultModel ?? "qwen3-coder:30b";
 
         // Ensure rubric directory exists
         Directory.CreateDirectory(RubricDirectory);
@@ -80,7 +80,7 @@ public class OllamaConfiguration
         int maxRetries = 3)
     {
         Endpoint = endpoint ?? "http://localhost:11434";
-        DefaultModel = defaultModel ?? "llama3.2:1b";
+        DefaultModel = defaultModel ?? "qwen3-coder:30b";
         MaxRetries = maxRetries > 0 && maxRetries <= 10
             ? maxRetries
             : throw new ArgumentException("MaxRetries must be between 1 and 10", nameof(maxRetries));

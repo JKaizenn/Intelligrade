@@ -5,21 +5,22 @@
         
         <!-- Light Theme -->
         <ResourceDictionary x:Key="Light">
-            
+
             <!-- Backgrounds -->
             <SolidColorBrush x:Key="WindowBackground">#e2e8f0</SolidColorBrush>
             <SolidColorBrush x:Key="SurfaceBackground">#f8fafc</SolidColorBrush>
             <SolidColorBrush x:Key="CardBackground">#ffffff</SolidColorBrush>
-            <SolidColorBrush x:Key="HeaderBackground">#0f172a</SolidColorBrush>
-            <SolidColorBrush x:Key="StatusBarBackground">#1e293b</SolidColorBrush>
-            
+            <SolidColorBrush x:Key="HeaderBackground">#ffffff</SolidColorBrush>
+            <SolidColorBrush x:Key="HeaderBorder">#10b981</SolidColorBrush>
+            <SolidColorBrush x:Key="StatusBarBackground">#f1f5f9</SolidColorBrush>
+
             <!-- Text -->
             <SolidColorBrush x:Key="TextPrimary">#0f172a</SolidColorBrush>
             <SolidColorBrush x:Key="TextSecondary">#475569</SolidColorBrush>
             <SolidColorBrush x:Key="TextMuted">#64748b</SolidColorBrush>
             <SolidColorBrush x:Key="TextOnDark">#f8fafc</SolidColorBrush>
             <SolidColorBrush x:Key="TextOnAccent">#f8fafc</SolidColorBrush>
-            
+
             <!-- Borders -->
             <SolidColorBrush x:Key="BorderDefault">#e2e8f0</SolidColorBrush>
             <SolidColorBrush x:Key="BorderMuted">#cbd5e1</SolidColorBrush>
@@ -103,14 +104,15 @@
 
         <!-- Dark Theme -->
         <ResourceDictionary x:Key="Dark">
-            
+
             <!-- Backgrounds -->
             <SolidColorBrush x:Key="WindowBackground">#0f172a</SolidColorBrush>
             <SolidColorBrush x:Key="SurfaceBackground">#0f172a</SolidColorBrush>
             <SolidColorBrush x:Key="CardBackground">#1e293b</SolidColorBrush>
             <SolidColorBrush x:Key="HeaderBackground">#020617</SolidColorBrush>
+            <SolidColorBrush x:Key="HeaderBorder">#10b981</SolidColorBrush>
             <SolidColorBrush x:Key="StatusBarBackground">#0f172a</SolidColorBrush>
-            
+
             <!-- Text -->
             <SolidColorBrush x:Key="TextPrimary">#f8fafc</SolidColorBrush>
             <SolidColorBrush x:Key="TextSecondary">#cbd5e1</SolidColorBrush>

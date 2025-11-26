@@ -46,11 +46,11 @@ public class OllamaGradingService : IOllamaGradingService
     /// <summary>
     /// Initializes the grading service with specified Ollama model and endpoint.
     /// </summary>
-    /// <param name="model">LLM model name (default: llama3.2:1b)</param>
+    /// <param name="model">LLM model name (default: qwen3-coder:30b)</param>
     /// <param name="endpoint">Ollama API endpoint (default: localhost:11434)</param>
     /// <param name="timeoutSeconds">Request timeout in seconds (default: 90)</param>
     public OllamaGradingService(
-        string model = "llama3.2:1b",
+        string model = "qwen3-coder:30b",
         string endpoint = "http://localhost:11434",
         int timeoutSeconds = 90)
     {
@@ -203,9 +203,9 @@ public class OllamaGradingService : IOllamaGradingService
             }
         }
 
-        return $@"You are a grading assistant for {courseName} - {assignmentName}.
+        return $@"You are a STRICT grading assistant for {courseName} - {assignmentName}.
 
-TASK: Analyze student code against rubric criteria and provide structured grading suggestions.
+TASK: Critically analyze student code against rubric criteria. Be thorough and demanding - only award high scores for truly excellent work.
 
 === RUBRIC CRITERIA ===
 {criteriaSection}
@@ -244,13 +244,17 @@ Respond with VALID JSON matching this structure:
 - Medium: Evidence present but ambiguous between levels
 - Low: Limited evidence, uncertain assessment
 
-=== CRITICAL RULES ===
+=== CRITICAL GRADING RULES ===
 - Output ONLY valid JSON (no markdown, no explanations)
-- Evaluate ONLY what rubric explicitly mentions
-- Reference SPECIFIC code elements in evidence
-- Match scores to rubric level descriptions
+- Be STRICT and CRITICAL - perfect scores require perfect code
+- Check for BUGS, ERRORS, and INCORRECT LOGIC
+- Verify code ACTUALLY WORKS CORRECTLY
+- Penalize poor practices: bad names, missing edge cases, inefficiency
+- Award full points ONLY for excellent, bug-free, well-written code
+- Match scores to rubric level descriptions EXACTLY
+- Reference SPECIFIC code problems in evidence
 - Be OBJECTIVE - base on observable code facts
-- Do NOT invent criteria not in rubric";
+- Do NOT be lenient - students must EARN high scores";
     }
 
     /// <summary>
@@ -278,7 +282,7 @@ Respond with VALID JSON matching this structure:
             ? string.Join("\n", codeLines.Take(150)) + "\n... (truncated)"
             : sourceCode;
 
-        return $@"Grade this {courseName} {assignmentName} code.
+        return $@"STRICTLY grade this {courseName} {assignmentName} code. Be critical and demanding.
 
 CRITERIA (Total: {rubric.TotalPoints} points):
 {criteriaList}
@@ -287,13 +291,20 @@ CODE:
 {truncatedCode}
 {outputSection}
 
+GRADING RULES:
+- Check for BUGS and ERRORS first
+- Verify code WORKS CORRECTLY
+- Only award high scores for EXCELLENT code
+- Penalize mistakes, bad practices, missing logic
+- Be STRICT - students must EARN points
+
 Respond with JSON only:
 {{
   ""scores"": [
-    {{""criterion"": ""[name]"", ""score"": [points], ""reason"": ""[1 sentence]""}}
+    {{""criterion"": ""[name]"", ""score"": [points], ""reason"": ""[why this score - mention any bugs/issues]""}}
   ],
   ""total"": [sum],
-  ""summary"": ""[1-2 sentences]""
+  ""summary"": ""[mention strengths AND problems found]""
 }}";
     }
 
@@ -325,7 +336,7 @@ Respond with JSON only:
             {
                 PropertyNameCaseInsensitive = true,
                 AllowTrailingCommas = true,
-                Converters = { new System.Text.Json.Serialization.JsonStringEnumConverter(JsonNamingPolicy.CamelCase, allowIntegerValues: false) }
+                Converters = { new System.Text.Json.Serialization.JsonStringEnumConverter(namingPolicy: null, allowIntegerValues: true) }
             };
 
             var response = JsonSerializer.Deserialize<AiGradingResponse>(extractedJson, options);

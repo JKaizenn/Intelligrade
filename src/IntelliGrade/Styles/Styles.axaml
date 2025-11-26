@@ -151,6 +151,8 @@
     <!-- Header -->
     <Style Selector="Border.header">
         <Setter Property="Background" Value="{DynamicResource HeaderBackground}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource HeaderBorder}"/>
+        <Setter Property="BorderThickness" Value="0,0,0,3"/>
         <Setter Property="Padding" Value="24,16"/>
     </Style>
 

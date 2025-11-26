@@ -11,5 +11,5 @@ public class GradingConfig
     public string RubricDirectory { get; } =
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "bin", "rubrics");
 
-    public string OllamaModel { get; } = "llama3.2:1b";
+    public string OllamaModel { get; } = "qwen3-coder:30b";
 }

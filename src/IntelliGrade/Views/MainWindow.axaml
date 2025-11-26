@@ -22,17 +22,19 @@
     <Grid RowDefinitions="Auto,*,Auto">
 
         <!-- Header -->
-        <Border Grid.Row="0" Classes="header">
+        <Border Grid.Row="0"
+                Classes="header"
+                BorderBrush="{Binding HeaderBorderBrush}">
             <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto">
                 <!-- Logo/Title -->
                 <StackPanel Grid.Column="0">
                     <TextBlock Text="IntelliGrade"
                                FontSize="28"
                                FontWeight="Bold"
-                               Foreground="{DynamicResource TextOnDark}"/>
+                               Foreground="{DynamicResource TextPrimary}"/>
                     <TextBlock Text="Your speedy grading assistant!"
                                FontSize="13"
-                               Foreground="{DynamicResource TextOnDark}"
+                               Foreground="{DynamicResource TextSecondary}"
                                Margin="0,6,0,0"/>
                 </StackPanel>
 
@@ -123,7 +125,7 @@
                              VerticalAlignment="Center"/>
                 <TextBlock Grid.Column="1"
                            Text="{Binding StatusMessage}"
-                           Foreground="{DynamicResource TextOnDark}"
+                           Foreground="{DynamicResource TextPrimary}"
                            FontSize="13"
                            VerticalAlignment="Center"
                            TextTrimming="CharacterEllipsis"/>
