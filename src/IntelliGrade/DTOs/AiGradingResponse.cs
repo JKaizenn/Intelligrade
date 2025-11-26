@@ -20,4 +20,14 @@ public class AiGradingResponse
     /// Null if advanced analysis was not requested or failed.
     /// </summary>
     public AdvancedAnalysis? AdvancedAnalysis { get; set; }
+
+    /// <summary>
+    /// Debug information: raw AI response text (for troubleshooting parsing issues).
+    /// </summary>
+    public string? RawAiResponse { get; set; }
+
+    /// <summary>
+    /// Debug information: which parser was used (JSON or Text).
+    /// </summary>
+    public string? ParserUsed { get; set; }
 }

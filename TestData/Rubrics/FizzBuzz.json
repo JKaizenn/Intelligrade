@@ -1,0 +1,131 @@
+{
+  "name": "FizzBuzz Implementation",
+  "course": "CSE 110",
+  "language": "python",
+  "totalPoints": 100,
+  "criteria": [
+    {
+      "name": "Correct Output",
+      "maxPoints": 40,
+      "description": "Program produces correct FizzBuzz output for numbers 1-100",
+      "levels": [
+        {
+          "label": "Complete",
+          "points": 40,
+          "description": "All 100 lines correct: prints 'Fizz' for multiples of 3, 'Buzz' for multiples of 5, 'FizzBuzz' for multiples of both, and the number otherwise"
+        },
+        {
+          "label": "Mostly Correct",
+          "points": 30,
+          "description": "Minor errors in output (1-5 incorrect lines)"
+        },
+        {
+          "label": "Partial",
+          "points": 20,
+          "description": "Some correct output but significant errors (6-20 incorrect lines)"
+        },
+        {
+          "label": "Attempting",
+          "points": 10,
+          "description": "Shows understanding of concept but mostly incorrect output"
+        },
+        {
+          "label": "Missing",
+          "points": 0,
+          "description": "No output or completely wrong approach"
+        }
+      ]
+    },
+    {
+      "name": "Code Structure",
+      "maxPoints": 25,
+      "description": "Code uses proper control flow and logic structure",
+      "levels": [
+        {
+          "label": "Excellent",
+          "points": 25,
+          "description": "Uses efficient conditional logic, checks divisibility by 15 first (or equivalent), clean loop structure"
+        },
+        {
+          "label": "Good",
+          "points": 20,
+          "description": "Correct logic but slightly inefficient (e.g., redundant checks)"
+        },
+        {
+          "label": "Acceptable",
+          "points": 15,
+          "description": "Works but uses poor structure (deeply nested, repeated code)"
+        },
+        {
+          "label": "Poor",
+          "points": 5,
+          "description": "Overly complex or confusing structure"
+        },
+        {
+          "label": "Missing",
+          "points": 0,
+          "description": "No discernible structure"
+        }
+      ]
+    },
+    {
+      "name": "Code Style",
+      "maxPoints": 20,
+      "description": "Follows Python style conventions (PEP 8)",
+      "levels": [
+        {
+          "label": "Excellent",
+          "points": 20,
+          "description": "Follows PEP 8, meaningful variable names, proper spacing and indentation"
+        },
+        {
+          "label": "Good",
+          "points": 15,
+          "description": "Minor style issues (1-3 violations)"
+        },
+        {
+          "label": "Acceptable",
+          "points": 10,
+          "description": "Several style issues but code is readable"
+        },
+        {
+          "label": "Poor",
+          "points": 5,
+          "description": "Many style issues, hard to read"
+        },
+        {
+          "label": "Missing",
+          "points": 0,
+          "description": "No attention to style"
+        }
+      ]
+    },
+    {
+      "name": "Documentation",
+      "maxPoints": 15,
+      "description": "Code includes appropriate comments and docstrings",
+      "levels": [
+        {
+          "label": "Complete",
+          "points": 15,
+          "description": "Has module docstring, function docstring (if applicable), and helpful inline comments"
+        },
+        {
+          "label": "Good",
+          "points": 10,
+          "description": "Has some documentation but missing elements"
+        },
+        {
+          "label": "Minimal",
+          "points": 5,
+          "description": "Only basic comments or header"
+        },
+        {
+          "label": "Missing",
+          "points": 0,
+          "description": "No documentation"
+        }
+      ]
+    }
+  ]
+}

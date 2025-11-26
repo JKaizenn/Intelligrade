@@ -151,7 +151,10 @@
                     <ScrollViewer Padding="16" VerticalScrollBarVisibility="Auto">
                         <StackPanel Spacing="16">
                             <!-- Rubric-Based Analysis -->
-                            <TextBox Text="{Binding AiAnalysis}" Classes="code"/>
+                            <TextBox Text="{Binding AiAnalysis}"
+                                     Classes="code"
+                                     IsReadOnly="True"
+                                     AcceptsReturn="True"/>
 
                             <!-- Code Quality Analysis Button -->
                             <Border Classes="card" Padding="16" Margin="0,8,0,0">

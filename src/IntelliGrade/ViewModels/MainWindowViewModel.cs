@@ -552,6 +552,58 @@ public partial class MainWindowViewModel : ViewModelBase
                 sb.AppendLine($"Overall Confidence: {response.OverallConfidence}");
                 sb.AppendLine($"Recommended Total: {response.RecommendedTotal}/{response.MaxPossible}");
                 sb.AppendLine();
+
+                // Show warning if no suggestions returned
+                if (response.Suggestions.Count == 0)
+                {
+                    sb.AppendLine("⚠️ WARNING: AI returned no criterion suggestions.");
+                    sb.AppendLine();
+                    sb.AppendLine("Debug Information:");
+                    sb.AppendLine($"  • Rubric Name: {rubric.Name}");
+                    sb.AppendLine($"  • Rubric Criteria Count: {rubric.Criteria.Count}");
+                    sb.AppendLine($"  • Expected Max Points: {rubric.TotalPoints}");
+                    sb.AppendLine($"  • AI Response Success: {response.Success}");
+                    sb.AppendLine($"  • Parser Used: {response.ParserUsed ?? "Unknown"}");
+                    if (!string.IsNullOrEmpty(response.ErrorMessage))
+                        sb.AppendLine($"  • Error Message: {response.ErrorMessage}");
+
+                    sb.AppendLine();
+                    sb.AppendLine("Rubric Criteria Expected:");
+                    foreach (var criterion in rubric.Criteria)
+                    {
+                        sb.AppendLine($"  - {criterion.Name} ({criterion.MaxPoints} pts)");
+                    }
+
+                    sb.AppendLine();
+                    sb.AppendLine("Raw AI Response (first 1000 chars):");
+                    if (!string.IsNullOrEmpty(response.RawAiResponse))
+                    {
+                        var preview = response.RawAiResponse.Length > 1000
+                            ? response.RawAiResponse.Substring(0, 1000) + "..."
+                            : response.RawAiResponse;
+                        sb.AppendLine(preview);
+                    }
+                    else
+                    {
+                        sb.AppendLine("  [No raw response captured]");
+                    }
+
+                    // Show parse error if JSON parsing failed
+                    if (response.ParserUsed?.Contains("failed") == true && !string.IsNullOrEmpty(response.ErrorMessage))
+                    {
+                        sb.AppendLine();
+                        sb.AppendLine($"JSON Parse Error: {response.ErrorMessage}");
+                    }
+
+                    sb.AppendLine();
+                    sb.AppendLine("Possible Causes:");
+                    sb.AppendLine("  • AI response didn't match expected JSON or text format");
+                    sb.AppendLine("  • Criterion names in AI response don't match rubric");
+                    sb.AppendLine("  • AI model may need more specific prompting");
+                    sb.AppendLine("  • Try re-running the analysis or check the rubric file");
+                    sb.AppendLine();
+                }
+
                 sb.AppendLine("CRITERION BREAKDOWN:");
                 sb.AppendLine("=".PadRight(80, '='));
 

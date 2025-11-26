@@ -90,7 +90,19 @@ public class OllamaGradingService : IOllamaGradingService
             var aiText = response.ToString();
 
             // Try JSON parsing first, fallback to text parsing
-            var result = TryParseJsonResponse(aiText, rubric) ?? ParseTextResponse(aiText, rubric);
+            var result = TryParseJsonResponse(aiText, rubric);
+
+            if (result != null)
+            {
+                result.RawAiResponse = aiText;
+                result.ParserUsed = "JSON";
+            }
+            else
+            {
+                result = ParseTextResponse(aiText, rubric);
+                result.RawAiResponse = aiText;
+                result.ParserUsed = "Text";
+            }
 
             return result;
         }
@@ -190,30 +202,112 @@ Respond with VALID JSON matching this structure:
     /// </summary>
     private AiGradingResponse? TryParseJsonResponse(string aiText, Rubric rubric)
     {
+        string? extractedJson = null;
         try
         {
-            // Extract JSON from response (AI might wrap it in markdown)
-            var jsonMatch = Regex.Match(aiText, @"\{[\s\S]*\}", RegexOptions.Multiline);
-            if (!jsonMatch.Success)
-                return null;
+            // Extract JSON from response (AI might wrap it in markdown code blocks)
+            // First try to extract from markdown code blocks
+            var markdownMatch = Regex.Match(aiText, @"```(?:json)?\s*(\{[\s\S]*?\})\s*```", RegexOptions.Multiline);
 
-            var json = jsonMatch.Value;
+            if (markdownMatch.Success && markdownMatch.Groups.Count > 1)
+            {
+                extractedJson = markdownMatch.Groups[1].Value;
+            }
+            else
+            {
+                // Use brace-balanced extraction to find complete JSON object
+                extractedJson = ExtractJsonObject(aiText);
+                if (extractedJson == null)
+                    return null;
+            }
+
             var options = new JsonSerializerOptions
             {
-                PropertyNameCaseInsensitive = true
+                PropertyNameCaseInsensitive = true,
+                AllowTrailingCommas = true,
+                Converters = { new System.Text.Json.Serialization.JsonStringEnumConverter(JsonNamingPolicy.CamelCase, allowIntegerValues: false) }
             };
 
-            var response = JsonSerializer.Deserialize<AiGradingResponse>(json, options);
+            var response = JsonSerializer.Deserialize<AiGradingResponse>(extractedJson, options);
             if (response == null)
                 return null;
+
+            // Check if suggestions were actually parsed
+            if (response.Suggestions == null || response.Suggestions.Count == 0)
+            {
+                return null;
+            }
 
             response.Success = true;
             return response;
         }
-        catch
+        catch (Exception ex)
         {
-            return null;
+            // For debugging: create a response with error details
+            return new AiGradingResponse
+            {
+                Success = false,
+                ErrorMessage = $"JSON parse error: {ex.Message}",
+                RawAiResponse = extractedJson ?? aiText,
+                ParserUsed = "JSON (failed)",
+                MaxPossible = rubric.TotalPoints
+            };
         }
+    }
+
+    /// <summary>
+    /// Extracts a complete JSON object from text using brace balancing.
+    /// Finds the first '{' and matches it with the corresponding '}'.
+    /// </summary>
+    private static string? ExtractJsonObject(string text)
+    {
+        int startIndex = text.IndexOf('{');
+        if (startIndex == -1)
+            return null;
+
+        int braceCount = 0;
+        bool inString = false;
+        bool escapeNext = false;
+
+        for (int i = startIndex; i < text.Length; i++)
+        {
+            char c = text[i];
+
+            if (escapeNext)
+            {
+                escapeNext = false;
+                continue;
+            }
+
+            if (c == '\\')
+            {
+                escapeNext = true;
+                continue;
+            }
+
+            if (c == '"')
+            {
+                inString = !inString;
+                continue;
+            }
+
+            if (!inString)
+            {
+                if (c == '{')
+                    braceCount++;
+                else if (c == '}')
+                {
+                    braceCount--;
+                    if (braceCount == 0)
+                    {
+                        // Found matching closing brace
+                        return text.Substring(startIndex, i - startIndex + 1);
+                    }
+                }
+            }
+        }
+
+        return null;
     }
 
     /// <summary>
