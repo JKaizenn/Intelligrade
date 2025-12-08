@@ -15,7 +15,11 @@ namespace IntelliGrade.App.Services;
 /// </summary>
 public class RubricService : IRubricService
 {
-
+    /// <summary>
+    /// Loads and deserializes a rubric from a JSON file.
+    /// </summary>
+    /// <param name="filePath">Path to JSON rubric file</param>
+    /// <returns>Deserialized Rubric object, or null if file doesn't exist or parsing fails</returns>
     public async Task<Rubric?> LoadRubricAsync(string filePath)
     {
         try
@@ -33,10 +37,16 @@ public class RubricService : IRubricService
         }
         catch
         {
+            // Return null for invalid JSON or file access errors
             return null;
         }
     }
 
+    /// <summary>
+    /// Saves a rubric to a JSON file with indented formatting.
+    /// </summary>
+    /// <param name="rubric">Rubric object to serialize</param>
+    /// <param name="filePath">Destination file path</param>
     public async Task SaveRubricAsync(Rubric rubric, string filePath)
     {
         var options = new JsonSerializerOptions
@@ -49,6 +59,11 @@ public class RubricService : IRubricService
         await File.WriteAllTextAsync(filePath, json);
     }
 
+    /// <summary>
+    /// Loads a plain text rubric file.
+    /// </summary>
+    /// <param name="filePath">Path to text rubric file</param>
+    /// <returns>Rubric content as string, or empty string if file doesn't exist or read fails</returns>
     public async Task<string> LoadPlainTextRubricAsync(string filePath)
     {
         try
@@ -60,10 +75,17 @@ public class RubricService : IRubricService
         }
         catch
         {
+            // Return empty string for file access errors
             return string.Empty;
         }
     }
 
+    /// <summary>
+    /// Loads a rubric from file and formats it for display.
+    /// Automatically detects JSON vs plain text format based on file extension.
+    /// </summary>
+    /// <param name="filePath">Path to rubric file (.json or .txt)</param>
+    /// <returns>Formatted rubric string</returns>
     public async Task<string> LoadAndFormatRubricAsync(string filePath)
     {
         // Try JSON format first
@@ -78,6 +100,11 @@ public class RubricService : IRubricService
         return await LoadPlainTextRubricAsync(filePath);
     }
 
+    /// <summary>
+    /// Formats a rubric for AI consumption with structured criteria and scoring levels.
+    /// </summary>
+    /// <param name="rubric">Rubric to format</param>
+    /// <returns>Formatted rubric string optimized for AI analysis</returns>
     public string FormatRubricForAI(Rubric rubric)
     {
         var sb = new StringBuilder();
@@ -88,7 +115,7 @@ public class RubricService : IRubricService
         sb.AppendLine($"TOTAL POINTS: {rubric.TotalPoints}");
         sb.AppendLine();
         sb.AppendLine("GRADING CRITERIA:");
-        sb.AppendLine("=".PadRight(80, '='));
+        sb.AppendLine("=".PadRight(80, '='));  // 80 character separator line for readability
 
         for (int i = 0; i < rubric.Criteria.Count; i++)
         {
@@ -113,16 +140,21 @@ public class RubricService : IRubricService
             if (i < rubric.Criteria.Count - 1)
             {
                 sb.AppendLine();
-                sb.AppendLine("-".PadRight(80, '-'));
+                sb.AppendLine("-".PadRight(80, '-'));  // Separator between criteria
             }
         }
 
         sb.AppendLine();
-        sb.AppendLine("=".PadRight(80, '='));
+        sb.AppendLine("=".PadRight(80, '='));  // End separator
 
         return sb.ToString();
     }
 
+    /// <summary>
+    /// Formats a rubric for user-friendly display in the UI.
+    /// </summary>
+    /// <param name="rubric">Rubric to format</param>
+    /// <returns>Formatted rubric string optimized for reading</returns>
     public string FormatRubricForDisplay(Rubric rubric)
     {
         var sb = new StringBuilder();

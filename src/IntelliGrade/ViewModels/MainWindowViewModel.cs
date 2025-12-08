@@ -136,7 +136,10 @@ public partial class MainWindowViewModel : ViewModelBase
             var dir = await _localStorage.GetAsync("LastDirectory", Directory.GetCurrentDirectory());
             if (dir != null) CurrentDirectory = dir;
         }
-        catch { }
+        catch
+        {
+            // Silently ignore settings load errors - use defaults instead
+        }
     }
 
     private bool DetectSystemTheme()
@@ -150,7 +153,10 @@ public partial class MainWindowViewModel : ViewModelBase
                 return colorValues.ThemeVariant == Avalonia.Platform.PlatformThemeVariant.Dark;
             }
         }
-        catch { }
+        catch
+        {
+            // Platform theme detection not available - fall through to default
+        }
 
         // Default to light mode if detection fails
         return false;
@@ -164,7 +170,7 @@ public partial class MainWindowViewModel : ViewModelBase
         }
         catch
         {
-            // Ignore errors saving theme
+            // Theme preference is non-critical - silently fail
         }
     }
 
@@ -461,14 +467,14 @@ public partial class MainWindowViewModel : ViewModelBase
 
             if (result.success)
             {
-                output.AppendLine("✓ Success");
+                output.AppendLine("Success");
                 output.AppendLine();
                 output.AppendLine("Output:");
                 output.AppendLine(result.output);
             }
             else
             {
-                output.AppendLine("✗ Failed");
+                output.AppendLine("Failed");
                 output.AppendLine();
                 output.AppendLine("Error:");
                 output.AppendLine(result.error);
@@ -880,6 +886,7 @@ public partial class MainWindowViewModel : ViewModelBase
         }
         catch
         {
+            // If Ollama initialization fails, disable AI features gracefully
             OllamaAvailable = false;
             StatusMessage = "AI connection failed";
         }
@@ -905,7 +912,7 @@ public partial class MainWindowViewModel : ViewModelBase
         }
         catch
         {
-            // Silently fail - don't update UI on background check failure
+            // Background availability check is non-critical - silently fail to avoid UI disruption
         }
     }
 

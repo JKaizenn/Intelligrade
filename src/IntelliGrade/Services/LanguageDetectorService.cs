@@ -28,6 +28,11 @@ public class LanguageDetectorService : ILanguageDetectorService
         ["rust"] = new("rust", "Rust", new[] { ".rs" }, "rustc")
     };
 
+    /// <summary>
+    /// Scans a directory for programming language files and returns detected languages.
+    /// </summary>
+    /// <param name="directory">Directory path to scan for source files</param>
+    /// <returns>List of detected programming languages</returns>
     public List<LanguageInfo> DetectLanguages(string directory)
     {
         var detected = new List<LanguageInfo>();
@@ -47,6 +52,13 @@ public class LanguageDetectorService : ILanguageDetectorService
         return detected;
     }
 
+    /// <summary>
+    /// Gets all source files for a specific language in a directory.
+    /// Returns paths relative to the provided directory.
+    /// </summary>
+    /// <param name="directory">Directory to search for source files</param>
+    /// <param name="language">Language information with file extensions</param>
+    /// <returns>Array of relative file paths</returns>
     public string[] GetSourceFiles(string directory, LanguageInfo language)
     {
         var files = new List<string>();
