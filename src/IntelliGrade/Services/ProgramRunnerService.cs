@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using IntelliGrade.App.Configuration;
@@ -92,15 +94,57 @@ public class ProgramRunnerService : IProgramRunnerService
     private async Task<(bool success, string output, string error)> CompileAsync(
         string sourceFile, LanguageInfo language, string workingDirectory)
     {
-        var (compiler, arguments) = GetCompileCommand(sourceFile, language);
+        var (compiler, arguments) = GetCompileCommand(sourceFile, language, workingDirectory);
         return await ExecuteProgramAsync(compiler, arguments, workingDirectory, "");
     }
 
     private async Task<(bool success, string output, string error)> RunScriptAsync(
         string sourceFile, LanguageInfo language, string workingDirectory)
     {
+        // Java requires compilation of all .java files before execution
+        if (language.Name == "java")
+        {
+            return await CompileAndRunJavaAsync(sourceFile, workingDirectory);
+        }
+
         var (interpreter, arguments) = GetExecutionCommand(sourceFile, language);
         return await ExecuteProgramAsync(interpreter, arguments, workingDirectory, "");
+    }
+
+    /// <summary>
+    /// Compiles all Java files in the directory and runs the main class.
+    /// </summary>
+    private async Task<(bool success, string output, string error)> CompileAndRunJavaAsync(
+        string mainFile, string workingDirectory)
+    {
+        try
+        {
+            // Find all .java files in the directory
+            var javaFiles = Directory.GetFiles(workingDirectory, "*.java", SearchOption.TopDirectoryOnly).ToList();
+
+            if (javaFiles.Count == 0)
+            {
+                return (false, "", "No Java source files found");
+            }
+
+            // Compile all Java files
+            var quotedFiles = string.Join(" ", javaFiles.Select(f => $"\"{Path.GetFileName(f)}\""));
+            var compileResult = await ExecuteProgramAsync("javac", quotedFiles, workingDirectory, "");
+
+            if (!compileResult.success)
+            {
+                return (false, compileResult.output, $"Java compilation failed:\n{compileResult.error}");
+            }
+
+            // Run the main class (assume file name matches class name)
+            var className = Path.GetFileNameWithoutExtension(mainFile);
+            return await ExecuteProgramAsync("java", className, workingDirectory,
+                $"Compiled successfully:\n{compileResult.output}\n\n--- Program Output ---\n");
+        }
+        catch (Exception ex)
+        {
+            return (false, "", $"Java compile and run error: {ex.Message}");
+        }
     }
 
     /// <summary>
@@ -173,7 +217,6 @@ public class ProgramRunnerService : IProgramRunnerService
         {
             "python" => ("python3", sourceFile),
             "javascript" => ("node", sourceFile),
-            "java" => GetJavaCommand(sourceFile),
             "php" => ("php", sourceFile),
             "ruby" => ("ruby", sourceFile),
             "go" => ("go", $"run {sourceFile}"),
@@ -181,18 +224,90 @@ public class ProgramRunnerService : IProgramRunnerService
         };
     }
 
-    private (string fileName, string arguments) GetCompileCommand(string sourceFile, LanguageInfo language)
+    /// <summary>
+    /// Gets the compilation command for a source file.
+    /// For C++ and C, automatically includes all source files in the directory for linking.
+    /// </summary>
+    private (string fileName, string arguments) GetCompileCommand(string sourceFile, LanguageInfo language, string workingDirectory)
     {
         var outputName = Path.GetFileNameWithoutExtension(sourceFile);
 
         return language.Name switch
         {
-            "cpp" => ("g++", $"\"{sourceFile}\" -o \"{outputName}\""),
-            "c" => ("gcc", $"\"{sourceFile}\" -o \"{outputName}\""),
+            "cpp" => GetMultiFileCppCommand(sourceFile, workingDirectory, outputName),
+            "c" => GetMultiFileCCommand(sourceFile, workingDirectory, outputName),
             "csharp" => ("dotnet", "build"),
-            "rust" => ("rustc", $"\"{sourceFile}\" -o \"{outputName}\""),
+            "rust" => GetMultiFileRustCommand(sourceFile, workingDirectory, outputName),
             _ => throw new NotSupportedException($"Language {language.Name} not supported for compilation")
         };
+    }
+
+    /// <summary>
+    /// Builds C++ compilation command including all .cpp files in the directory.
+    /// Header files (.h, .hpp) are not included as they're handled via #include directives.
+    /// </summary>
+    private (string fileName, string arguments) GetMultiFileCppCommand(string mainFile, string workingDirectory, string outputName)
+    {
+        // Find all .cpp, .cc, .cxx files in the directory
+        var cppExtensions = new[] { "*.cpp", "*.cc", "*.cxx" };
+        var sourceFiles = new List<string>();
+
+        foreach (var pattern in cppExtensions)
+        {
+            sourceFiles.AddRange(Directory.GetFiles(workingDirectory, pattern, SearchOption.TopDirectoryOnly));
+        }
+
+        // Build the compile command with all source files
+        if (sourceFiles.Count == 0)
+        {
+            // Fallback to just the main file if no files found
+            return ("g++", $"\"{mainFile}\" -o \"{outputName}\"");
+        }
+
+        // Quote each file path and join them
+        var quotedFiles = string.Join(" ", sourceFiles.Select(f => $"\"{Path.GetFileName(f)}\""));
+        return ("g++", $"{quotedFiles} -o \"{outputName}\"");
+    }
+
+    /// <summary>
+    /// Builds C compilation command including all .c files in the directory.
+    /// Header files (.h) are not included as they're handled via #include directives.
+    /// </summary>
+    private (string fileName, string arguments) GetMultiFileCCommand(string mainFile, string workingDirectory, string outputName)
+    {
+        // Find all .c files in the directory (exclude .h header files)
+        var sourceFiles = Directory.GetFiles(workingDirectory, "*.c", SearchOption.TopDirectoryOnly).ToList();
+
+        // Build the compile command with all source files
+        if (sourceFiles.Count == 0)
+        {
+            // Fallback to just the main file if no files found
+            return ("gcc", $"\"{mainFile}\" -o \"{outputName}\"");
+        }
+
+        // Quote each file path and join them
+        var quotedFiles = string.Join(" ", sourceFiles.Select(f => $"\"{Path.GetFileName(f)}\""));
+        return ("gcc", $"{quotedFiles} -o \"{outputName}\"");
+    }
+
+    /// <summary>
+    /// Builds Rust compilation command.
+    /// Rust's cargo handles multi-file projects, but for simple rustc compilation,
+    /// we compile the main file which should include modules.
+    /// </summary>
+    private (string fileName, string arguments) GetMultiFileRustCommand(string mainFile, string workingDirectory, string outputName)
+    {
+        // Check if there's a Cargo.toml file (proper Rust project)
+        var cargoToml = Path.Combine(workingDirectory, "Cargo.toml");
+        if (File.Exists(cargoToml))
+        {
+            // Use cargo build for proper projects
+            return ("cargo", "build --release");
+        }
+
+        // For simple single-file or module-based Rust, rustc should handle it
+        // Rust uses mod declarations to include other files, not command-line arguments
+        return ("rustc", $"\"{Path.GetFileName(mainFile)}\" -o \"{outputName}\"");
     }
 
     private string GetExecutablePath(string sourceFile, LanguageInfo language, string workingDirectory)
@@ -207,11 +322,5 @@ public class ProgramRunnerService : IProgramRunnerService
             "csharp" => "dotnet",
             _ => throw new NotSupportedException($"Language {language.Name} does not produce executables")
         };
-    }
-
-    private (string, string) GetJavaCommand(string sourceFile)
-    {
-        var className = Path.GetFileNameWithoutExtension(sourceFile);
-        return ("java", className);
     }
 }

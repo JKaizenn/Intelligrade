@@ -1,136 +1,26 @@
 {
-  "name": "Todo List Application",
-  "course": "CSE 210",
-  "language": "csharp",
+  "assignmentName": "Todo List Application",
   "totalPoints": 100,
   "criteria": [
     {
       "name": "Core Functionality",
-      "maxPoints": 40,
-      "description": "Program can add, remove, list, and mark todos as complete",
-      "levels": [
-        {
-          "label": "Complete",
-          "points": 40,
-          "description": "All 4 operations work correctly: add new todos, remove by index/name, list all todos with status, mark as complete/incomplete"
-        },
-        {
-          "label": "Mostly Complete",
-          "points": 32,
-          "description": "3 of 4 operations work correctly"
-        },
-        {
-          "label": "Partial",
-          "points": 20,
-          "description": "2 operations work correctly"
-        },
-        {
-          "label": "Minimal",
-          "points": 10,
-          "description": "Only 1 operation works"
-        },
-        {
-          "label": "Missing",
-          "points": 0,
-          "description": "No working functionality"
-        }
-      ]
+      "points": 40,
+      "description": "Implements add, remove, display, save, and load tasks. Program should maintain a list of tasks and provide user interaction."
     },
     {
-      "name": "Object-Oriented Design",
-      "maxPoints": 25,
-      "description": "Uses classes appropriately (TodoItem class with properties)",
-      "levels": [
-        {
-          "label": "Excellent",
-          "points": 25,
-          "description": "Separate TodoItem class with properties, TodoList class for management, proper use of List<T>, clean separation of concerns"
-        },
-        {
-          "label": "Good",
-          "points": 20,
-          "description": "Uses classes but some design issues"
-        },
-        {
-          "label": "Acceptable",
-          "points": 13,
-          "description": "Basic class usage but relies heavily on parallel arrays or poor structure"
-        },
-        {
-          "label": "Poor",
-          "points": 5,
-          "description": "No classes, uses only primitives"
-        },
-        {
-          "label": "Missing",
-          "points": 0,
-          "description": "No object-oriented design"
-        }
-      ]
+      "name": "File Persistence",
+      "points": 25,
+      "description": "Correctly saves tasks to file and loads them back. Should handle missing files gracefully and maintain data between runs."
     },
     {
-      "name": "User Interface",
-      "maxPoints": 20,
-      "description": "Clear menu-driven console interface",
-      "levels": [
-        {
-          "label": "Excellent",
-          "points": 20,
-          "description": "Clear menu, handles invalid input, formatted output, good user experience"
-        },
-        {
-          "label": "Good",
-          "points": 15,
-          "description": "Functional menu with minor UX issues"
-        },
-        {
-          "label": "Acceptable",
-          "points": 10,
-          "description": "Basic interface but confusing or hard to use"
-        },
-        {
-          "label": "Poor",
-          "points": 5,
-          "description": "Barely usable interface"
-        },
-        {
-          "label": "Missing",
-          "points": 0,
-          "description": "No user interface"
-        }
-      ]
+      "name": "Error Handling",
+      "points": 20,
+      "description": "Validates user input, handles file I/O errors, prevents empty tasks, checks array bounds for task removal."
     },
     {
-      "name": "Code Quality",
-      "maxPoints": 15,
-      "description": "Clean C# code following conventions with XML documentation",
-      "levels": [
-        {
-          "label": "Excellent",
-          "points": 15,
-          "description": "XML documentation comments, PascalCase naming, proper use of C# features (properties, LINQ), consistent style"
-        },
-        {
-          "label": "Good",
-          "points": 12,
-          "description": "Good code with minor style issues"
-        },
-        {
-          "label": "Acceptable",
-          "points": 8,
-          "description": "Functional but inconsistent style"
-        },
-        {
-          "label": "Poor",
-          "points": 4,
-          "description": "Poor naming, no documentation"
-        },
-        {
-          "label": "Missing",
-          "points": 0,
-          "description": "Unreadable code"
-        }
-      ]
+      "name": "Code Quality and Structure",
+      "points": 15,
+      "description": "Well-organized code with functions or classes, clear documentation, good variable names, and user-friendly interface."
     }
   ]
 }

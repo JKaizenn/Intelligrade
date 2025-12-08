@@ -1,0 +1,116 @@
+{
+  "name": "StudentGrades",
+  "course": "CS 150",
+  "language": "C/Java",
+  "totalPoints": 100,
+  "criteria": [
+    {
+      "name": "Functionality",
+      "maxPoints": 40,
+      "description": "Program correctly calculates statistics for student grades",
+      "levels": [
+        {
+          "label": "Complete",
+          "points": 40,
+          "description": "Correctly calculates average, finds min/max, sorts grades"
+        },
+        {
+          "label": "Mostly Complete",
+          "points": 30,
+          "description": "Most calculations correct, minor bugs"
+        },
+        {
+          "label": "Partial",
+          "points": 18,
+          "description": "Some features work, others have significant bugs"
+        },
+        {
+          "label": "Minimal",
+          "points": 0,
+          "description": "Most features don't work"
+        }
+      ]
+    },
+    {
+      "name": "Array Handling",
+      "maxPoints": 25,
+      "description": "Proper use of arrays and loops",
+      "levels": [
+        {
+          "label": "Excellent",
+          "points": 25,
+          "description": "Efficient array operations, proper bounds checking, no hardcoded sizes"
+        },
+        {
+          "label": "Good",
+          "points": 19,
+          "description": "Correct array usage with minor inefficiencies"
+        },
+        {
+          "label": "Needs Improvement",
+          "points": 10,
+          "description": "Array handling issues, potential out-of-bounds errors"
+        },
+        {
+          "label": "Poor",
+          "points": 0,
+          "description": "Incorrect array usage"
+        }
+      ]
+    },
+    {
+      "name": "Sorting Algorithm",
+      "maxPoints": 20,
+      "description": "Implements correct sorting algorithm",
+      "levels": [
+        {
+          "label": "Excellent",
+          "points": 20,
+          "description": "Correct sorting implementation (bubble, selection, or better)"
+        },
+        {
+          "label": "Good",
+          "points": 15,
+          "description": "Sorting works but inefficient or incorrect edge cases"
+        },
+        {
+          "label": "Needs Improvement",
+          "points": 8,
+          "description": "Sorting has significant bugs"
+        },
+        {
+          "label": "Poor",
+          "points": 0,
+          "description": "No working sorting implementation"
+        }
+      ]
+    },
+    {
+      "name": "Code Quality",
+      "maxPoints": 15,
+      "description": "Organization, comments, and readability",
+      "levels": [
+        {
+          "label": "Excellent",
+          "points": 15,
+          "description": "Well-organized functions, clear comments, good naming"
+        },
+        {
+          "label": "Good",
+          "points": 12,
+          "description": "Decent organization and documentation"
+        },
+        {
+          "label": "Needs Improvement",
+          "points": 6,
+          "description": "Poor organization or lack of comments"
+        },
+        {
+          "label": "Poor",
+          "points": 0,
+          "description": "No organization or documentation"
+        }
+      ]
+    }
+  ]
+}

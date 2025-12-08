@@ -1,131 +1,26 @@
 {
-  "name": "Bank Account Class",
-  "course": "CSE 210",
-  "language": "java",
+  "assignmentName": "Bank Account Management System",
   "totalPoints": 100,
   "criteria": [
     {
-      "name": "Class Design",
-      "maxPoints": 30,
-      "description": "Proper OOP design with encapsulation, constructors, and appropriate access modifiers",
-      "levels": [
-        {
-          "label": "Excellent",
-          "points": 30,
-          "description": "Private fields, public methods, multiple constructors (default + parameterized), proper encapsulation"
-        },
-        {
-          "label": "Good",
-          "points": 24,
-          "description": "Good encapsulation with minor issues (missing constructor overload)"
-        },
-        {
-          "label": "Acceptable",
-          "points": 18,
-          "description": "Basic class structure but encapsulation violations"
-        },
-        {
-          "label": "Poor",
-          "points": 8,
-          "description": "Public fields or major design issues"
-        },
-        {
-          "label": "Missing",
-          "points": 0,
-          "description": "No class or completely incorrect structure"
-        }
-      ]
+      "name": "Object-Oriented Design",
+      "points": 30,
+      "description": "Proper use of classes, encapsulation, and access modifiers. Should have private data members and public methods."
     },
     {
-      "name": "Core Methods",
-      "maxPoints": 35,
-      "description": "deposit(), withdraw(), and getBalance() work correctly",
-      "levels": [
-        {
-          "label": "Complete",
-          "points": 35,
-          "description": "All methods work correctly: deposit adds to balance, withdraw subtracts (with sufficient funds check), getBalance returns current balance"
-        },
-        {
-          "label": "Mostly Correct",
-          "points": 28,
-          "description": "Methods work but missing overdraft protection or minor calculation errors"
-        },
-        {
-          "label": "Partial",
-          "points": 18,
-          "description": "1-2 methods work correctly"
-        },
-        {
-          "label": "Minimal",
-          "points": 8,
-          "description": "Methods exist but have significant bugs"
-        },
-        {
-          "label": "Missing",
-          "points": 0,
-          "description": "No working methods"
-        }
-      ]
+      "name": "Core Functionality",
+      "points": 35,
+      "description": "Correctly implements deposit, withdrawal, and balance display. Account should maintain owner name and balance."
     },
     {
-      "name": "Validation & Error Handling",
-      "maxPoints": 20,
-      "description": "Validates input and handles error conditions appropriately",
-      "levels": [
-        {
-          "label": "Complete",
-          "points": 20,
-          "description": "Rejects negative deposits, prevents overdrafts, validates initial balance, throws or handles exceptions appropriately"
-        },
-        {
-          "label": "Good",
-          "points": 15,
-          "description": "Most validation present but missing some edge cases"
-        },
-        {
-          "label": "Partial",
-          "points": 10,
-          "description": "Basic validation (e.g., overdraft check only)"
-        },
-        {
-          "label": "Missing",
-          "points": 0,
-          "description": "No validation, accepts any input"
-        }
-      ]
+      "name": "Error Handling and Validation",
+      "points": 20,
+      "description": "Validates inputs (no negative deposits/withdrawals), prevents overdrafts, handles edge cases properly."
     },
     {
       "name": "Code Quality",
-      "maxPoints": 15,
-      "description": "Clean code following Java conventions with documentation",
-      "levels": [
-        {
-          "label": "Excellent",
-          "points": 15,
-          "description": "JavaDoc comments, meaningful names, consistent formatting, follows Java naming conventions"
-        },
-        {
-          "label": "Good",
-          "points": 12,
-          "description": "Good quality with minor style issues"
-        },
-        {
-          "label": "Acceptable",
-          "points": 8,
-          "description": "Readable but inconsistent or minimal documentation"
-        },
-        {
-          "label": "Poor",
-          "points": 4,
-          "description": "Hard to read, poor naming, no comments"
-        },
-        {
-          "label": "Missing",
-          "points": 0,
-          "description": "Unreadable code"
-        }
-      ]
+      "points": 15,
+      "description": "Clean code structure, meaningful variable names, proper documentation, and comments. Multi-file organization for compiled languages."
     }
   ]
 }
