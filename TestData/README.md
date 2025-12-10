@@ -83,11 +83,14 @@ Test programs in Python, C++, Java, C, JavaScript, C#, Rust, Go, and Ruby.
 
 ### 2. Interactive Terminal
 Programs that require stdin input:
-- **TodoList** (Python): Menu-driven interactive program
-- **BankAccount** (C++): Account operations with user prompts
-- **StudentGrades** (C): Input student names and scores
+- **TodoList/Good** (Python): Menu-driven interactive program with user input
+- **Calculator/Good** (C++): Menu-driven calculator with user prompts
+- **Calculator/Medium** (C++): Single calculation with user input
+- **Calculator/Bad** (C++): Simple calculator with user input
 
-Test these using the Interactive Terminal feature in IntelliGrade.
+**Note**: BankAccount and StudentGrades programs are fully automated demonstrations that do NOT require interactive input - they run with hardcoded values.
+
+Test interactive programs using the Interactive Terminal feature in IntelliGrade.
 
 ### 3. Multi-File Projects
 The BankAccount C++ project demonstrates multi-file compilation:
