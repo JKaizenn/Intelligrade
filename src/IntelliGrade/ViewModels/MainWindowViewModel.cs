@@ -399,6 +399,51 @@ public partial class MainWindowViewModel : ViewModelBase
         }
     }
 
+    /// <summary>
+    /// Reads all source files in the current directory for the selected language.
+    /// Combines them with clear file separators for AI analysis of multi-file projects.
+    /// </summary>
+    private string GetAllSourceCode()
+    {
+        if (SelectedLanguage == null || string.IsNullOrEmpty(CurrentDirectory))
+            return SourceCode;
+
+        try
+        {
+            var allFiles = _languageDetector.GetSourceFiles(CurrentDirectory, SelectedLanguage);
+
+            // If only one file, return the current source code
+            if (allFiles.Length <= 1)
+                return SourceCode;
+
+            // Combine all source files with clear separators
+            var sb = new System.Text.StringBuilder();
+            sb.AppendLine($"=== MULTI-FILE PROJECT ({allFiles.Length} files) ===");
+            sb.AppendLine("");
+
+            foreach (var file in allFiles)
+            {
+                var fileName = Path.GetFileName(file);
+                var fullPath = Path.Combine(CurrentDirectory, fileName);
+
+                if (File.Exists(fullPath))
+                {
+                    sb.AppendLine($"=== FILE: {fileName} ===");
+                    sb.AppendLine(File.ReadAllText(fullPath));
+                    sb.AppendLine("");
+                }
+            }
+
+            return sb.ToString();
+        }
+        catch (Exception ex)
+        {
+            // If anything fails, fall back to single file
+            StatusMessage = $"Warning: Could not read all files ({ex.Message}), using selected file only";
+            return SourceCode;
+        }
+    }
+
     partial void OnSelectedAssignmentChanged(string? value)
     {
         if (!string.IsNullOrEmpty(value) && SelectedCourse != null && SelectedLanguage != null)
@@ -588,8 +633,11 @@ public partial class MainWindowViewModel : ViewModelBase
                 };
             }
 
+            // Get all source files for multi-file project support
+            var allSourceCode = GetAllSourceCode();
+
             var response = await _ollamaService.AnalyzeWithModeAsync(
-                SourceCode,
+                allSourceCode,
                 rubric,
                 SelectedCourse ?? "Unknown",
                 SelectedAssignment ?? "Unknown",

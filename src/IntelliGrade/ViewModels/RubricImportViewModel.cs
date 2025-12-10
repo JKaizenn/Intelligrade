@@ -103,7 +103,18 @@ public partial class RubricImportViewModel : ViewModelBase
                     AssignmentName = Path.GetFileNameWithoutExtension(file.Name);
                 }
 
-                StatusMessage = "File loaded successfully";
+                // Auto-detect JSON files and uncheck "Convert to JSON" if already JSON
+                var fileName = file.Name.ToLowerInvariant();
+                if (fileName.EndsWith(".json") || IsJsonContent(RubricText))
+                {
+                    ConvertToJson = false;
+                    StatusMessage = "JSON file detected - conversion disabled";
+                }
+                else
+                {
+                    StatusMessage = "File loaded successfully";
+                }
+
                 ClearError();
             }
         }
@@ -142,14 +153,19 @@ public partial class RubricImportViewModel : ViewModelBase
             }
 
             RubricImported?.Invoke(this, EventArgs.Empty);
-            StatusMessage = "Rubric saved successfully!";
 
-            // Clear form
+            // Show success message
+            StatusMessage = $"✓ Rubric '{AssignmentName}' imported successfully!";
+            ClearError();
+
+            // Clear form after short delay to show success message
+            await Task.Delay(100);
             AssignmentName = string.Empty;
             RubricText = string.Empty;
         }
         catch (Exception ex)
         {
+            StatusMessage = string.Empty;
             ShowError($"Failed to save rubric: {ex.Message}");
         }
         finally
@@ -162,27 +178,12 @@ public partial class RubricImportViewModel : ViewModelBase
     {
         StatusMessage = "Converting to JSON format...";
 
-        string? jsonContent = null;
-
-        if (UseAiConversion)
-        {
-            // Try AI conversion first
-            StatusMessage = "Using AI to parse rubric structure...";
-            jsonContent = await _converterService.ConvertToJsonAsync(
-                RubricText,
-                SelectedCourse!,
-                AssignmentName);
-        }
-
-        // Fallback to simple conversion if AI fails
-        if (string.IsNullOrEmpty(jsonContent))
-        {
-            StatusMessage = "Using pattern-based conversion...";
-            jsonContent = _converterService.ConvertSimpleRubric(
-                RubricText,
-                SelectedCourse!,
-                AssignmentName);
-        }
+        // Use pattern-based conversion only
+        StatusMessage = "Converting rubric to JSON...";
+        string? jsonContent = _converterService.ConvertSimpleRubric(
+            RubricText,
+            SelectedCourse!,
+            AssignmentName);
 
         if (string.IsNullOrEmpty(jsonContent))
         {
@@ -272,6 +273,19 @@ public partial class RubricImportViewModel : ViewModelBase
     {
         ErrorMessage = string.Empty;
         HasError = false;
+    }
+
+    /// <summary>
+    /// Checks if the content appears to be JSON format.
+    /// </summary>
+    private bool IsJsonContent(string content)
+    {
+        if (string.IsNullOrWhiteSpace(content))
+            return false;
+
+        var trimmed = content.Trim();
+        return (trimmed.StartsWith("{") && trimmed.EndsWith("}")) ||
+               (trimmed.StartsWith("[") && trimmed.EndsWith("]"));
     }
 
     partial void OnSelectedCourseChanged(string? value)

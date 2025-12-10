@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using IntelliGrade.App.DTOs;
@@ -17,6 +19,12 @@ public partial class CriterionGradeViewModel : ObservableObject
     public Criterion Criterion { get; }
 
     /// <summary>
+    /// Levels sorted from highest to lowest points (for Canvas-style rubric grid).
+    /// </summary>
+    public IEnumerable<CriterionLevel> SortedLevels =>
+        Criterion.Levels.OrderByDescending(l => l.Points);
+
+    /// <summary>
     /// AI's suggested score and reasoning for this criterion.
     /// </summary>
     public AiCriterionSuggestion? AiSuggestion { get; }
@@ -33,6 +41,12 @@ public partial class CriterionGradeViewModel : ObservableObject
     /// </summary>
     [ObservableProperty]
     private string _feedback = string.Empty;
+
+    /// <summary>
+    /// The currently selected rubric level (for visual rubric mode).
+    /// </summary>
+    [ObservableProperty]
+    private CriterionLevel? _selectedLevel;
 
     /// <summary>
     /// Whether the instructor has assigned a score.
@@ -90,5 +104,29 @@ public partial class CriterionGradeViewModel : ObservableObject
         OnPropertyChanged(nameof(IsScored));
         OnPropertyChanged(nameof(MatchesAiSuggestion));
         OnPropertyChanged(nameof(FinalScore));
+
+        // Update selected level if score matches a level
+        if (value.HasValue && SelectedLevel?.Points != value.Value)
+        {
+            SelectedLevel = Criterion.Levels.FirstOrDefault(l => l.Points == value.Value);
+        }
+    }
+
+    partial void OnSelectedLevelChanged(CriterionLevel? value)
+    {
+        // Update instructor score when level is selected
+        if (value != null && InstructorScore != value.Points)
+        {
+            InstructorScore = value.Points;
+        }
+    }
+
+    /// <summary>
+    /// Command to select a specific rubric level.
+    /// </summary>
+    [RelayCommand]
+    private void SelectLevel(CriterionLevel level)
+    {
+        SelectedLevel = level;
     }
 }

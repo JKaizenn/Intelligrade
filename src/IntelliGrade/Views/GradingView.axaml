@@ -451,12 +451,34 @@
                             <!-- Per-Criterion Grading -->
                             <Border Classes="card" Padding="16" IsVisible="{Binding GradingSession, Converter={x:Static converters:ObjectNotNullConverter.Instance}}">
                                 <StackPanel Spacing="16">
-                                    <Grid ColumnDefinitions="*,Auto">
+                                    <Grid ColumnDefinitions="*,Auto,Auto">
                                         <TextBlock Grid.Column="0"
                                                    Text="Per-Criterion Grading"
                                                    FontSize="16"
-                                                   FontWeight="SemiBold"/>
-                                        <Button Grid.Column="1"
+                                                   FontWeight="SemiBold"
+                                                   VerticalAlignment="Center"/>
+
+                                        <!-- Input Mode Toggle -->
+                                        <StackPanel Grid.Column="1"
+                                                   Orientation="Horizontal"
+                                                   Spacing="8"
+                                                   VerticalAlignment="Center"
+                                                   Margin="0,0,12,0">
+                                            <TextBlock Text="Number Input"
+                                                      FontSize="12"
+                                                      VerticalAlignment="Center"
+                                                      Foreground="{DynamicResource TextSecondary}"/>
+                                            <ToggleSwitch IsChecked="{Binding GradingSession.UseVisualRubricMode}"
+                                                        OffContent=""
+                                                        OnContent=""
+                                                        MinWidth="40"/>
+                                            <TextBlock Text="Rubric Grid"
+                                                      FontSize="12"
+                                                      VerticalAlignment="Center"
+                                                      Foreground="{DynamicResource TextSecondary}"/>
+                                        </StackPanel>
+
+                                        <Button Grid.Column="2"
                                                 Content="Apply All AI Suggestions"
                                                 Command="{Binding GradingSession.ApplyAllAiSuggestionsCommand}"
                                                 Classes="secondary"
@@ -526,8 +548,9 @@
                                                             </Grid>
                                                         </Border>
 
-                                                        <!-- Instructor Score Input -->
-                                                        <Grid ColumnDefinitions="Auto,*">
+                                                        <!-- Number Input Mode -->
+                                                        <Grid ColumnDefinitions="Auto,*"
+                                                              IsVisible="{Binding !$parent[ItemsControl].((vm:GradingSessionViewModel)DataContext).UseVisualRubricMode}">
                                                             <TextBlock Grid.Column="0"
                                                                        Text="Your Score:"
                                                                        VerticalAlignment="Center"
@@ -540,6 +563,93 @@
                                                                            FormatString="F0"
                                                                            HorizontalAlignment="Stretch"/>
                                                         </Grid>
+
+                                                        <!-- Visual Rubric Grid Mode (Canvas-style Row/Column) -->
+                                                        <Border IsVisible="{Binding $parent[ItemsControl].((vm:GradingSessionViewModel)DataContext).UseVisualRubricMode}"
+                                                               BorderBrush="#cbd5e1"
+                                                               BorderThickness="1"
+                                                               CornerRadius="4"
+                                                               Margin="0,4,0,0">
+                                                            <!-- Horizontal Grid of Level Buttons (Higher scores on left) -->
+                                                            <ItemsControl ItemsSource="{Binding SortedLevels}">
+                                                                <ItemsControl.ItemsPanel>
+                                                                    <ItemsPanelTemplate>
+                                                                        <UniformGrid Rows="1"/>
+                                                                    </ItemsPanelTemplate>
+                                                                </ItemsControl.ItemsPanel>
+                                                                <ItemsControl.ItemTemplate>
+                                                                    <DataTemplate>
+                                                                        <Button Command="{Binding $parent[ItemsControl].((vm:CriterionGradeViewModel)DataContext).SelectLevelCommand}"
+                                                                               CommandParameter="{Binding}"
+                                                                               HorizontalAlignment="Stretch"
+                                                                               VerticalAlignment="Stretch"
+                                                                               HorizontalContentAlignment="Center"
+                                                                               VerticalContentAlignment="Top"
+                                                                               Padding="8"
+                                                                               Margin="0"
+                                                                               CornerRadius="0"
+                                                                               Background="{DynamicResource InputBackground}"
+                                                                               BorderThickness="0,0,1,0"
+                                                                               BorderBrush="#cbd5e1">
+                                                                            <Button.Styles>
+                                                                                <Style Selector="Button:pointerover">
+                                                                                    <Setter Property="Background" Value="{DynamicResource CardBackgroundAlt}"/>
+                                                                                </Style>
+                                                                                <!-- Selected state styling -->
+                                                                                <Style Selector="Button">
+                                                                                    <Style.Resources>
+                                                                                        <!-- This is a workaround for selection highlighting -->
+                                                                                    </Style.Resources>
+                                                                                </Style>
+                                                                            </Button.Styles>
+                                                                            <StackPanel Spacing="6" MinWidth="80">
+                                                                                <!-- Points Header -->
+                                                                                <Border Background="{DynamicResource AccentColor}"
+                                                                                       CornerRadius="3"
+                                                                                       Padding="6,3"
+                                                                                       HorizontalAlignment="Center">
+                                                                                    <Border.IsVisible>
+                                                                                        <MultiBinding Converter="{x:Static converters:MultiValueEqualityConverter.Instance}">
+                                                                                            <Binding Path="Points"/>
+                                                                                            <Binding Path="$parent[ItemsControl].((vm:CriterionGradeViewModel)DataContext).InstructorScore"/>
+                                                                                        </MultiBinding>
+                                                                                    </Border.IsVisible>
+                                                                                    <TextBlock Text="SELECTED"
+                                                                                              FontSize="9"
+                                                                                              FontWeight="Bold"
+                                                                                              Foreground="White"/>
+                                                                                </Border>
+
+                                                                                <TextBlock FontWeight="Bold"
+                                                                                          FontSize="18"
+                                                                                          HorizontalAlignment="Center">
+                                                                                    <Run Text="{Binding Points}"/>
+                                                                                    <Run Text=" pts" FontSize="11"/>
+                                                                                </TextBlock>
+
+                                                                                <!-- Level Label -->
+                                                                                <TextBlock Text="{Binding Label}"
+                                                                                          FontSize="11"
+                                                                                          FontWeight="SemiBold"
+                                                                                          HorizontalAlignment="Center"
+                                                                                          TextAlignment="Center"
+                                                                                          TextWrapping="Wrap"
+                                                                                          Foreground="{DynamicResource TextSecondary}"/>
+
+                                                                                <!-- Description -->
+                                                                                <TextBlock Text="{Binding Description}"
+                                                                                          FontSize="10"
+                                                                                          TextWrapping="Wrap"
+                                                                                          TextAlignment="Center"
+                                                                                          Foreground="{DynamicResource TextSecondary}"
+                                                                                          MaxHeight="100"
+                                                                                          Margin="0,4,0,0"/>
+                                                                            </StackPanel>
+                                                                        </Button>
+                                                                    </DataTemplate>
+                                                                </ItemsControl.ItemTemplate>
+                                                            </ItemsControl>
+                                                        </Border>
                                                     </StackPanel>
                                                 </Border>
                                             </DataTemplate>

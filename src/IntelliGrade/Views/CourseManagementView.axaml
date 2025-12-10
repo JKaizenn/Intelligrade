@@ -1,6 +1,7 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:IntelliGrade.App.ViewModels"
+        xmlns:converters="using:IntelliGrade.App.Converters"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="500"
@@ -100,7 +101,7 @@
                                 Classes="danger"
                                 HorizontalAlignment="Stretch"
                                 MinHeight="36"
-                                IsEnabled="{Binding SelectedCourse, Converter={x:Static ObjectConverters.IsNotNull}}"/>
+                                IsEnabled="{Binding SelectedCourse, Converter={x:Static converters:ObjectNotNullConverter.Instance}}"/>
                     </Grid>
                 </Border>
 
@@ -125,6 +126,65 @@
                             </TextBlock>
                         </StackPanel>
                     </StackPanel>
+                </Border>
+
+                <!-- Rubric Manager Section -->
+                <Border Grid.Row="2" Grid.ColumnSpan="3" Classes="card" Padding="16" Margin="0,12,0,0">
+                    <Grid RowDefinitions="Auto,12,*,12,Auto">
+                        <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+                            <TextBlock Grid.Column="0"
+                                      Text="Rubric Manager"
+                                      Classes="label"
+                                      FontSize="15"
+                                      VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="1"
+                                      Text="{Binding SelectedCourse, StringFormat='Course: {0}'}"
+                                      Classes="description"
+                                      FontSize="12"
+                                      VerticalAlignment="Center"
+                                      IsVisible="{Binding SelectedCourse, Converter={x:Static converters:ObjectNotNullConverter.Instance}}"/>
+                        </Grid>
+
+                        <!-- Rubrics List -->
+                        <Border Grid.Row="2"
+                               BorderBrush="#cbd5e1"
+                               BorderThickness="1"
+                               CornerRadius="6"
+                               MinHeight="120">
+                            <ListBox ItemsSource="{Binding Rubrics}"
+                                    SelectedItem="{Binding SelectedRubric}">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding DisplayText}"
+                                                  Padding="8,6"
+                                                  FontSize="13"
+                                                  TextWrapping="Wrap"/>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </Border>
+
+                        <!-- Info Message when no course selected -->
+                        <TextBlock Grid.Row="2"
+                                  Text="Select a course above to view and manage its rubrics"
+                                  Classes="description"
+                                  FontSize="12"
+                                  VerticalAlignment="Center"
+                                  HorizontalAlignment="Center"
+                                  IsVisible="{Binding SelectedCourse, Converter={x:Static converters:ObjectNullConverter.Instance}}"
+                                  TextWrapping="Wrap"
+                                  TextAlignment="Center"
+                                  Margin="20"/>
+
+                        <!-- Delete Rubric Button -->
+                        <Button Grid.Row="4"
+                               Content="Delete Selected Rubric"
+                               Command="{Binding DeleteRubricCommand}"
+                               Classes="danger"
+                               HorizontalAlignment="Stretch"
+                               MinHeight="36"
+                               IsEnabled="{Binding SelectedRubric, Converter={x:Static converters:ObjectNotNullConverter.Instance}}"/>
+                    </Grid>
                 </Border>
 
             </Grid>

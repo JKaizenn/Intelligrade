@@ -56,6 +56,12 @@ public partial class GradingSessionViewModel : ObservableObject
     private string _overallFeedback = string.Empty;
 
     /// <summary>
+    /// Whether to use visual rubric selector (true) or number input (false).
+    /// </summary>
+    [ObservableProperty]
+    private bool _useVisualRubricMode = true;
+
+    /// <summary>
     /// Total score across all graded criteria.
     /// </summary>
     public int TotalScore => CriteriaGrades

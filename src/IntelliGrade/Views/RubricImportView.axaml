@@ -1,6 +1,7 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:IntelliGrade.App.ViewModels"
+        xmlns:converters="using:IntelliGrade.App.Converters"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="700"
@@ -112,15 +113,9 @@
                                   Content="Convert to JSON format (recommended)"
                                   FontSize="14"/>
 
-                        <CheckBox IsChecked="{Binding UseAiConversion}"
-                                  IsEnabled="{Binding ConvertToJson}"
-                                  Content="Use AI for intelligent rubric parsing"
-                                  FontSize="14"
-                                  Margin="20,0,0,0"/>
-
                         <TextBlock Classes="description" FontSize="11" TextWrapping="Wrap" Margin="0,4,0,0">
-                            JSON format enables better AI grading and structured analysis. If AI conversion fails,
-                            the program will attempt pattern-based conversion or save as plain text.
+                            JSON format enables better AI grading and structured analysis. The program will use
+                            pattern-based conversion to parse the rubric structure.
                         </TextBlock>
                     </StackPanel>
                 </Border>
@@ -147,21 +142,33 @@
             </StackPanel>
         </ScrollViewer>
 
-        <!-- Footer Buttons -->
-        <Grid Grid.Row="2" Margin="0,24,0,0" MaxWidth="700" HorizontalAlignment="Center">
-            <Grid ColumnDefinitions="*,Auto,Auto">
-                <TextBlock Grid.Column="0"
-                           Text="{Binding StatusMessage}"
-                           VerticalAlignment="Center"
-                           Classes="description"
-                           FontSize="12"
-                           IsVisible="{Binding !IsProcessing}"/>
+        <!-- Footer with Status and Buttons -->
+        <Grid Grid.Row="2" Margin="0,24,0,0" MaxWidth="700" HorizontalAlignment="Center" RowDefinitions="Auto,12,Auto">
 
+            <!-- Status Message Row -->
+            <Border Grid.Row="0"
+                    IsVisible="{Binding !IsProcessing}"
+                    Background="{DynamicResource CardBackgroundAlt}"
+                    Padding="12,8"
+                    CornerRadius="6"
+                    BorderBrush="{DynamicResource AccentColor}"
+                    BorderThickness="1">
+                <TextBlock Text="{Binding StatusMessage}"
+                           FontSize="13"
+                           FontWeight="SemiBold"
+                           TextAlignment="Center"
+                           Foreground="{DynamicResource AccentColor}"
+                           IsVisible="{Binding StatusMessage, Converter={x:Static converters:ObjectNotNullConverter.Instance}}"/>
+            </Border>
+
+            <!-- Buttons Row -->
+            <Grid Grid.Row="2" ColumnDefinitions="*,Auto,Auto">
                 <Button Grid.Column="1"
                         Content="Save Rubric"
                         Command="{Binding SaveRubricCommand}"
                         Classes="primary"
                         Width="120"
+                        MinHeight="36"
                         Margin="0,0,12,0"
                         IsEnabled="{Binding !IsProcessing}"/>
 
@@ -170,6 +177,7 @@
                         Click="CancelButton_Click"
                         Classes="secondary"
                         Width="100"
+                        MinHeight="36"
                         IsEnabled="{Binding !IsProcessing}"/>
             </Grid>
         </Grid>

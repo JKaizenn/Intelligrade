@@ -108,9 +108,9 @@ public class OllamaGradingService : IOllamaGradingService
                 Prompt = prompt,
                 Options = new RequestOptions
                 {
-                    NumPredict = IsSmallModel ? 800 : 1500,
-                    NumCtx = IsSmallModel ? 2048 : 4096,
-                    Temperature = IsSmallModel ? 0.2f : 0.3f,
+                    NumPredict = IsSmallModel ? 1000 : 1500,
+                    NumCtx = IsSmallModel ? 4096 : 8192,
+                    Temperature = 0.3f,
                     TopP = 0.9f,
                     RepeatPenalty = 1.1f
                 }
@@ -203,9 +203,9 @@ public class OllamaGradingService : IOllamaGradingService
             }
         }
 
-        return $@"You are a STRICT grading assistant for {courseName} - {assignmentName}.
+        return $@"You are an objective grading assistant for {courseName} - {assignmentName}.
 
-TASK: Critically analyze student code against rubric criteria. Be thorough and demanding - only award high scores for truly excellent work.
+TASK: Analyze student code against rubric criteria. Award scores based on how well the code matches each rubric level. Be fair and balanced - recognize both strengths and areas for improvement.
 
 === RUBRIC CRITERIA ===
 {criteriaSection}
@@ -214,9 +214,14 @@ TASK: Critically analyze student code against rubric criteria. Be thorough and d
 {sourceCode}
 {outputSection}
 
-=== OUTPUT FORMAT ===
+=== CRITICAL JSON FORMAT RULES ===
 
-Respond with VALID JSON matching this structure:
+1. The ""suggestions"" array must contain ONLY criterion evaluations (one per rubric criterion)
+2. DO NOT include ""summary"" or ""total"" in the suggestions array
+3. Each suggestion must have a ""criterionName"" that EXACTLY matches a criterion name from the rubric above
+4. The ""summary"" field is SEPARATE from suggestions - do not put it inside the array
+
+CORRECT JSON structure:
 
 {{
   ""suggestions"": [
@@ -226,40 +231,38 @@ Respond with VALID JSON matching this structure:
       ""maxPoints"": [max points as integer],
       ""confidence"": ""High"" | ""Medium"" | ""Low"",
       ""ratingLevel"": ""[which level label applies]"",
-      ""reasoning"": ""[2-3 sentences explaining why this score fits]"",
+      ""reasoning"": ""[2-3 sentences explaining why this score fits - mention both what's done well and what's missing]"",
       ""evidence"": [
-        ""[specific code element/line/feature]"",
+        ""[specific code element/line/feature that supports this score]"",
         ""[another piece of evidence]""
       ]
     }}
   ],
   ""recommendedTotal"": [sum of suggested scores],
   ""maxPossible"": {rubric.TotalPoints},
-  ""summary"": ""[2-3 sentences on strengths and improvement areas]"",
+  ""summary"": ""2-3 sentences covering strengths and improvements"",
   ""overallConfidence"": ""High"" | ""Medium"" | ""Low""
 }}
 
-=== CONFIDENCE LEVELS ===
-- High: Clear evidence matching specific rubric level
-- Medium: Evidence present but ambiguous between levels
-- Low: Limited evidence, uncertain assessment
-
-=== CRITICAL GRADING RULES ===
-- Output ONLY valid JSON (no markdown, no explanations)
-- Be STRICT and CRITICAL - perfect scores require perfect code
-- Check for BUGS, ERRORS, and INCORRECT LOGIC
-- Verify code ACTUALLY WORKS CORRECTLY
-- Penalize poor practices: bad names, missing edge cases, inefficiency
-- Award full points ONLY for excellent, bug-free, well-written code
-- Match scores to rubric level descriptions EXACTLY
-- Reference SPECIFIC code problems in evidence
-- Be OBJECTIVE - base on observable code facts
-- Do NOT be lenient - students must EARN high scores";
+=== GRADING GUIDELINES ===
+- Output ONLY valid JSON (no markdown, no explanations outside JSON)
+- IMPORTANT: If you see ""=== FILE: filename ==="" markers in the code section above, your summary MUST start with ""Reviewed: "" followed by the actual filenames separated by commas (e.g., ""Reviewed: BankAccount.h, BankAccount.cpp, main.cpp."")
+- For single-file projects (no file markers), start the summary directly with your analysis
+- Match scores to the rubric level descriptions that best fit the code
+- Check for bugs, errors, and incorrect logic - these significantly lower scores
+- Verify functionality: does the code accomplish its purpose?
+- Evaluate code quality: readability, structure, documentation, error handling
+- Award points proportionally based on which rubric level best matches
+- Start by identifying what the code does WELL, then note shortcomings
+- Be OBJECTIVE and FAIR - base scores on observable facts matched to rubric levels
+- For good code with minor issues: award most points, note improvements
+- For code with major flaws: identify the appropriate lower rubric level
+- Reference SPECIFIC code features (both positive and negative) in evidence";
     }
 
     /// <summary>
     /// Builds a simplified prompt optimized for small language models (1b-3b parameters).
-    /// Reduces token count by omitting detailed level descriptions.
+    /// Includes essential rubric levels for accurate scoring while staying concise.
     /// </summary>
     private static string BuildLiteGradingPrompt(
         string sourceCode,
@@ -272,9 +275,25 @@ Respond with VALID JSON matching this structure:
             ? $"\n\nOUTPUT:\n{string.Join("\n", outputContents.Take(500))}"
             : "";
 
-        // Simplified criteria list - just names and max points
-        var criteriaList = string.Join("\n", rubric.Criteria.Select(c =>
-            $"- {c.Name}: {c.MaxPoints} points"));
+        // Build simplified criteria with point ranges for guidance
+        var criteriaSection = new StringBuilder();
+        foreach (var criterion in rubric.Criteria)
+        {
+            criteriaSection.AppendLine($"\nCriterion: \"{criterion.Name}\" - Max: {criterion.MaxPoints} pts");
+            if (criterion.Levels.Count > 0)
+            {
+                // Show score ranges from levels for guidance
+                var highLevel = criterion.Levels.OrderByDescending(l => l.Points).First();
+                var lowLevel = criterion.Levels.OrderBy(l => l.Points).First();
+                criteriaSection.AppendLine($"  Full ({highLevel.Points} pts): {highLevel.Description}");
+                if (criterion.Levels.Count > 2)
+                {
+                    var midLevel = criterion.Levels.OrderByDescending(l => l.Points).Skip(1).First();
+                    criteriaSection.AppendLine($"  Partial ({midLevel.Points} pts): {midLevel.Description}");
+                }
+                criteriaSection.AppendLine($"  Minimal ({lowLevel.Points} pts): {lowLevel.Description}");
+            }
+        }
 
         // Truncate source code if too long (keep first 150 lines)
         var codeLines = sourceCode.Split('\n');
@@ -282,29 +301,43 @@ Respond with VALID JSON matching this structure:
             ? string.Join("\n", codeLines.Take(150)) + "\n... (truncated)"
             : sourceCode;
 
-        return $@"STRICTLY grade this {courseName} {assignmentName} code. Be critical and demanding.
+        return $@"Grade this {courseName} {assignmentName} code objectively using the rubric below.
 
-CRITERIA (Total: {rubric.TotalPoints} points):
-{criteriaList}
+RUBRIC (Total {rubric.TotalPoints} points):
+{criteriaSection}
 
 CODE:
 {truncatedCode}
 {outputSection}
 
-GRADING RULES:
-- Check for BUGS and ERRORS first
-- Verify code WORKS CORRECTLY
-- Only award high scores for EXCELLENT code
-- Penalize mistakes, bad practices, missing logic
-- Be STRICT - students must EARN points
+CRITICAL JSON RULES:
+1. The ""scores"" array must have ONLY criterion entries (one per rubric criterion above)
+2. DO NOT put ""summary"" or ""total"" inside the scores array
+3. Use the EXACT criterion name in quotes (e.g., ""Object-Oriented Design"" NOT ""Object-Oriented Design (max 30 pts)"")
+4. Score must be a single NUMBER, not an array
+5. ""summary"" and ""total"" are SEPARATE fields outside the array
 
-Respond with JSON only:
+GRADING STEPS:
+1. For each criterion, identify which rubric level best matches the code
+2. Check if code works correctly (bugs/errors lower the score significantly)
+3. Evaluate quality: structure, documentation, error handling
+4. Award full points if code matches the full points description
+5. Award partial points if code matches a lower level description
+6. Note both what's done well and what's missing
+
+IMPORTANT - File Listing in Summary:
+- If you see ""=== FILE: filename ==="" markers in the code above, extract those actual filenames
+- Start your summary with ""Reviewed: filename1, filename2, filename3."" using the ACTUAL filenames you found
+- For single-file projects (no file markers), skip the ""Reviewed:"" prefix
+
+Example for multi-file project:
 {{
   ""scores"": [
-    {{""criterion"": ""[name]"", ""score"": [points], ""reason"": ""[why this score - mention any bugs/issues]""}}
+    {{""criterion"": ""Object-Oriented Design"", ""score"": 25, ""reason"": ""Has classes and methods but lacks encapsulation""}},
+    {{""criterion"": ""Core Functionality"", ""score"": 30, ""reason"": ""Most features work correctly with minor bugs""}}
   ],
-  ""total"": [sum],
-  ""summary"": ""[mention strengths AND problems found]""
+  ""total"": 55,
+  ""summary"": ""Reviewed: BankAccount.h, BankAccount.cpp, main.cpp. Good structure with proper OOP separation, needs better error handling in edge cases.""
 }}";
     }
 
@@ -317,42 +350,109 @@ Respond with JSON only:
         try
         {
             // Extract JSON from response (AI might wrap it in markdown code blocks)
-            // First try to extract from markdown code blocks
-            var markdownMatch = Regex.Match(aiText, @"```(?:json)?\s*(\{[\s\S]*?\})\s*```", RegexOptions.Multiline);
-
-            if (markdownMatch.Success && markdownMatch.Groups.Count > 1)
+            // First, strip markdown code fences if present
+            var strippedText = aiText;
+            if (aiText.Contains("```"))
             {
-                extractedJson = markdownMatch.Groups[1].Value;
-            }
-            else
-            {
-                // Use brace-balanced extraction to find complete JSON object
-                extractedJson = ExtractJsonObject(aiText);
-                if (extractedJson == null)
-                    return null;
+                // Remove markdown code fences but keep the content
+                strippedText = Regex.Replace(aiText, @"```(?:json)?\s*", "", RegexOptions.Multiline);
+                strippedText = Regex.Replace(strippedText, @"\s*```", "", RegexOptions.Multiline);
             }
 
-            var options = new JsonSerializerOptions
+            // Use brace-balanced extraction to find complete JSON object
+            extractedJson = ExtractJsonObject(strippedText);
+            if (extractedJson == null)
+                return null;
+
+            // Parse JSON manually to handle potentially malformed suggestions
+            using var doc = JsonDocument.Parse(extractedJson);
+            var root = doc.RootElement;
+
+            var validCriteriaNames = new HashSet<string>(
+                rubric.Criteria.Select(c => c.Name),
+                StringComparer.OrdinalIgnoreCase
+            );
+
+            var suggestions = new List<AiCriterionSuggestion>();
+
+            // Manually parse suggestions array to skip invalid entries
+            if (root.TryGetProperty("suggestions", out var suggestionsArray))
             {
-                PropertyNameCaseInsensitive = true,
-                AllowTrailingCommas = true,
-                Converters = { new System.Text.Json.Serialization.JsonStringEnumConverter(namingPolicy: null, allowIntegerValues: true) }
+                foreach (var item in suggestionsArray.EnumerateArray())
+                {
+                    try
+                    {
+                        // Check if has required criterionName field and it's valid
+                        if (!item.TryGetProperty("criterionName", out var nameEl))
+                            continue;
+
+                        var criterionName = nameEl.GetString();
+                        if (string.IsNullOrEmpty(criterionName) || !validCriteriaNames.Contains(criterionName))
+                            continue;
+
+                        // Parse required fields
+                        var suggestedScore = item.TryGetProperty("suggestedScore", out var scoreEl)
+                            ? scoreEl.GetInt32() : 0;
+                        var maxPoints = item.TryGetProperty("maxPoints", out var maxEl)
+                            ? maxEl.GetInt32() : rubric.Criteria.FirstOrDefault(c => c.Name.Equals(criterionName, StringComparison.OrdinalIgnoreCase))?.MaxPoints ?? 0;
+                        var confidence = item.TryGetProperty("confidence", out var confEl)
+                            ? Enum.TryParse<AiConfidence>(confEl.GetString(), true, out var conf) ? conf : AiConfidence.Medium
+                            : AiConfidence.Medium;
+                        var ratingLevel = item.TryGetProperty("ratingLevel", out var ratingEl)
+                            ? ratingEl.GetString() ?? "Unknown" : "Unknown";
+                        var reasoning = item.TryGetProperty("reasoning", out var reasonEl)
+                            ? reasonEl.GetString() ?? "" : "";
+
+                        var evidence = new List<string>();
+                        if (item.TryGetProperty("evidence", out var evidenceEl) && evidenceEl.ValueKind == JsonValueKind.Array)
+                        {
+                            foreach (var ev in evidenceEl.EnumerateArray())
+                            {
+                                var evText = ev.GetString();
+                                if (!string.IsNullOrEmpty(evText))
+                                    evidence.Add(evText);
+                            }
+                        }
+
+                        suggestions.Add(new AiCriterionSuggestion
+                        {
+                            CriterionName = criterionName,
+                            SuggestedScore = suggestedScore,
+                            MaxPoints = maxPoints,
+                            Confidence = confidence,
+                            RatingLevel = ratingLevel,
+                            Reasoning = reasoning,
+                            Evidence = evidence
+                        });
+                    }
+                    catch
+                    {
+                        // Skip this suggestion if it can't be parsed
+                        continue;
+                    }
+                }
+            }
+
+            if (suggestions.Count == 0)
+                return null;
+
+            // Parse other fields
+            var recommendedTotal = suggestions.Sum(s => s.SuggestedScore);
+            var summary = root.TryGetProperty("summary", out var summaryEl)
+                ? summaryEl.GetString() ?? "" : "";
+            var overallConfidence = root.TryGetProperty("overallConfidence", out var overallConfEl)
+                ? Enum.TryParse<AiConfidence>(overallConfEl.GetString(), true, out var oconf) ? oconf : AiConfidence.Medium
+                : AiConfidence.Medium;
+
+            return new AiGradingResponse
+            {
+                Success = true,
+                Suggestions = suggestions,
+                RecommendedTotal = recommendedTotal,
+                MaxPossible = rubric.TotalPoints,
+                Summary = summary,
+                OverallConfidence = overallConfidence
             };
-
-            var response = JsonSerializer.Deserialize<AiGradingResponse>(extractedJson, options);
-            if (response == null)
-                return null;
-
-            // Check if suggestions were actually parsed
-            if (response.Suggestions == null || response.Suggestions.Count == 0)
-            {
-                return null;
-            }
-
-            // Recalculate total from suggestions to fix any AI miscalculation
-            response.RecommendedTotal = response.Suggestions.Sum(s => s.SuggestedScore);
-            response.Success = true;
-            return response;
         }
         catch (Exception ex)
         {
@@ -430,6 +530,12 @@ Respond with JSON only:
     {
         var suggestions = new List<AiCriterionSuggestion>();
 
+        // Build set of valid criterion names for validation
+        var validCriteriaNames = new HashSet<string>(
+            rubric.Criteria.Select(c => c.Name),
+            StringComparer.OrdinalIgnoreCase
+        );
+
         // Parse each criterion section
         var criterionPattern = @"CRITERION:\s*(.+?)\s*\n.*?SUGGESTED SCORE:\s*(\d+)/(\d+).*?\n.*?RATING LEVEL:\s*(.+?)\s*\n.*?REASONING:\s*(.+?)(?=\nEVIDENCE:|CRITERION:|RECOMMENDED TOTAL:|$)";
         var matches = Regex.Matches(aiText, criterionPattern, RegexOptions.Singleline | RegexOptions.IgnoreCase);
@@ -437,6 +543,11 @@ Respond with JSON only:
         foreach (Match match in matches)
         {
             var criterionName = match.Groups[1].Value.Trim();
+
+            // Skip invalid criterion names (e.g., "Summary", "Total")
+            if (!validCriteriaNames.Contains(criterionName))
+                continue;
+
             var score = int.Parse(match.Groups[2].Value);
             var maxPoints = int.Parse(match.Groups[3].Value);
             var ratingLevel = match.Groups[4].Value.Trim();
@@ -465,9 +576,8 @@ Respond with JSON only:
             });
         }
 
-        // Extract total and summary
-        var totalMatch = Regex.Match(aiText, @"RECOMMENDED TOTAL:\s*(\d+)", RegexOptions.IgnoreCase);
-        var recommendedTotal = totalMatch.Success ? int.Parse(totalMatch.Groups[1].Value) : suggestions.Sum(s => s.SuggestedScore);
+        // Filter and recalculate total from valid suggestions only
+        var recommendedTotal = suggestions.Sum(s => s.SuggestedScore);
 
         var summaryMatch = Regex.Match(aiText, @"SUMMARY:\s*(.+?)(?=\n===|$)", RegexOptions.Singleline | RegexOptions.IgnoreCase);
         var summary = summaryMatch.Success ? summaryMatch.Groups[1].Value.Trim() : "AI grading analysis completed.";
@@ -490,7 +600,15 @@ Respond with JSON only:
     {
         try
         {
-            var extractedJson = ExtractJsonObject(aiText);
+            // Strip markdown code fences if present
+            var strippedText = aiText;
+            if (aiText.Contains("```"))
+            {
+                strippedText = Regex.Replace(aiText, @"```(?:json)?\s*", "", RegexOptions.Multiline);
+                strippedText = Regex.Replace(strippedText, @"\s*```", "", RegexOptions.Multiline);
+            }
+
+            var extractedJson = ExtractJsonObject(strippedText);
             if (extractedJson == null)
                 return null;
 
@@ -499,11 +617,21 @@ Respond with JSON only:
 
             var suggestions = new List<AiCriterionSuggestion>();
 
+            // Build set of valid criterion names for validation
+            var validCriteriaNames = new HashSet<string>(
+                rubric.Criteria.Select(c => c.Name),
+                StringComparer.OrdinalIgnoreCase
+            );
+
             if (root.TryGetProperty("scores", out var scoresElement))
             {
                 foreach (var scoreItem in scoresElement.EnumerateArray())
                 {
                     var criterionName = scoreItem.GetProperty("criterion").GetString() ?? "";
+
+                    // Skip invalid criterion names (e.g., "summary", "total", etc.)
+                    if (!validCriteriaNames.Contains(criterionName))
+                        continue;
 
                     // Handle score as either number or array
                     int score = 0;
@@ -524,7 +652,7 @@ Respond with JSON only:
                         ? reasonEl.GetString() ?? ""
                         : "";
 
-                    // Find matching criterion from rubric
+                    // Find matching criterion from rubric (we know it exists from validation above)
                     var criterion = rubric.Criteria.FirstOrDefault(c =>
                         c.Name.Equals(criterionName, StringComparison.OrdinalIgnoreCase));
 
@@ -540,6 +668,10 @@ Respond with JSON only:
                     });
                 }
             }
+
+            // Ensure we have at least some valid suggestions
+            if (suggestions.Count == 0)
+                return null;
 
             var summary = root.TryGetProperty("summary", out var summaryEl)
                 ? summaryEl.GetString() ?? ""
@@ -651,8 +783,16 @@ Respond with JSON only:
 
             var aiText = response.ToString();
 
+            // Strip markdown code fences if present
+            var strippedText = aiText;
+            if (aiText.Contains("```"))
+            {
+                strippedText = Regex.Replace(aiText, @"```(?:json)?\s*", "", RegexOptions.Multiline);
+                strippedText = Regex.Replace(strippedText, @"\s*```", "", RegexOptions.Multiline);
+            }
+
             // Try to parse JSON response
-            var extractedJson = ExtractJsonObject(aiText);
+            var extractedJson = ExtractJsonObject(strippedText);
             if (extractedJson == null)
                 return null;
 
