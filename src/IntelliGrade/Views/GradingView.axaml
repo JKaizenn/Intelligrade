@@ -687,7 +687,7 @@
 
                                                         <!-- Number Input Mode -->
                                                         <Grid ColumnDefinitions="Auto,*"
-                                                              IsVisible="{Binding !$parent[ItemsControl].((vm:GradingSessionViewModel)DataContext).UseVisualRubricMode}">
+                                                              IsVisible="{Binding !$parent[UserControl].((vm:MainWindowViewModel)DataContext).GradingSession.UseVisualRubricMode}">
                                                             <TextBlock Grid.Column="0"
                                                                        Text="Your Score:"
                                                                        VerticalAlignment="Center"
@@ -702,7 +702,7 @@
                                                         </Grid>
 
                                                         <!-- Visual Rubric Grid Mode (Canvas-style Row/Column) -->
-                                                        <Border IsVisible="{Binding $parent[ItemsControl].((vm:GradingSessionViewModel)DataContext).UseVisualRubricMode}"
+                                                        <Border IsVisible="{Binding $parent[UserControl].((vm:MainWindowViewModel)DataContext).GradingSession.UseVisualRubricMode}"
                                                                BorderBrush="#cbd5e1"
                                                                BorderThickness="1"
                                                                CornerRadius="4"

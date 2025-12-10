@@ -946,7 +946,20 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
             }
             else
             {
-                AiAnalysis = $"Analysis failed: {response.ErrorMessage}";
+                // Show user-friendly error message for JSON parse errors
+                if (response.ErrorMessage?.Contains("JSON parse") == true)
+                {
+                    AiAnalysis = "Analysis failed: AI generated an invalid response.\n\n" +
+                                "This sometimes happens with AI models. Please try:\n" +
+                                "1. Click 'Analyze with AI' again to retry\n" +
+                                "2. Try a different analysis mode (Quick/Balanced/Thorough)\n" +
+                                "3. Ensure Ollama is running: ollama serve\n\n" +
+                                $"Technical details: {response.ErrorMessage}";
+                }
+                else
+                {
+                    AiAnalysis = $"Analysis failed: {response.ErrorMessage}";
+                }
             }
 
             var advancedInfo = response.AdvancedAnalysis != null
@@ -1270,7 +1283,7 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
                     Language = SelectedLanguage?.DisplayName,
                     SourceFile = SelectedSourceFile,
                     InstructorFeedback,
-                    ProgramOutput,
+                    ProgramOutput = CleanOutputForExport(ProgramOutput),
                     AiAnalysis,
                     Timestamp = DateTime.Now
                 };
@@ -1337,6 +1350,29 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
     private static string Escape(string? value)
     {
         return value?.Replace("\"", "\"\"") ?? "";
+    }
+
+    /// <summary>
+    /// Cleans program output for export by removing box-drawing characters and excessive whitespace.
+    /// </summary>
+    private static string CleanOutputForExport(string? output)
+    {
+        if (string.IsNullOrEmpty(output))
+            return string.Empty;
+
+        // Remove box-drawing characters (U+2500-U+257F)
+        var cleaned = System.Text.RegularExpressions.Regex.Replace(output, @"[\u2500-\u257F]+", "");
+
+        // Remove ANSI escape codes
+        cleaned = System.Text.RegularExpressions.Regex.Replace(cleaned, @"\x1B\[[0-9;]*[a-zA-Z]", "");
+
+        // Replace multiple consecutive newlines with maximum of 2
+        cleaned = System.Text.RegularExpressions.Regex.Replace(cleaned, @"\n{3,}", "\n\n");
+
+        // Trim leading/trailing whitespace
+        cleaned = cleaned.Trim();
+
+        return cleaned;
     }
 
     /// <summary>
