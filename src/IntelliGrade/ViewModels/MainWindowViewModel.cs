@@ -95,9 +95,11 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
         : new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#ef4444")); // Red
 
     /// <summary>
-    /// Returns true if AI analysis can run (not processing and file is selected).
+    /// Returns true if AI analysis can run (not processing, file is selected, and rubric is selected).
     /// </summary>
-    public bool CanRunAnalysis => !IsProcessing && !string.IsNullOrEmpty(SelectedSourceFile);
+    public bool CanRunAnalysis => !IsProcessing &&
+                                   !string.IsNullOrEmpty(SelectedSourceFile) &&
+                                   !string.IsNullOrEmpty(SelectedAssignment);
 
     public MainWindowViewModel()
     {
@@ -527,6 +529,7 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
 
     partial void OnSelectedAssignmentChanged(string? value)
     {
+        OnPropertyChanged(nameof(CanRunAnalysis));
         if (!string.IsNullOrEmpty(value) && SelectedCourse != null && SelectedLanguage != null)
         {
             RunInBackground(LoadRubricAsync());
