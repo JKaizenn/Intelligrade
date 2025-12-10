@@ -19,7 +19,7 @@ If you encounter a bug, please [open an issue](https://github.com/JKaizenn/Intel
 5. **Environment details**:
    - Operating System (macOS, Windows, Linux)
    - .NET version (`dotnet --version`)
-   - IntelliGrade version (v0.9.0-beta)
+   - IntelliGrade version (v1.0-beta)
 6. **Screenshots** - If applicable
 
 ### Feature Suggestions
