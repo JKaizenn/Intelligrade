@@ -1,0 +1,100 @@
+name: Build macOS App
+
+on:
+  release:
+    types: [created]
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  build-macos:
+    runs-on: macos-14  # macOS Sonoma with Apple Silicon
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '10.0.x'
+
+    - name: Import Code Signing Certificate
+      if: secrets.MACOS_CERTIFICATE
+      env:
+        CERTIFICATE_BASE64: ${{ secrets.MACOS_CERTIFICATE }}
+        CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CERTIFICATE_PASSWORD }}
+      run: |
+        echo "🔐 Setting up code signing certificate..."
+
+        # Create temporary keychain
+        KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+        KEYCHAIN_PASSWORD=$(openssl rand -base64 32)
+
+        # Create keychain
+        security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+        security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+        security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+
+        # Import certificate
+        echo "$CERTIFICATE_BASE64" | base64 --decode > certificate.p12
+        security import certificate.p12 -k "$KEYCHAIN_PATH" -P "$CERTIFICATE_PASSWORD" -T /usr/bin/codesign
+        security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+
+        # Add keychain to search list
+        security list-keychain -d user -s "$KEYCHAIN_PATH"
+
+        # Cleanup certificate file
+        rm certificate.p12
+
+        echo "✅ Certificate imported successfully"
+
+    - name: Setup Notarization Credentials
+      if: secrets.APPLE_ID && secrets.MACOS_CERTIFICATE
+      env:
+        APPLE_ID: ${{ secrets.APPLE_ID }}
+        APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        APPLE_APP_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
+      run: |
+        echo "🍎 Setting up notarization credentials..."
+
+        # Store notarization credentials
+        xcrun notarytool store-credentials "notarization-profile" \
+          --apple-id "$APPLE_ID" \
+          --team-id "$APPLE_TEAM_ID" \
+          --password "$APPLE_APP_PASSWORD"
+
+        echo "✅ Notarization credentials configured"
+
+    - name: Build macOS App
+      run: |
+        chmod +x scripts/build-macos.sh
+
+        if [ -n "${{ secrets.MACOS_CERTIFICATE }}" ]; then
+          echo "🔨 Building with code signing..."
+        else
+          echo "🔨 Building without code signing (will show warnings when distributed)..."
+        fi
+
+        ./scripts/build-macos.sh
+
+    - name: Upload DMG
+      uses: actions/upload-artifact@v4
+      with:
+        name: IntelliGrade-macOS
+        path: IntelliGrade-v0.9.0-beta-macOS.dmg
+
+    - name: Upload to Release
+      if: github.event_name == 'release'
+      uses: softprops/action-gh-release@v1
+      with:
+        files: IntelliGrade-v0.9.0-beta-macOS.dmg
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Cleanup Keychain
+      if: always()
+      run: |
+        KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+        if [ -f "$KEYCHAIN_PATH" ]; then
+          security delete-keychain "$KEYCHAIN_PATH"
+        fi
