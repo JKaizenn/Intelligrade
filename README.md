@@ -21,8 +21,8 @@ Desktop application for quickly running and grading student code with local AI a
 
 Download the installer for your platform from [Releases](https://github.com/JKaizenn/Intelligrade/releases):
 
-- **macOS**: `IntelliGrade-v0.9.0-beta-macOS.dmg`
-- **Windows**: `IntelliGrade-v0.9.0-beta-Windows-Setup.exe`
+- **macOS**: `IntelliGrade-v1.0.0-beta-macOS.dmg`
+- **Windows**: `IntelliGrade-v1.0.0-beta-Windows-Setup.exe`
 
 No .NET installation required. Installers are self-contained.
 
