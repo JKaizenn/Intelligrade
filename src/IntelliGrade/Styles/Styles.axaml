@@ -239,6 +239,7 @@
 
     <Style Selector="TextBox.code">
         <Setter Property="FontFamily" Value="Consolas, Courier New, monospace"/>
+        <Setter Property="FontSize" Value="13"/>
         <Setter Property="Background" Value="{DynamicResource CodeBackground}"/>
         <Setter Property="Foreground" Value="{DynamicResource CodeText}"/>
         <Setter Property="BorderBrush" Value="{DynamicResource CodeBorder}"/>

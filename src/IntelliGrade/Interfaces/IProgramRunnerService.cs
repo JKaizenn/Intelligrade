@@ -66,28 +66,32 @@ public class InteractiveProcess : IDisposable
 
     /// <summary>
     /// Sends a line of input to the running program.
+    /// Thread-safe with proper exception handling for race conditions.
     /// </summary>
     public async Task SendInputAsync(string input)
     {
-        lock (_lock)
-        {
-            if (_disposed || _process.HasExited)
-                return;
-        }
+        // Quick check before attempting write (optimization only)
+        if (_disposed || _process.HasExited)
+            return;
 
         try
         {
             await _process.StandardInput.WriteLineAsync(input);
             await _process.StandardInput.FlushAsync();
         }
-        catch (InvalidOperationException ex)
+        catch (ObjectDisposedException ex)
         {
-            // Process has terminated or stdin is not redirected
+            // Process or stream was disposed
             System.Diagnostics.Debug.WriteLine($"Failed to send input: {ex.Message}");
         }
         catch (System.IO.IOException ex)
         {
             // Pipe is broken (process terminated)
+            System.Diagnostics.Debug.WriteLine($"Failed to send input: {ex.Message}");
+        }
+        catch (InvalidOperationException ex)
+        {
+            // Process has terminated or stdin is not redirected
             System.Diagnostics.Debug.WriteLine($"Failed to send input: {ex.Message}");
         }
     }

@@ -41,7 +41,7 @@ public class LocalStorageService : ILocalStorageService
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error saving to local storage: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"Error saving to local storage: {ex.Message}");
         }
     }
 
@@ -61,7 +61,7 @@ public class LocalStorageService : ILocalStorageService
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error reading from local storage: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"Error reading from local storage: {ex.Message}");
         }
 
         return defaultValue;
@@ -80,7 +80,7 @@ public class LocalStorageService : ILocalStorageService
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error removing from local storage: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"Error removing from local storage: {ex.Message}");
         }
     }
 
@@ -98,7 +98,7 @@ public class LocalStorageService : ILocalStorageService
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error clearing local storage: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"Error clearing local storage: {ex.Message}");
         }
 
         await Task.CompletedTask;
@@ -125,10 +125,24 @@ public class LocalStorageService : ILocalStorageService
 
     private async Task SaveSettingsAsync(Dictionary<string, string> settings)
     {
-        var json = JsonSerializer.Serialize(settings, new JsonSerializerOptions
+        try
         {
-            WriteIndented = true
-        });
-        await File.WriteAllTextAsync(_settingsFile, json);
+            var json = JsonSerializer.Serialize(settings, new JsonSerializerOptions
+            {
+                WriteIndented = true
+            });
+
+            // Atomic write: write to temp file, then replace
+            var tempFile = _settingsFile + ".tmp";
+            await File.WriteAllTextAsync(tempFile, json);
+
+            // Replace atomically (overwrites existing file)
+            File.Move(tempFile, _settingsFile, overwrite: true);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error saving settings: {ex.Message}");
+            throw; // Re-throw to let caller know save failed
+        }
     }
 }

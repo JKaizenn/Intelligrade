@@ -1,0 +1,116 @@
+{
+  "name": "Bank Account Management System",
+  "course": "CS 201",
+  "language": "C++/Java",
+  "totalPoints": 100,
+  "criteria": [
+    {
+      "name": "Object-Oriented Design",
+      "maxPoints": 30,
+      "description": "Proper use of classes, encapsulation, and access modifiers",
+      "levels": [
+        {
+          "label": "Excellent",
+          "points": 30,
+          "description": "Complete OOP design with proper encapsulation, private data members, public methods, constructors, and getters/setters where appropriate"
+        },
+        {
+          "label": "Good",
+          "points": 23,
+          "description": "Good use of classes with minor encapsulation issues or missing some access modifiers"
+        },
+        {
+          "label": "Needs Improvement",
+          "points": 12,
+          "description": "Basic class structure but poor encapsulation, public data members, or missing key OOP principles"
+        },
+        {
+          "label": "Poor",
+          "points": 0,
+          "description": "No OOP design, procedural code, or all code in main function"
+        }
+      ]
+    },
+    {
+      "name": "Core Functionality",
+      "maxPoints": 35,
+      "description": "Implements deposit, withdrawal, and balance operations correctly",
+      "levels": [
+        {
+          "label": "Complete",
+          "points": 35,
+          "description": "All operations work correctly: deposit adds money, withdraw removes money, balance displays correctly, maintains owner name"
+        },
+        {
+          "label": "Mostly Complete",
+          "points": 26,
+          "description": "Most operations work with minor bugs in edge cases or one operation partially working"
+        },
+        {
+          "label": "Partial",
+          "points": 14,
+          "description": "Some operations work but significant bugs in deposit, withdraw, or balance tracking"
+        },
+        {
+          "label": "Minimal",
+          "points": 0,
+          "description": "Most or all operations don't work correctly"
+        }
+      ]
+    },
+    {
+      "name": "Error Handling and Validation",
+      "maxPoints": 20,
+      "description": "Validates inputs and handles errors appropriately",
+      "levels": [
+        {
+          "label": "Comprehensive",
+          "points": 20,
+          "description": "Prevents negative deposits/withdrawals, prevents overdrafts, validates all inputs with clear error messages"
+        },
+        {
+          "label": "Good",
+          "points": 15,
+          "description": "Handles most error cases but missing some validations or error messages"
+        },
+        {
+          "label": "Basic",
+          "points": 8,
+          "description": "Minimal error handling, some invalid operations allowed, or program crashes on bad input"
+        },
+        {
+          "label": "None",
+          "points": 0,
+          "description": "No error handling or validation"
+        }
+      ]
+    },
+    {
+      "name": "Code Quality",
+      "maxPoints": 15,
+      "description": "Code organization, documentation, and naming conventions",
+      "levels": [
+        {
+          "label": "Excellent",
+          "points": 15,
+          "description": "Clean code structure, meaningful variable names, proper comments and documentation, multi-file organization for compiled languages"
+        },
+        {
+          "label": "Good",
+          "points": 12,
+          "description": "Good organization and naming with minor issues in documentation or file structure"
+        },
+        {
+          "label": "Needs Improvement",
+          "points": 6,
+          "description": "Poor naming conventions, minimal documentation, or poor file organization"
+        },
+        {
+          "label": "Poor",
+          "points": 0,
+          "description": "No documentation, unclear variable names, or disorganized code"
+        }
+      ]
+    }
+  ]
+}

@@ -30,7 +30,7 @@
 
         <!-- Content with ScrollViewer for small screens -->
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-            <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,12,*" Margin="0,0,8,0">
+            <Grid RowDefinitions="Auto,12,Auto,12,Auto" ColumnDefinitions="*,12,*" Margin="0,0,8,0">
 
                 <!-- Add Course Section -->
                 <Border Grid.Row="0" Grid.Column="0" Classes="card" Padding="16">
@@ -82,17 +82,20 @@
                                 BorderThickness="1"
                                 CornerRadius="6"
                                 MinHeight="150">
-                            <ListBox ItemsSource="{Binding Courses}"
-                                     SelectedItem="{Binding SelectedCourse}">
-                                <ListBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding}"
-                                                   Padding="8,6"
-                                                   FontSize="13"
-                                                   TextWrapping="Wrap"/>
-                                    </DataTemplate>
-                                </ListBox.ItemTemplate>
-                            </ListBox>
+                            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                <ListBox ItemsSource="{Binding Courses}"
+                                         SelectedItem="{Binding SelectedCourse}"
+                                         Background="Transparent">
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding}"
+                                                       Padding="8,6"
+                                                       FontSize="13"
+                                                       TextWrapping="Wrap"/>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+                            </ScrollViewer>
                         </Border>
 
                         <Button Grid.Row="4"
@@ -106,7 +109,7 @@
                 </Border>
 
                 <!-- Info Section -->
-                <Border Grid.Row="2" Grid.Column="0" Classes="card" Padding="16" Margin="0,12,0,0">
+                <Border Grid.Row="2" Grid.Column="0" Classes="card" Padding="16">
                     <StackPanel Spacing="10">
                         <TextBlock Text="Guidelines"
                                    Classes="label"
@@ -129,7 +132,7 @@
                 </Border>
 
                 <!-- Rubric Manager Section -->
-                <Border Grid.Row="2" Grid.ColumnSpan="3" Classes="card" Padding="16" Margin="0,12,0,0">
+                <Border Grid.Row="4" Grid.ColumnSpan="3" Classes="card" Padding="16">
                     <Grid RowDefinitions="Auto,12,*,12,Auto">
                         <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
                             <TextBlock Grid.Column="0"
@@ -150,18 +153,22 @@
                                BorderBrush="#cbd5e1"
                                BorderThickness="1"
                                CornerRadius="6"
-                               MinHeight="120">
-                            <ListBox ItemsSource="{Binding Rubrics}"
-                                    SelectedItem="{Binding SelectedRubric}">
-                                <ListBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding DisplayText}"
-                                                  Padding="8,6"
-                                                  FontSize="13"
-                                                  TextWrapping="Wrap"/>
-                                    </DataTemplate>
-                                </ListBox.ItemTemplate>
-                            </ListBox>
+                               MinHeight="120"
+                               MaxHeight="200">
+                            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                <ListBox ItemsSource="{Binding Rubrics}"
+                                        SelectedItem="{Binding SelectedRubric}"
+                                        Background="Transparent">
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding DisplayText}"
+                                                      Padding="8,6"
+                                                      FontSize="13"
+                                                      TextWrapping="Wrap"/>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+                            </ScrollViewer>
                         </Border>
 
                         <!-- Info Message when no course selected -->

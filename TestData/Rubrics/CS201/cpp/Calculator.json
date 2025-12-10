@@ -1,0 +1,116 @@
+{
+  "name": "Calculator",
+  "course": "CS 201",
+  "language": "C++/Java",
+  "totalPoints": 100,
+  "criteria": [
+    {
+      "name": "Functionality",
+      "maxPoints": 35,
+      "description": "Calculator performs all required operations correctly",
+      "levels": [
+        {
+          "label": "Complete",
+          "points": 35,
+          "description": "All operations work correctly: add, subtract, multiply, divide with error handling"
+        },
+        {
+          "label": "Mostly Complete",
+          "points": 25,
+          "description": "Most operations work, minor issues with edge cases"
+        },
+        {
+          "label": "Partial",
+          "points": 15,
+          "description": "Some operations work, missing error handling"
+        },
+        {
+          "label": "Minimal",
+          "points": 0,
+          "description": "Few or no operations work correctly"
+        }
+      ]
+    },
+    {
+      "name": "Object-Oriented Design",
+      "maxPoints": 30,
+      "description": "Proper use of classes and separation of concerns",
+      "levels": [
+        {
+          "label": "Excellent",
+          "points": 30,
+          "description": "Multiple files, separate Calculator class, clean interface, proper encapsulation"
+        },
+        {
+          "label": "Good",
+          "points": 22,
+          "description": "Uses classes but could be better organized"
+        },
+        {
+          "label": "Needs Improvement",
+          "points": 12,
+          "description": "Minimal OOP, mostly procedural code"
+        },
+        {
+          "label": "Poor",
+          "points": 0,
+          "description": "No OOP principles, all code in main"
+        }
+      ]
+    },
+    {
+      "name": "Error Handling",
+      "maxPoints": 20,
+      "description": "Handles invalid input and division by zero",
+      "levels": [
+        {
+          "label": "Comprehensive",
+          "points": 20,
+          "description": "Handles all error cases gracefully with meaningful messages"
+        },
+        {
+          "label": "Basic",
+          "points": 15,
+          "description": "Handles some errors but not all"
+        },
+        {
+          "label": "Minimal",
+          "points": 7,
+          "description": "Minimal error handling, program crashes on invalid input"
+        },
+        {
+          "label": "None",
+          "points": 0,
+          "description": "No error handling"
+        }
+      ]
+    },
+    {
+      "name": "Code Quality",
+      "maxPoints": 15,
+      "description": "Documentation, naming, and code organization",
+      "levels": [
+        {
+          "label": "Excellent",
+          "points": 15,
+          "description": "Well-documented, clear naming, proper file organization"
+        },
+        {
+          "label": "Good",
+          "points": 12,
+          "description": "Decent documentation and naming"
+        },
+        {
+          "label": "Needs Improvement",
+          "points": 6,
+          "description": "Poor documentation or naming"
+        },
+        {
+          "label": "Poor",
+          "points": 0,
+          "description": "No documentation, unclear code"
+        }
+      ]
+    }
+  ]
+}

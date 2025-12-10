@@ -1,0 +1,106 @@
+{
+  "name": "HelloWorld",
+  "course": "CS101",
+  "language": "Go",
+  "totalPoints": 100,
+  "criteria": [
+    {
+      "name": "Program Execution",
+      "maxPoints": 40,
+      "description": "Program compiles and runs correctly",
+      "levels": [
+        {
+          "label": "Perfect",
+          "points": 40,
+          "description": "Program compiles and prints 'Hello, World!' correctly"
+        },
+        {
+          "label": "Good",
+          "points": 30,
+          "description": "Program works but has minor issues"
+        },
+        {
+          "label": "Partial",
+          "points": 15,
+          "description": "Program compiles but output is incorrect"
+        },
+        {
+          "label": "Not Working",
+          "points": 0,
+          "description": "Program does not compile or crashes"
+        }
+      ]
+    },
+    {
+      "name": "Go Syntax and Structure",
+      "maxPoints": 30,
+      "description": "Proper use of Go syntax, package, and imports",
+      "levels": [
+        {
+          "label": "Excellent",
+          "points": 30,
+          "description": "Proper package main, import fmt, and main function structure"
+        },
+        {
+          "label": "Good",
+          "points": 22,
+          "description": "Mostly correct structure with minor issues"
+        },
+        {
+          "label": "Needs Improvement",
+          "points": 12,
+          "description": "Missing proper package or import statements"
+        },
+        {
+          "label": "Poor",
+          "points": 0,
+          "description": "Major structural problems"
+        }
+      ]
+    },
+    {
+      "name": "Documentation",
+      "maxPoints": 20,
+      "description": "Comments and documentation",
+      "levels": [
+        {
+          "label": "Complete",
+          "points": 20,
+          "description": "Has package and function documentation comments"
+        },
+        {
+          "label": "Partial",
+          "points": 10,
+          "description": "Has some comments"
+        },
+        {
+          "label": "None",
+          "points": 0,
+          "description": "No documentation"
+        }
+      ]
+    },
+    {
+      "name": "Go Best Practices",
+      "maxPoints": 10,
+      "description": "Follows Go conventions and best practices",
+      "levels": [
+        {
+          "label": "Excellent",
+          "points": 10,
+          "description": "Follows gofmt formatting and Go conventions"
+        },
+        {
+          "label": "Acceptable",
+          "points": 5,
+          "description": "Mostly follows conventions"
+        },
+        {
+          "label": "Poor",
+          "points": 0,
+          "description": "Does not follow conventions"
+        }
+      ]
+    }
+  ]
+}

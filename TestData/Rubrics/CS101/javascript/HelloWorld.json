@@ -1,0 +1,106 @@
+{
+  "name": "HelloWorld",
+  "course": "CS101",
+  "language": "JavaScript",
+  "totalPoints": 100,
+  "criteria": [
+    {
+      "name": "Program Execution",
+      "maxPoints": 40,
+      "description": "Program runs without errors and produces correct output",
+      "levels": [
+        {
+          "label": "Perfect",
+          "points": 40,
+          "description": "Program executes and prints 'Hello, World!' exactly"
+        },
+        {
+          "label": "Good",
+          "points": 30,
+          "description": "Program executes but output has minor formatting issues"
+        },
+        {
+          "label": "Partial",
+          "points": 15,
+          "description": "Program executes but output is incorrect"
+        },
+        {
+          "label": "Not Working",
+          "points": 0,
+          "description": "Program does not execute or crashes"
+        }
+      ]
+    },
+    {
+      "name": "Code Quality",
+      "maxPoints": 30,
+      "description": "Clean, readable code with proper formatting",
+      "levels": [
+        {
+          "label": "Excellent",
+          "points": 30,
+          "description": "Clean code, proper formatting, uses console.log() appropriately"
+        },
+        {
+          "label": "Good",
+          "points": 22,
+          "description": "Mostly clean code with minor style issues"
+        },
+        {
+          "label": "Needs Improvement",
+          "points": 12,
+          "description": "Poorly formatted or unclear code"
+        },
+        {
+          "label": "Poor",
+          "points": 0,
+          "description": "Very messy or unreadable code"
+        }
+      ]
+    },
+    {
+      "name": "Documentation",
+      "maxPoints": 20,
+      "description": "Comments and documentation",
+      "levels": [
+        {
+          "label": "Complete",
+          "points": 20,
+          "description": "File has header comment explaining the program"
+        },
+        {
+          "label": "Partial",
+          "points": 10,
+          "description": "Some comments present"
+        },
+        {
+          "label": "None",
+          "points": 0,
+          "description": "No comments or documentation"
+        }
+      ]
+    },
+    {
+      "name": "Best Practices",
+      "maxPoints": 10,
+      "description": "Follows JavaScript best practices",
+      "levels": [
+        {
+          "label": "Excellent",
+          "points": 10,
+          "description": "Uses strict mode, proper variable declarations"
+        },
+        {
+          "label": "Acceptable",
+          "points": 5,
+          "description": "Mostly follows best practices"
+        },
+        {
+          "label": "Poor",
+          "points": 0,
+          "description": "Does not follow best practices"
+        }
+      ]
+    }
+  ]
+}

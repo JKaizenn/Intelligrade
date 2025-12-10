@@ -1,0 +1,106 @@
+{
+  "name": "HelloWorld",
+  "course": "CS101",
+  "language": "C#",
+  "totalPoints": 100,
+  "criteria": [
+    {
+      "name": "Program Execution",
+      "maxPoints": 40,
+      "description": "Program compiles and runs correctly",
+      "levels": [
+        {
+          "label": "Perfect",
+          "points": 40,
+          "description": "Program compiles, executes, and prints 'Hello, World!' correctly"
+        },
+        {
+          "label": "Good",
+          "points": 30,
+          "description": "Program works but has minor output issues"
+        },
+        {
+          "label": "Partial",
+          "points": 15,
+          "description": "Program compiles but output is incorrect"
+        },
+        {
+          "label": "Not Working",
+          "points": 0,
+          "description": "Program does not compile or crashes"
+        }
+      ]
+    },
+    {
+      "name": "Code Structure",
+      "maxPoints": 30,
+      "description": "Proper use of namespace, class, and Main method",
+      "levels": [
+        {
+          "label": "Excellent",
+          "points": 30,
+          "description": "Proper namespace, class structure, and Main method signature"
+        },
+        {
+          "label": "Good",
+          "points": 22,
+          "description": "Has basic structure but could be improved"
+        },
+        {
+          "label": "Needs Improvement",
+          "points": 12,
+          "description": "Missing namespace or improper structure"
+        },
+        {
+          "label": "Poor",
+          "points": 0,
+          "description": "No proper structure"
+        }
+      ]
+    },
+    {
+      "name": "Documentation",
+      "maxPoints": 20,
+      "description": "XML comments and inline documentation",
+      "levels": [
+        {
+          "label": "Complete",
+          "points": 20,
+          "description": "Has XML documentation comments for class and methods"
+        },
+        {
+          "label": "Partial",
+          "points": 10,
+          "description": "Has some comments"
+        },
+        {
+          "label": "None",
+          "points": 0,
+          "description": "No documentation"
+        }
+      ]
+    },
+    {
+      "name": "C# Best Practices",
+      "maxPoints": 10,
+      "description": "Follows C# naming conventions and best practices",
+      "levels": [
+        {
+          "label": "Excellent",
+          "points": 10,
+          "description": "PascalCase for class names, proper using statements"
+        },
+        {
+          "label": "Acceptable",
+          "points": 5,
+          "description": "Mostly follows conventions"
+        },
+        {
+          "label": "Poor",
+          "points": 0,
+          "description": "Does not follow conventions"
+        }
+      ]
+    }
+  ]
+}

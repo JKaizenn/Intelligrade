@@ -20,6 +20,7 @@
                         <TextBlock Text="Working Directory" Classes="label"/>
                         <TextBox Text="{Binding CurrentDirectory}"
                                  IsReadOnly="True"
+                                 FontSize="13"
                                  Watermark="No directory selected"
                                  Margin="0,0,0,10"/>
                         <Grid ColumnDefinitions="*,8,*">
@@ -213,64 +214,93 @@
 
                 <!-- Interactive Terminal Tab -->
                 <TabItem Header="Terminal">
-                    <Border Classes="card" Padding="0" Margin="16"
+                    <Border Classes="card" Padding="16" Margin="16"
                             VerticalAlignment="Stretch"
                             HorizontalAlignment="Stretch">
-                        <Grid RowDefinitions="Auto,*,Auto">
+                        <Grid RowDefinitions="Auto,*">
                             <!-- Terminal Header -->
-                            <Border Grid.Row="0" Padding="16,16,16,8"
-                                    Background="{DynamicResource CardBackground}">
-                                <Grid ColumnDefinitions="*,Auto">
-                                    <TextBlock Grid.Column="0"
-                                               Text="Interactive Terminal"
-                                               FontWeight="SemiBold"
-                                               FontSize="14"/>
-                                    <Button Grid.Column="1"
-                                            Content="Stop Program"
-                                            Command="{Binding StopProgramCommand}"
-                                            Classes="secondary"
-                                            FontSize="13"
-                                            Padding="12,6"
-                                            IsVisible="{Binding IsProgramRunning}"/>
-                                </Grid>
-                            </Border>
+                            <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,12">
+                                <TextBlock Grid.Column="0"
+                                           Text="Interactive Terminal"
+                                           FontWeight="SemiBold"
+                                           FontSize="14"
+                                           VerticalAlignment="Center"/>
+                                <Button Grid.Column="1"
+                                        Content="Stop Program"
+                                        Command="{Binding StopProgramCommand}"
+                                        Classes="secondary"
+                                        FontSize="12"
+                                        Padding="8,4"
+                                        IsVisible="{Binding IsProgramRunning}"/>
+                            </Grid>
 
-                            <!-- Terminal Output -->
-                            <ScrollViewer Grid.Row="1"
-                                          VerticalScrollBarVisibility="Auto"
-                                          HorizontalScrollBarVisibility="Disabled"
-                                          Padding="16,8,16,8">
-                                <TextBlock Text="{Binding ProgramOutput}"
-                                           FontFamily="JetBrains Mono,Consolas,Menlo,Monaco,Courier New,monospace"
-                                           FontSize="13"
-                                           TextWrapping="Wrap"
-                                           Background="Transparent"
-                                           x:Name="TerminalOutputTextBlock"/>
-                            </ScrollViewer>
+                            <!-- Terminal Surface (Output + Inline Input) -->
+                            <Border Grid.Row="1"
+                                    CornerRadius="6"
+                                    Background="{DynamicResource CardBackground}"
+                                    BorderBrush="{DynamicResource CardBorder}"
+                                    BorderThickness="1"
+                                    Padding="0">
+                                <Grid RowDefinitions="*,Auto">
+                                    <!-- Terminal Output -->
+                                    <ScrollViewer Grid.Row="0"
+                                                  VerticalScrollBarVisibility="Auto"
+                                                  HorizontalScrollBarVisibility="Disabled"
+                                                  Padding="12">
+                                        <TextBlock Text="{Binding ProgramOutput}"
+                                                   FontFamily="JetBrains Mono,Consolas,Menlo,Monaco,Courier New,monospace"
+                                                   FontSize="11"
+                                                   TextWrapping="Wrap"
+                                                   Background="Transparent"
+                                                   Foreground="{DynamicResource TextPrimary}"
+                                                   x:Name="TerminalOutputTextBlock"/>
+                                    </ScrollViewer>
 
-                            <!-- Terminal Input Prompt -->
-                            <Border Grid.Row="2" Padding="16,8,16,16"
-                                    Background="{DynamicResource CardBackground}">
-                                <Grid ColumnDefinitions="Auto,*">
-                                    <TextBlock Grid.Column="0"
-                                               Text="> "
-                                               FontFamily="JetBrains Mono,Consolas,Menlo,Monaco,Courier New,monospace"
-                                               FontSize="13"
-                                               FontWeight="Bold"
-                                               Foreground="{DynamicResource SystemAccentColor}"
-                                               VerticalAlignment="Center"
-                                               Margin="0,0,4,0"/>
-                                    <TextBox Grid.Column="1"
-                                             Text="{Binding InteractiveInput}"
-                                             Watermark="Type your input here and press Enter..."
-                                             FontFamily="JetBrains Mono,Consolas,Menlo,Monaco,Courier New,monospace"
-                                             FontSize="13"
-                                             Background="Transparent"
-                                             BorderThickness="0"
-                                             Padding="0"
-                                             IsEnabled="{Binding IsProgramRunning}"
-                                             KeyDown="InteractiveInput_KeyDown"
-                                             x:Name="TerminalInputTextBox"/>
+                                    <!-- Terminal Input Line (Inline at bottom) -->
+                                    <Border Grid.Row="1"
+                                            Padding="12,0,12,12"
+                                            Background="Transparent">
+                                        <Grid ColumnDefinitions="Auto,*">
+                                            <TextBlock Grid.Column="0"
+                                                       Text="$ "
+                                                       FontFamily="JetBrains Mono,Consolas,Menlo,Monaco,Courier New,monospace"
+                                                       FontSize="11"
+                                                       FontWeight="SemiBold"
+                                                       Foreground="{DynamicResource SystemAccentColor}"
+                                                       VerticalAlignment="Center"
+                                                       Margin="0,0,0,0"/>
+                                            <TextBox Grid.Column="1"
+                                                     Text="{Binding InteractiveInput}"
+                                                     Watermark="type input and press enter..."
+                                                     FontFamily="JetBrains Mono,Consolas,Menlo,Monaco,Courier New,monospace"
+                                                     FontSize="11"
+                                                     Background="Transparent"
+                                                     BorderThickness="0"
+                                                     Padding="6,8"
+                                                     VerticalAlignment="Center"
+                                                     VerticalContentAlignment="Center"
+                                                     IsEnabled="{Binding IsProgramRunning}"
+                                                     KeyDown="InteractiveInput_KeyDown"
+                                                     CaretBrush="{DynamicResource TextPrimary}"
+                                                     Foreground="{DynamicResource TextPrimary}"
+                                                     x:Name="TerminalInputTextBox">
+                                                <TextBox.Styles>
+                                                    <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
+                                                        <Setter Property="Background" Value="Transparent"/>
+                                                        <Setter Property="BorderBrush" Value="Transparent"/>
+                                                    </Style>
+                                                    <Style Selector="TextBox:focus /template/ Border#PART_BorderElement">
+                                                        <Setter Property="Background" Value="Transparent"/>
+                                                        <Setter Property="BorderBrush" Value="Transparent"/>
+                                                    </Style>
+                                                    <Style Selector="TextBox /template/ Border#PART_BorderElement">
+                                                        <Setter Property="Background" Value="Transparent"/>
+                                                        <Setter Property="BorderBrush" Value="Transparent"/>
+                                                    </Style>
+                                                </TextBox.Styles>
+                                            </TextBox>
+                                        </Grid>
+                                    </Border>
                                 </Grid>
                             </Border>
                         </Grid>
@@ -488,9 +518,11 @@
                                     <Grid ColumnDefinitions="*,16,*">
                                         <TextBox Grid.Column="0"
                                                  Text="{Binding StudentName}"
+                                                 FontSize="13"
                                                  Watermark="Student Name"/>
                                         <TextBox Grid.Column="2"
                                                  Text="{Binding StudentId}"
+                                                 FontSize="13"
                                                  Watermark="Student ID (optional)"/>
                                     </Grid>
                                 </StackPanel>
@@ -771,6 +803,7 @@
                                              AcceptsReturn="True"
                                              TextWrapping="Wrap"
                                              MinHeight="150"
+                                             FontSize="13"
                                              Watermark="Enter overall feedback for the student..."/>
                                 </StackPanel>
                             </Border>

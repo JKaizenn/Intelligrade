@@ -1,0 +1,52 @@
+{
+  "name": "FizzBuzz",
+  "course": "CS 101",
+  "language": "Any",
+  "totalPoints": 100,
+  "criteria": [
+    {
+      "name": "Correct Output",
+      "maxPoints": 40,
+      "description": "Program produces correct FizzBuzz output for numbers 1-100",
+      "levels": [
+        {"label": "Perfect", "points": 40, "description": "All numbers print correctly"},
+        {"label": "Mostly Correct", "points": 30, "description": "Minor issues with edge cases"},
+        {"label": "Partial", "points": 15, "description": "Logic partially correct"},
+        {"label": "Incorrect", "points": 0, "description": "Does not produce correct output"}
+      ]
+    },
+    {
+      "name": "Code Structure",
+      "maxPoints": 25,
+      "description": "Code is well-organized with proper loop structure",
+      "levels": [
+        {"label": "Excellent", "points": 25, "description": "Clean loop structure, proper conditionals"},
+        {"label": "Good", "points": 20, "description": "Acceptable structure with minor issues"},
+        {"label": "Needs Improvement", "points": 10, "description": "Poor structure, redundant code"},
+        {"label": "Poor", "points": 0, "description": "No clear structure"}
+      ]
+    },
+    {
+      "name": "Logic and Conditionals",
+      "maxPoints": 20,
+      "description": "Correct use of modulo operator and conditional statements",
+      "levels": [
+        {"label": "Excellent", "points": 20, "description": "Proper order of conditionals"},
+        {"label": "Good", "points": 15, "description": "Correct logic but not optimal"},
+        {"label": "Needs Improvement", "points": 8, "description": "Logic errors"},
+        {"label": "Poor", "points": 0, "description": "Fundamental errors"}
+      ]
+    },
+    {
+      "name": "Code Quality",
+      "maxPoints": 15,
+      "description": "Readability, comments, naming conventions",
+      "levels": [
+        {"label": "Excellent", "points": 15, "description": "Clear names, good comments"},
+        {"label": "Good", "points": 12, "description": "Mostly readable"},
+        {"label": "Needs Improvement", "points": 6, "description": "Poor naming"},
+        {"label": "Poor", "points": 0, "description": "Unreadable code"}
+      ]
+    }
+  ]
+}

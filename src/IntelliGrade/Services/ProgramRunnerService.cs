@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 using IntelliGrade.App.Configuration;
 using IntelliGrade.App.Interfaces;
@@ -154,7 +155,8 @@ public class ProgramRunnerService : IProgramRunnerService
     /// Captures stdout/stderr and enforces configured timeout limit.
     /// </summary>
     private async Task<(bool success, string output, string error)> ExecuteProgramAsync(
-        string fileName, string arguments, string workingDirectory, string outputPrefix, string? standardInput = null)
+        string fileName, string arguments, string workingDirectory, string outputPrefix, string? standardInput = null,
+        CancellationToken cancellationToken = default)
     {
         try
         {
@@ -209,7 +211,7 @@ public class ProgramRunnerService : IProgramRunnerService
                 }
             }
 
-            var completed = await Task.Run(() => process.WaitForExit(_config.TimeoutSeconds * 1000));
+            var completed = await Task.Run(() => process.WaitForExit(_config.TimeoutSeconds * 1000), cancellationToken);
 
             if (!completed)
             {

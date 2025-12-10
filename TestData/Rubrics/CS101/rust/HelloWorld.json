@@ -1,0 +1,106 @@
+{
+  "name": "HelloWorld",
+  "course": "CS101",
+  "language": "Rust",
+  "totalPoints": 100,
+  "criteria": [
+    {
+      "name": "Program Execution",
+      "maxPoints": 40,
+      "description": "Program compiles and runs correctly",
+      "levels": [
+        {
+          "label": "Perfect",
+          "points": 40,
+          "description": "Program compiles with no warnings and prints 'Hello, World!' correctly"
+        },
+        {
+          "label": "Good",
+          "points": 30,
+          "description": "Program works but has compiler warnings"
+        },
+        {
+          "label": "Partial",
+          "points": 15,
+          "description": "Program compiles but output is incorrect"
+        },
+        {
+          "label": "Not Working",
+          "points": 0,
+          "description": "Program does not compile"
+        }
+      ]
+    },
+    {
+      "name": "Rust Syntax",
+      "maxPoints": 30,
+      "description": "Proper use of Rust syntax and conventions",
+      "levels": [
+        {
+          "label": "Excellent",
+          "points": 30,
+          "description": "Proper main function, uses println! macro correctly, follows Rust conventions"
+        },
+        {
+          "label": "Good",
+          "points": 22,
+          "description": "Mostly correct syntax with minor issues"
+        },
+        {
+          "label": "Needs Improvement",
+          "points": 12,
+          "description": "Has syntax issues or doesn't follow conventions"
+        },
+        {
+          "label": "Poor",
+          "points": 0,
+          "description": "Major syntax problems"
+        }
+      ]
+    },
+    {
+      "name": "Documentation",
+      "maxPoints": 20,
+      "description": "Comments and documentation",
+      "levels": [
+        {
+          "label": "Complete",
+          "points": 20,
+          "description": "Has documentation comments (///) explaining the program"
+        },
+        {
+          "label": "Partial",
+          "points": 10,
+          "description": "Has some comments"
+        },
+        {
+          "label": "None",
+          "points": 0,
+          "description": "No documentation"
+        }
+      ]
+    },
+    {
+      "name": "Code Quality",
+      "maxPoints": 10,
+      "description": "Clean, idiomatic Rust code",
+      "levels": [
+        {
+          "label": "Excellent",
+          "points": 10,
+          "description": "Follows rustfmt formatting, idiomatic code"
+        },
+        {
+          "label": "Acceptable",
+          "points": 5,
+          "description": "Mostly clean code"
+        },
+        {
+          "label": "Poor",
+          "points": 0,
+          "description": "Messy or non-idiomatic code"
+        }
+      ]
+    }
+  ]
+}

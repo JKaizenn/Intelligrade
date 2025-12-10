@@ -1,121 +1,68 @@
 # IntelliGrade
 
-<img width="1358" height="852" alt="Screenshot 2025-10-28 at 8 58 07 AM" src="https://github.com/user-attachments/assets/02bb18fc-cb63-4c08-941b-dd9e9484805d" />
+<img width="1358" height="852" alt="IntelliGrade Screenshot" src="https://github.com/user-attachments/assets/02bb18fc-cb63-4c08-941b-dd9e9484805d" />
 
-**Currently in Beta** - Desktop application for grading programming assignments using AI to assist with grading. Looking for testers and feedback!
+Desktop application for quickly running and grading student code with local AI analysis assisting. Currently in beta.
 
 ## Features
 
-- **AI Grading** - Automated code analysis with local Ollama AI
-- **Code Execution** - Run and test student programs safely
-- **Rubric Support** - JSON and markdown/text-based grading criteria
-- **Multi-Language** - Python, C++, Java, JavaScript, C#, Rust, Go, and more
-- **Export** - CSV and JSON export for gradebooks
-- **Cross-Platform** - macOS, Windows, Linux
+- Quick and easy interactive program execution with terminal support
+- Local AI analysis assisting using Ollama models
+- Multiple analysis modes (Quick, Balanced, Thorough)
+- Flexible rubric system (JSON and markdown formats)
+- Multi-language support (Python, C++, Java, JavaScript, C#, Rust, Go, and more)
+- Grade export to CSV and JSON
+- Cross-platform (macOS, Windows, Linux)
+- Dark mode support
 
-## Quick Start
+## Installation
 
-### For Beta Testers
+### Beta Release
 
-**Download the installer for your platform:**
-- **macOS**: Download `IntelliGrade-v0.9.0-beta-macOS.dmg` from [Releases](https://github.com/JKaizenn/Intelligrade/releases)
-- **Windows**: Download `IntelliGrade-v0.9.0-beta-Windows-Setup.exe` from [Releases](https://github.com/JKaizenn/Intelligrade/releases)
+Download the installer for your platform from [Releases](https://github.com/JKaizenn/Intelligrade/releases):
 
-**No .NET installation required** - installers include everything you need!
+- **macOS**: `IntelliGrade-v0.9.0-beta-macOS.dmg`
+- **Windows**: `IntelliGrade-v0.9.0-beta-Windows-Setup.exe`
 
-**Optional (for AI grading):**
-- Install [Ollama](https://ollama.com/) and run `ollama pull llama3.2:1b`
+No .NET installation required. Installers are self-contained.
 
-### For Developers
+### AI Setup (Optional)
 
-**Requirements:**
-- [.NET 10.0](https://dotnet.microsoft.com/download/dotnet/10.0)
-
-**Run from source:**
-```bash
-cd src/IntelliGrade
-dotnet run
-```
-
-**Build installers:**
-```bash
-# macOS (creates DMG)
-./scripts/build-macos.sh
-# Output: IntelliGrade-v0.9.0-beta-macOS.dmg
-
-# Windows (creates installer if Inno Setup is installed)
-.\scripts\build-windows.ps1
-# Output: dist\IntelliGrade-v0.9.0-beta-Windows-Setup.exe
-
-# Linux (creates AppImage/binary)
-./scripts/build-linux.sh
-```
-
-## Using IntelliGrade
-
-### Navigation
-
-The app has a simple layout:
-- **Top Bar** - Settings, Home, and Dark Mode toggle buttons
-- **Main Area** - Grading interface with tabs for different views
-- **Status Bar** - Shows current operation status
-
-### Step-by-Step Guide
-
-1. **Select Student Directory**
-   - Click "Browse" on the welcome screen
-   - Choose the folder containing student submissions
-
-2. **Detect Languages**
-   - Click "Detect Languages" to scan for code files
-   - The app will find all programming languages in the directory
-
-3. **Configure Assignment**
-   - Select the programming language from the dropdown
-   - Choose the specific source file to grade
-   - Select your course (e.g., CSE 101, CSE 232)
-   - Pick the rubric for this assignment
-
-4. **Run the Code** (Optional)
-   - Click "Run Program" to execute the student's code
-   - View the output to verify functionality
-   - Check for errors or unexpected behavior
-
-5. **AI Analysis** (Optional)
-   - Click "Analyze with AI" to get automated feedback
-   - The AI will review the code against the rubric
-   - View suggestions in the AI Analysis panel
-
-6. **Enter Grade**
-   - Fill in student name and ID
-   - Enter the numeric grade (0-100)
-   - Add instructor feedback in the text area
-   - The letter grade calculates automatically
-
-7. **Export Results**
-   - Click "Export to CSV" or "Export to JSON"
-   - Save grades for import into your gradebook system
-
-### Managing Courses and Rubrics
-
-- Click the **Settings** button in the top-right
-- Use "Manage Courses" to add/remove courses
-- Use "Import Rubric" to add new grading rubrics
-
-## AI Configuration
-
-### Using Ollama (Local AI)
-
+For AI grading features:
 1. Install [Ollama](https://ollama.com/)
 2. Pull a model: `ollama pull llama3.2:1b`
-3. IntelliGrade will automatically detect Ollama if it's running
-4. Optionally configure custom endpoint in Settings if using a remote Ollama instance
+3. IntelliGrade will auto-detect running Ollama instances
 
-## Rubric Format
+## Usage
 
-Place rubrics in `~/bin/rubrics/{Course}/{Language}/`
+### Basic Workflow
 
-### JSON Format (Recommended)
+1. **Select Directory** - Browse to student submission folder or clone from GitHub
+2. **Detect Languages** - Scan directory for programming languages
+3. **Configure** - Select language, source file, course, and rubric
+4. **Run & Test** - Execute code interactively in the terminal
+5. **AI Analysis** - Get automated feedback (requires Ollama)
+6. **Grade** - Enter student info, score, and feedback
+7. **Export** - Save grades to CSV or JSON
+
+### Interface Overview
+
+- **Header** - AI status indicator, feedback, settings, home, and theme toggle
+- **Main Tabs** - Source code, program output, interactive terminal, rubric view
+- **Sidebar** - Student info, grading controls, AI analysis results
+- **Status Bar** - Operation progress and version info
+
+### Analysis Modes
+
+- **Quick** - Fast analysis for simple assignments
+- **Balanced** - Standard thoroughness for most cases
+- **Thorough** - Deep analysis with detailed feedback
+
+## Rubric Configuration
+
+Rubrics are stored in `~/bin/rubrics/{Course}/{Language}/`
+
+### JSON Format
 
 ```json
 {
@@ -126,59 +73,62 @@ Place rubrics in `~/bin/rubrics/{Course}/{Language}/`
     {
       "name": "Functionality",
       "maxPoints": 40,
-      "description": "Program functionality and correctness",
+      "description": "Program works as specified",
       "levels": [
-        { "label": "Complete", "points": 40, "description": "Works perfectly" },
-        { "label": "Partial", "points": 20, "description": "Partial functionality" },
-        { "label": "Missing", "points": 0, "description": "Doesn't work" }
+        { "label": "Complete", "points": 40, "description": "Fully functional" },
+        { "label": "Partial", "points": 20, "description": "Partially working" },
+        { "label": "None", "points": 0, "description": "Does not work" }
       ]
     }
   ]
 }
 ```
 
-### Text/Markdown Format (Simple)
+### Markdown Format
 
 ```markdown
-# Assignment Rubric - CSE 101
+# Lab 1 Rubric
 
-## Requirements (100 points total)
+## Functionality (40 points)
+- Fully functional: 40 points
+- Partially working: 20 points
+- Does not work: 0 points
 
-### Functionality (40 points)
-- Works perfectly (40 points)
-- Partial functionality (20 points)
-- Doesn't work (0 points)
-
-## Grading Scale
-- A: 90-100
-- B: 80-89
-- C: 70-79
-- D: 60-69
-- F: Below 60
+## Code Quality (30 points)
+- Excellent: 30 points
+- Good: 20 points
+- Poor: 10 points
 ```
 
 ## Development
 
-```bash
-# Build from source
-dotnet build src/IntelliGrade/IntelliGrade.App.csproj
+### Requirements
 
-# Run from source
+- [.NET 10.0](https://dotnet.microsoft.com/download/dotnet/10.0)
+
+### Build from Source
+
+```bash
 cd src/IntelliGrade
 dotnet run
-
-# Create distributable installers (see Build installers section above)
-./scripts/build-macos.sh      # macOS DMG
-.\scripts\build-windows.ps1   # Windows Setup.exe
-./scripts/build-linux.sh      # Linux binary
 ```
 
-## Beta Testing & Feedback
+### Create Installers
 
-This is a beta release! If you encounter bugs or have feature suggestions:
-- Open an issue on GitHub
-- Describe your use case and workflow
-- Include your OS and .NET version
+```bash
+# macOS
+./scripts/build-macos.sh
+
+# Windows
+.\scripts\build-windows.ps1
+
+# Linux
+./scripts/build-linux.sh
+```
+
+## Feedback
+
+Report bugs or suggest features by opening an issue on GitHub. Include your OS and details about the issue.
 
 ## License
 

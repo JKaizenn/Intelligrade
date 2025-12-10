@@ -1,0 +1,116 @@
+{
+  "name": "Todo List Application",
+  "course": "CS 150",
+  "language": "C++/Java/Python",
+  "totalPoints": 100,
+  "criteria": [
+    {
+      "name": "Core Functionality",
+      "maxPoints": 40,
+      "description": "Implements add, remove, display, and task management features",
+      "levels": [
+        {
+          "label": "Complete",
+          "points": 40,
+          "description": "All features work correctly: add tasks, remove tasks, display tasks, list numbering, and user menu/interaction"
+        },
+        {
+          "label": "Mostly Complete",
+          "points": 30,
+          "description": "Most features work with minor bugs in one operation or display issues"
+        },
+        {
+          "label": "Partial",
+          "points": 18,
+          "description": "Some features work but significant bugs in add, remove, or display functionality"
+        },
+        {
+          "label": "Minimal",
+          "points": 0,
+          "description": "Most features don't work or program doesn't run"
+        }
+      ]
+    },
+    {
+      "name": "File Persistence",
+      "maxPoints": 25,
+      "description": "Saves and loads tasks from file correctly",
+      "levels": [
+        {
+          "label": "Excellent",
+          "points": 25,
+          "description": "Correctly saves tasks to file and loads them back, handles missing files gracefully, maintains data format between runs"
+        },
+        {
+          "label": "Good",
+          "points": 19,
+          "description": "File operations work but minor issues with file format or error handling"
+        },
+        {
+          "label": "Needs Improvement",
+          "points": 10,
+          "description": "Basic file save/load but significant bugs, data corruption, or crashes on missing file"
+        },
+        {
+          "label": "Poor",
+          "points": 0,
+          "description": "File persistence doesn't work or not implemented"
+        }
+      ]
+    },
+    {
+      "name": "Error Handling",
+      "maxPoints": 20,
+      "description": "Validates input and handles errors appropriately",
+      "levels": [
+        {
+          "label": "Comprehensive",
+          "points": 20,
+          "description": "Validates user input, handles file I/O errors, prevents empty tasks, checks bounds for task removal with clear error messages"
+        },
+        {
+          "label": "Good",
+          "points": 15,
+          "description": "Handles most errors but missing some validations or error messages could be clearer"
+        },
+        {
+          "label": "Basic",
+          "points": 8,
+          "description": "Minimal error handling, allows some invalid operations, or crashes on bad input"
+        },
+        {
+          "label": "None",
+          "points": 0,
+          "description": "No error handling or validation"
+        }
+      ]
+    },
+    {
+      "name": "Code Quality and Structure",
+      "maxPoints": 15,
+      "description": "Organization, documentation, and user interface",
+      "levels": [
+        {
+          "label": "Excellent",
+          "points": 15,
+          "description": "Well-organized with functions/classes, clear documentation and comments, good variable names, user-friendly interface with clear prompts"
+        },
+        {
+          "label": "Good",
+          "points": 12,
+          "description": "Decent organization and documentation with minor issues in structure or interface"
+        },
+        {
+          "label": "Needs Improvement",
+          "points": 6,
+          "description": "Poor organization, minimal documentation, confusing variable names, or unclear interface"
+        },
+        {
+          "label": "Poor",
+          "points": 0,
+          "description": "No organization or documentation, all code in main, unclear interface"
+        }
+      ]
+    }
+  ]
+}

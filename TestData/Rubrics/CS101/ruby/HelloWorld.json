@@ -1,0 +1,106 @@
+{
+  "name": "HelloWorld",
+  "course": "CS101",
+  "language": "Ruby",
+  "totalPoints": 100,
+  "criteria": [
+    {
+      "name": "Program Execution",
+      "maxPoints": 40,
+      "description": "Program runs correctly",
+      "levels": [
+        {
+          "label": "Perfect",
+          "points": 40,
+          "description": "Program executes and prints 'Hello, World!' correctly"
+        },
+        {
+          "label": "Good",
+          "points": 30,
+          "description": "Program works but has minor output issues"
+        },
+        {
+          "label": "Partial",
+          "points": 15,
+          "description": "Program runs but output is incorrect"
+        },
+        {
+          "label": "Not Working",
+          "points": 0,
+          "description": "Program crashes or has syntax errors"
+        }
+      ]
+    },
+    {
+      "name": "Ruby Syntax",
+      "maxPoints": 30,
+      "description": "Proper use of Ruby syntax and conventions",
+      "levels": [
+        {
+          "label": "Excellent",
+          "points": 30,
+          "description": "Uses puts method correctly, follows Ruby conventions"
+        },
+        {
+          "label": "Good",
+          "points": 22,
+          "description": "Mostly correct syntax"
+        },
+        {
+          "label": "Needs Improvement",
+          "points": 12,
+          "description": "Has syntax issues"
+        },
+        {
+          "label": "Poor",
+          "points": 0,
+          "description": "Major syntax problems"
+        }
+      ]
+    },
+    {
+      "name": "Documentation",
+      "maxPoints": 20,
+      "description": "Comments explaining the program",
+      "levels": [
+        {
+          "label": "Complete",
+          "points": 20,
+          "description": "Has header comment explaining the program"
+        },
+        {
+          "label": "Partial",
+          "points": 10,
+          "description": "Has some comments"
+        },
+        {
+          "label": "None",
+          "points": 0,
+          "description": "No documentation"
+        }
+      ]
+    },
+    {
+      "name": "Code Quality",
+      "maxPoints": 10,
+      "description": "Clean, idiomatic Ruby code",
+      "levels": [
+        {
+          "label": "Excellent",
+          "points": 10,
+          "description": "Follows Ruby style guide, clean code"
+        },
+        {
+          "label": "Acceptable",
+          "points": 5,
+          "description": "Mostly clean code"
+        },
+        {
+          "label": "Poor",
+          "points": 0,
+          "description": "Messy code"
+        }
+      ]
+    }
+  ]
+}

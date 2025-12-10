@@ -25,6 +25,9 @@ public class OllamaGradingService : IOllamaGradingService
     private readonly string _model;
     private readonly int _timeoutSeconds;
 
+    // Maximum response size to prevent memory issues
+    private const int MaxResponseTokens = 3000;
+
     /// <summary>
     /// Determines if the current model is a small model (1b, 3b, or under 1b parameters).
     /// Small models need simplified prompts for better performance.
@@ -68,7 +71,7 @@ public class OllamaGradingService : IOllamaGradingService
         try
         {
             var models = await _ollama.ListLocalModels();
-            return models.Any(m => m.Name.Contains(_model.Split(':')[0]));
+            return models.Any(m => m?.Name?.Contains(_model.Split(':')[0]) == true);
         }
         catch
         {
@@ -128,6 +131,13 @@ public class OllamaGradingService : IOllamaGradingService
                     if (tokenCount % 10 == 0)
                     {
                         OnProgressUpdate?.Invoke(tokenCount);
+                    }
+
+                    // Enforce response size limit to prevent memory issues
+                    if (tokenCount >= MaxResponseTokens)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Response size limit reached: {tokenCount} tokens");
+                        break;
                     }
                 }
             }

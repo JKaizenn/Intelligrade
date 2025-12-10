@@ -102,14 +102,14 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
     public MainWindowViewModel()
     {
         LoadCourses();
-        _ = InitializeOllamaAsync();
-        _ = LoadSettingsAsync();
+        RunInBackground(InitializeOllamaAsync());
+        RunInBackground(LoadSettingsAsync());
     }
 
     partial void OnIsDarkModeChanged(bool value)
     {
         ApplyTheme();
-        _ = SaveThemePreferenceAsync();
+        RunInBackground(SaveThemePreferenceAsync());
     }
 
     partial void OnIsProcessingChanged(bool value)
@@ -424,12 +424,12 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
         {
             var languages = _languageDetector.DetectLanguages(CurrentDirectory);
             DetectedLanguages = new ObservableCollection<LanguageInfo>(languages);
-            
+
             if (languages.Count == 1)
             {
                 SelectedLanguage = languages[0];
             }
-            
+
             StatusMessage = $"Detected {languages.Count} language(s)";
         }
         catch (Exception ex)
@@ -461,7 +461,7 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
     {
         if (!string.IsNullOrEmpty(value))
         {
-            _ = LoadSourceCodeAsync(value);
+            RunInBackground(LoadSourceCodeAsync(value));
         }
         OnPropertyChanged(nameof(CanRunAnalysis));
     }
@@ -529,7 +529,7 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
     {
         if (!string.IsNullOrEmpty(value) && SelectedCourse != null && SelectedLanguage != null)
         {
-            _ = LoadRubricAsync();
+            RunInBackground(LoadRubricAsync());
         }
     }
 
@@ -1121,7 +1121,7 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
                 : "AI not available - grading features disabled";
 
             // Start periodic check for Ollama availability with proper cancellation support
-            _ = Task.Run(async () =>
+            RunInBackground(Task.Run(async () =>
             {
                 while (!_cancellationTokenSource.Token.IsCancellationRequested)
                 {
@@ -1136,7 +1136,7 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
                         break;
                     }
                 }
-            }, _cancellationTokenSource.Token);
+            }, _cancellationTokenSource.Token));
         }
         catch
         {
@@ -1167,6 +1167,22 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
         catch
         {
             // Background availability check is non-critical - silently fail to avoid UI disruption
+        }
+    }
+
+    /// <summary>
+    /// Runs an async task in the background and ensures exceptions are properly observed.
+    /// Use this instead of fire-and-forget patterns to prevent unobserved task exceptions.
+    /// </summary>
+    private async void RunInBackground(Task task)
+    {
+        try
+        {
+            await task;
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Background task failed: {ex.Message}");
         }
     }
 
@@ -1336,5 +1352,7 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
 
         // Dispose interactive process
         _interactiveProcess?.Dispose();
+
+        GC.SuppressFinalize(this);
     }
 }

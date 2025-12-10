@@ -125,10 +125,16 @@ public class FileManagerService : IFileManagerService
     {
         try
         {
+            // Validate repository URL to prevent command injection
+            if (!IsValidGitUrl(repoUrl))
+            {
+                return "Invalid repository URL. Must be a valid git URL (https://, git://, ssh://, or git@)";
+            }
+
             var processInfo = new System.Diagnostics.ProcessStartInfo
             {
                 FileName = "git",
-                Arguments = $"clone {repoUrl} \"{targetDirectory}\"",
+                Arguments = $"clone \"{repoUrl}\" \"{targetDirectory}\"",
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
                 UseShellExecute = false,
@@ -151,5 +157,29 @@ public class FileManagerService : IFileManagerService
         {
             return $"Error cloning repository: {ex.Message}";
         }
+    }
+
+    /// <summary>
+    /// Validates that a string is a safe Git repository URL.
+    /// Prevents command injection by checking URL format.
+    /// </summary>
+    private bool IsValidGitUrl(string url)
+    {
+        if (string.IsNullOrWhiteSpace(url))
+            return false;
+
+        // Check for common shell injection characters
+        if (url.Contains(';') || url.Contains('|') || url.Contains('&') ||
+            url.Contains('`') || url.Contains('$') || url.Contains('\n') || url.Contains('\r'))
+        {
+            return false;
+        }
+
+        // Validate URL format (https, git, ssh protocols, or git@ syntax)
+        return url.StartsWith("https://", StringComparison.OrdinalIgnoreCase) ||
+               url.StartsWith("http://", StringComparison.OrdinalIgnoreCase) ||
+               url.StartsWith("git://", StringComparison.OrdinalIgnoreCase) ||
+               url.StartsWith("ssh://", StringComparison.OrdinalIgnoreCase) ||
+               url.StartsWith("git@", StringComparison.OrdinalIgnoreCase);
     }
 }
