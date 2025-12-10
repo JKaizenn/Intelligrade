@@ -6,6 +6,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using IntelliGrade.App.DTOs;
 using IntelliGrade.App.Models;
+using IntelliGrade.App.Utilities;
 
 namespace IntelliGrade.App.ViewModels;
 
@@ -83,7 +84,7 @@ public partial class GradingSessionViewModel : ObservableObject
     /// <summary>
     /// Letter grade based on percentage.
     /// </summary>
-    public string LetterGrade => CalculateLetterGrade(Percentage);
+    public string LetterGrade => GradeCalculator.CalculateLetterGrade(Percentage);
 
     /// <summary>
     /// Whether all criteria have been scored.
@@ -194,22 +195,4 @@ public partial class GradingSessionViewModel : ObservableObject
     /// Calculates letter grade from percentage.
     /// Uses standard grading scale.
     /// </summary>
-    private static string CalculateLetterGrade(double percentage)
-    {
-        return percentage switch
-        {
-            >= 93.0 => "A",
-            >= 90.0 => "A-",
-            >= 87.0 => "B+",
-            >= 83.0 => "B",
-            >= 80.0 => "B-",
-            >= 77.0 => "C+",
-            >= 73.0 => "C",
-            >= 70.0 => "C-",
-            >= 67.0 => "D+",
-            >= 63.0 => "D",
-            >= 60.0 => "D-",
-            _ => "F"
-        };
-    }
 }

@@ -30,6 +30,7 @@
                 <Button Content="Get Started"
                         Command="{Binding StartGradingCommand}"
                         Classes="primary"
+                        FontSize="13"
                         Width="200"
                         Height="50"
                         HorizontalAlignment="Center"

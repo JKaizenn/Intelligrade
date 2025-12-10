@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Styling;
@@ -12,8 +13,10 @@ using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using IntelliGrade.App.DTOs;
+using IntelliGrade.App.Interfaces;
 using IntelliGrade.App.Models;
 using IntelliGrade.App.Services;
+using IntelliGrade.App.Utilities;
 
 namespace IntelliGrade.App.ViewModels;
 
@@ -21,15 +24,23 @@ namespace IntelliGrade.App.ViewModels;
 /// Main application view model coordinating the grading workflow.
 /// Manages course selection, code execution, AI analysis, and grade recording.
 /// </summary>
-public partial class MainWindowViewModel : ViewModelBase
+public partial class MainWindowViewModel : ViewModelBase, IDisposable
 {
+    // Configuration constants
+    private const int OllamaPollingIntervalMs = 30000; // 30 seconds
+    private const int OllamaTimeoutSeconds = 90;
+    private const int DefaultTotalPoints = 100;
+
     private readonly LanguageDetectorService _languageDetector = new();
     private readonly ProgramRunnerService _programRunner = new();
     private readonly FileManagerService _fileManager = new();
     private readonly LocalStorageService _localStorage = new();
     private readonly RubricService _rubricService = new();
     private readonly GradingConfig _config = new();
+    private readonly CancellationTokenSource _cancellationTokenSource = new();
     private OllamaGradingService? _ollamaService;
+    private InteractiveProcess? _interactiveProcess;
+    private bool _disposed;
 
     public IStorageProvider? StorageProvider { get; set; }
     public Func<string, string, Task<bool>>? ShowConfirmationDialog { get; set; }
@@ -47,6 +58,9 @@ public partial class MainWindowViewModel : ViewModelBase
 
     [ObservableProperty] private string _sourceCode = string.Empty;
     [ObservableProperty] private string _programOutput = string.Empty;
+    [ObservableProperty] private string _programInput = string.Empty;
+    [ObservableProperty] private string _interactiveInput = string.Empty;
+    [ObservableProperty] private bool _isProgramRunning = false;
     [ObservableProperty] private string _aiAnalysis = string.Empty;
     [ObservableProperty] private string _rubricContent = string.Empty;
     [ObservableProperty] private string _statusMessage = "Ready";
@@ -69,7 +83,7 @@ public partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty] private int _analysisProgress;
     [ObservableProperty] private bool _showAnalysisProgress;
 
-    public string LetterGrade => CalculateLetterGrade(Grade);
+    public string LetterGrade => GradeCalculator.CalculateLetterGrade(Grade);
     public double Percentage => Grade.HasValue ? (double)Grade.Value : 0.0;
 
     /// <summary>
@@ -80,23 +94,58 @@ public partial class MainWindowViewModel : ViewModelBase
         ? new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#10b981")) // Green
         : new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#ef4444")); // Red
 
+    /// <summary>
+    /// Returns true if AI analysis can run (not processing and file is selected).
+    /// </summary>
+    public bool CanRunAnalysis => !IsProcessing && !string.IsNullOrEmpty(SelectedSourceFile);
+
     public MainWindowViewModel()
     {
         LoadCourses();
-        InitializeOllama();
-        LoadSettings();
+        _ = InitializeOllamaAsync();
+        _ = LoadSettingsAsync();
     }
 
     partial void OnIsDarkModeChanged(bool value)
     {
         ApplyTheme();
-        SaveThemePreference();
+        _ = SaveThemePreferenceAsync();
+    }
+
+    partial void OnIsProcessingChanged(bool value)
+    {
+        OnPropertyChanged(nameof(CanRunAnalysis));
     }
 
     [RelayCommand]
     private void ToggleDarkMode()
     {
         IsDarkMode = !IsDarkMode;
+    }
+
+    /// <summary>
+    /// Opens the default email client to send feedback.
+    /// </summary>
+    [RelayCommand]
+    private void SendFeedback()
+    {
+        try
+        {
+            var subject = Uri.EscapeDataString("IntelliGrade Feedback");
+            var body = Uri.EscapeDataString("Please share your feedback, suggestions, or report any issues:\n\n");
+            var mailto = $"mailto:intelligrade.ai.app@gmail.com?subject={subject}&body={body}";
+
+            var psi = new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = mailto,
+                UseShellExecute = true
+            };
+            System.Diagnostics.Process.Start(psi);
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = $"Could not open email client: {ex.Message}";
+        }
     }
 
     /// <summary>
@@ -112,7 +161,7 @@ public partial class MainWindowViewModel : ViewModelBase
         }
     }
 
-    private async void LoadSettings()
+    private async Task LoadSettingsAsync()
     {
         try
         {
@@ -136,9 +185,10 @@ public partial class MainWindowViewModel : ViewModelBase
             var dir = await _localStorage.GetAsync("LastDirectory", Directory.GetCurrentDirectory());
             if (dir != null) CurrentDirectory = dir;
         }
-        catch
+        catch (Exception ex)
         {
-            // Silently ignore settings load errors - use defaults instead
+            // Log the error and use defaults
+            System.Diagnostics.Debug.WriteLine($"Failed to load settings: {ex.Message}");
         }
     }
 
@@ -162,15 +212,16 @@ public partial class MainWindowViewModel : ViewModelBase
         return false;
     }
 
-    private async void SaveThemePreference()
+    private async Task SaveThemePreferenceAsync()
     {
         try
         {
             await _localStorage.SetAsync("IsDarkMode", IsDarkMode);
         }
-        catch
+        catch (Exception ex)
         {
-            // Theme preference is non-critical - silently fail
+            // Theme preference is non-critical - log and continue
+            System.Diagnostics.Debug.WriteLine($"Failed to save theme preference: {ex.Message}");
         }
     }
 
@@ -317,7 +368,23 @@ public partial class MainWindowViewModel : ViewModelBase
                 return;
 
             var parentDir = folders[0].Path.LocalPath;
-            var repoName = Path.GetFileNameWithoutExtension(repoUrl.TrimEnd('/').Split('/').Last());
+
+            // Extract repository name from URL with proper null checks
+            var repoSegments = repoUrl.TrimEnd('/').Split('/');
+            var lastSegment = repoSegments.LastOrDefault();
+            if (string.IsNullOrEmpty(lastSegment))
+            {
+                StatusMessage = "Invalid repository URL format";
+                return;
+            }
+
+            var repoName = Path.GetFileNameWithoutExtension(lastSegment);
+            if (string.IsNullOrEmpty(repoName))
+            {
+                StatusMessage = "Could not extract repository name from URL";
+                return;
+            }
+
             var targetDir = Path.Combine(parentDir, repoName);
 
             IsProcessing = true;
@@ -394,8 +461,22 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         if (!string.IsNullOrEmpty(value))
         {
-            var fullPath = Path.Combine(CurrentDirectory, value);
-            SourceCode = File.Exists(fullPath) ? File.ReadAllText(fullPath) : string.Empty;
+            _ = LoadSourceCodeAsync(value);
+        }
+        OnPropertyChanged(nameof(CanRunAnalysis));
+    }
+
+    private async Task LoadSourceCodeAsync(string fileName)
+    {
+        try
+        {
+            var fullPath = Path.Combine(CurrentDirectory, fileName);
+            SourceCode = File.Exists(fullPath) ? await File.ReadAllTextAsync(fullPath) : string.Empty;
+        }
+        catch (Exception ex)
+        {
+            SourceCode = string.Empty;
+            StatusMessage = $"Error reading file: {ex.Message}";
         }
     }
 
@@ -403,7 +484,7 @@ public partial class MainWindowViewModel : ViewModelBase
     /// Reads all source files in the current directory for the selected language.
     /// Combines them with clear file separators for AI analysis of multi-file projects.
     /// </summary>
-    private string GetAllSourceCode()
+    private async Task<string> GetAllSourceCodeAsync()
     {
         if (SelectedLanguage == null || string.IsNullOrEmpty(CurrentDirectory))
             return SourceCode;
@@ -429,7 +510,7 @@ public partial class MainWindowViewModel : ViewModelBase
                 if (File.Exists(fullPath))
                 {
                     sb.AppendLine($"=== FILE: {fileName} ===");
-                    sb.AppendLine(File.ReadAllText(fullPath));
+                    sb.AppendLine(await File.ReadAllTextAsync(fullPath));
                     sb.AppendLine("");
                 }
             }
@@ -448,7 +529,7 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         if (!string.IsNullOrEmpty(value) && SelectedCourse != null && SelectedLanguage != null)
         {
-            LoadRubric();
+            _ = LoadRubricAsync();
         }
     }
 
@@ -499,6 +580,128 @@ public partial class MainWindowViewModel : ViewModelBase
             return;
         }
 
+        // Stop any currently running program
+        if (_interactiveProcess != null)
+        {
+            _interactiveProcess.Dispose();
+            _interactiveProcess = null;
+        }
+
+        IsProcessing = true;
+        IsProgramRunning = true;
+        StatusMessage = "Running program (interactive mode)...";
+        ProgramOutput = string.Empty;
+        InteractiveInput = string.Empty;
+
+        try
+        {
+            _interactiveProcess = await _programRunner.StartInteractiveAsync(
+                SelectedSourceFile,
+                SelectedLanguage,
+                CurrentDirectory,
+                onOutput: (text) =>
+                {
+                    // Must update UI on UI thread
+                    Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+                    {
+                        ProgramOutput += text;
+                    });
+                },
+                onError: (text) =>
+                {
+                    Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+                    {
+                        ProgramOutput += $"[ERROR] {text}";
+                    });
+                },
+                onExit: (exitCode) =>
+                {
+                    Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+                    {
+                        ProgramOutput += $"\n\n--- Program exited with code {exitCode} ---\n";
+                        IsProgramRunning = false;
+                        IsProcessing = false;
+                        StatusMessage = exitCode == 0 ? "Program completed successfully" : "Program completed with errors";
+                        _interactiveProcess?.Dispose();
+                        _interactiveProcess = null;
+                    });
+                }
+            );
+
+            if (_interactiveProcess == null)
+            {
+                StatusMessage = "Failed to start program";
+                IsProcessing = false;
+                IsProgramRunning = false;
+                return;
+            }
+
+            IsProcessing = false;
+            StatusMessage = "Program running - type input and press Enter to send";
+        }
+        catch (Exception ex)
+        {
+            ProgramOutput = $"Error starting program: {ex.Message}";
+            StatusMessage = "Error";
+            IsProcessing = false;
+            IsProgramRunning = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task SendInputAsync()
+    {
+        if (_interactiveProcess == null)
+            return;
+
+        try
+        {
+            // Allow sending empty lines (just Enter) or spaces, like a real terminal
+            var inputToSend = InteractiveInput ?? string.Empty;
+            await _interactiveProcess.SendInputAsync(inputToSend);
+
+            // Show what was sent in the output
+            if (string.IsNullOrEmpty(inputToSend))
+            {
+                ProgramOutput += "> [Enter]\n";
+            }
+            else
+            {
+                ProgramOutput += $"> {inputToSend}\n";
+            }
+
+            InteractiveInput = string.Empty;
+        }
+        catch (Exception ex)
+        {
+            ProgramOutput += $"[ERROR] Failed to send input: {ex.Message}\n";
+        }
+    }
+
+    [RelayCommand]
+    private void StopProgram()
+    {
+        if (_interactiveProcess != null)
+        {
+            _interactiveProcess.Stop();
+            ProgramOutput += "\n\n--- Program stopped by user ---\n";
+            IsProgramRunning = false;
+            IsProcessing = false;
+            StatusMessage = "Program stopped";
+            _interactiveProcess.Dispose();
+            _interactiveProcess = null;
+        }
+    }
+
+    // Keep the old non-interactive version for pre-entered input
+    private async Task RunProgramWithPresetInputAsync()
+    {
+        if (SelectedLanguage == null || string.IsNullOrEmpty(SelectedSourceFile))
+        {
+            StatusMessage = "Please select language and source file";
+            return;
+        }
+
         IsProcessing = true;
         StatusMessage = "Running program...";
         ProgramOutput = string.Empty;
@@ -506,7 +709,7 @@ public partial class MainWindowViewModel : ViewModelBase
         try
         {
             var result = await _programRunner.RunProgramAsync(
-                SelectedSourceFile, SelectedLanguage, CurrentDirectory);
+                SelectedSourceFile, SelectedLanguage, CurrentDirectory, ProgramInput);
 
             var output = new System.Text.StringBuilder();
 
@@ -613,17 +816,17 @@ public partial class MainWindowViewModel : ViewModelBase
                     Name = SelectedAssignment ?? "Unknown Assignment",
                     Course = SelectedCourse ?? "Unknown Course",
                     Language = SelectedLanguage?.Name ?? "Unknown",
-                    TotalPoints = 100,
+                    TotalPoints = DefaultTotalPoints,
                     Criteria = new List<Models.Criterion>
                     {
                         new Models.Criterion
                         {
                             Name = "Overall Quality",
-                            MaxPoints = 100,
+                            MaxPoints = DefaultTotalPoints,
                             Description = "General code quality assessment",
                             Levels = new List<Models.CriterionLevel>
                             {
-                                new Models.CriterionLevel { Label = "Excellent", Points = 100, Description = "Excellent work" },
+                                new Models.CriterionLevel { Label = "Excellent", Points = DefaultTotalPoints, Description = "Excellent work" },
                                 new Models.CriterionLevel { Label = "Good", Points = 80, Description = "Good work with minor issues" },
                                 new Models.CriterionLevel { Label = "Fair", Points = 60, Description = "Fair work with several issues" },
                                 new Models.CriterionLevel { Label = "Poor", Points = 0, Description = "Does not meet requirements" }
@@ -634,7 +837,7 @@ public partial class MainWindowViewModel : ViewModelBase
             }
 
             // Get all source files for multi-file project support
-            var allSourceCode = GetAllSourceCode();
+            var allSourceCode = await GetAllSourceCodeAsync();
 
             var response = await _ollamaService.AnalyzeWithModeAsync(
                 allSourceCode,
@@ -882,11 +1085,6 @@ public partial class MainWindowViewModel : ViewModelBase
         }
     }
 
-    private async void InitializeOllama()
-    {
-        await InitializeOllamaAsync();
-    }
-
     private async Task InitializeOllamaAsync()
     {
         try
@@ -897,13 +1095,13 @@ public partial class MainWindowViewModel : ViewModelBase
                 _ollamaService = new OllamaGradingService(
                     model: settings.OllamaModel,
                     endpoint: settings.UseCustomEndpoint ? settings.OllamaEndpoint : "http://localhost:11434",
-                    timeoutSeconds: 90);
+                    timeoutSeconds: OllamaTimeoutSeconds);
             }
             else
             {
                 _ollamaService = new OllamaGradingService(
                     model: _config.OllamaModel,
-                    timeoutSeconds: 90);
+                    timeoutSeconds: OllamaTimeoutSeconds);
             }
 
             // Subscribe to progress updates
@@ -922,15 +1120,23 @@ public partial class MainWindowViewModel : ViewModelBase
                 ? "AI ready"
                 : "AI not available - grading features disabled";
 
-            // Start periodic check for Ollama availability (every 30 seconds)
+            // Start periodic check for Ollama availability with proper cancellation support
             _ = Task.Run(async () =>
             {
-                while (true)
+                while (!_cancellationTokenSource.Token.IsCancellationRequested)
                 {
-                    await Task.Delay(30000);
-                    await CheckOllamaAvailability();
+                    try
+                    {
+                        await Task.Delay(OllamaPollingIntervalMs, _cancellationTokenSource.Token);
+                        await CheckOllamaAvailability();
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        // Normal cancellation, exit loop
+                        break;
+                    }
                 }
-            });
+            }, _cancellationTokenSource.Token);
         }
         catch
         {
@@ -964,7 +1170,7 @@ public partial class MainWindowViewModel : ViewModelBase
         }
     }
 
-    private async void LoadRubric()
+    private async Task LoadRubricAsync()
     {
         if (SelectedCourse == null || SelectedLanguage == null || SelectedAssignment == null)
             return;
@@ -1114,26 +1320,21 @@ public partial class MainWindowViewModel : ViewModelBase
         return value?.Replace("\"", "\"\"") ?? "";
     }
 
-    private static string CalculateLetterGrade(decimal? grade)
+    /// <summary>
+    /// Disposes managed resources including cancellation token and interactive process.
+    /// </summary>
+    public void Dispose()
     {
-        if (!grade.HasValue || grade.Value < 0)
-            return "-";
+        if (_disposed)
+            return;
 
-        // Standard BYU-Idaho Grading Scale
-        return grade.Value switch
-        {
-            >= 93 => "A",
-            >= 90 => "A-",
-            >= 87 => "B+",
-            >= 83 => "B",
-            >= 80 => "B-",
-            >= 77 => "C+",
-            >= 73 => "C",
-            >= 70 => "C-",
-            >= 67 => "D+",
-            >= 63 => "D",
-            >= 60 => "D-",
-            _ => "F"
-        };
+        _disposed = true;
+
+        // Cancel background tasks
+        _cancellationTokenSource.Cancel();
+        _cancellationTokenSource.Dispose();
+
+        // Dispose interactive process
+        _interactiveProcess?.Dispose();
     }
 }

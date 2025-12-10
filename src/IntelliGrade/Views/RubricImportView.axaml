@@ -19,7 +19,7 @@
     <Grid RowDefinitions="Auto,*,Auto" Margin="32,24,32,24">
 
         <!-- Header -->
-        <StackPanel Grid.Row="0" Spacing="8" Margin="0,0,0,24" MaxWidth="700" HorizontalAlignment="Center">
+        <StackPanel Grid.Row="0" Spacing="8" Margin="0,0,0,20" MaxWidth="700" HorizontalAlignment="Center">
             <TextBlock Text="Import Rubric"
                        Classes="section-header"/>
             <TextBlock Text="Add a new grading rubric from text or file. The program will automatically convert it to JSON format."
@@ -28,11 +28,11 @@
         </StackPanel>
 
         <!-- Content -->
-        <ScrollViewer Grid.Row="1" Padding="0,0,8,0">
-            <StackPanel Spacing="20" MaxWidth="700" HorizontalAlignment="Center">
+        <ScrollViewer Grid.Row="1" Padding="0,0,8,0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <StackPanel Spacing="20" MaxWidth="700" HorizontalAlignment="Center" Margin="0,0,0,20">
 
                 <!-- Course and Language Selection -->
-                <Border Classes="card" Padding="20">
+                <Border Classes="card" Padding="20" MaxWidth="700">
                     <Grid RowDefinitions="Auto,12,Auto,12,Auto" ColumnDefinitions="*,16,*">
 
                         <TextBlock Grid.Row="0" Grid.ColumnSpan="3"
@@ -42,36 +42,39 @@
                                    Margin="0,0,0,8"/>
 
                         <!-- Course Selection -->
-                        <StackPanel Grid.Row="2" Grid.Column="0">
+                        <StackPanel Grid.Row="2" Grid.Column="0" Spacing="4">
                             <TextBlock Text="Course" Classes="label"/>
                             <ComboBox ItemsSource="{Binding Courses}"
                                       SelectedItem="{Binding SelectedCourse}"
                                       PlaceholderText="Select course..."
-                                      HorizontalAlignment="Stretch"/>
+                                      HorizontalAlignment="Stretch"
+                                      MinWidth="200"/>
                         </StackPanel>
 
                         <!-- Language Selection -->
-                        <StackPanel Grid.Row="2" Grid.Column="2">
+                        <StackPanel Grid.Row="2" Grid.Column="2" Spacing="4">
                             <TextBlock Text="Programming Language" Classes="label"/>
                             <ComboBox ItemsSource="{Binding Languages}"
                                       SelectedItem="{Binding SelectedLanguage}"
                                       PlaceholderText="Select language..."
-                                      HorizontalAlignment="Stretch"/>
+                                      HorizontalAlignment="Stretch"
+                                      MinWidth="200"/>
                         </StackPanel>
 
                         <!-- Assignment Name -->
-                        <StackPanel Grid.Row="4" Grid.ColumnSpan="3">
+                        <StackPanel Grid.Row="4" Grid.ColumnSpan="3" Spacing="4">
                             <TextBlock Text="Assignment Name" Classes="label"/>
                             <TextBox Text="{Binding AssignmentName}"
                                      Watermark="e.g., W06 Lab - Binary Tree"
-                                     MaxLength="100"/>
+                                     MaxLength="100"
+                                     HorizontalAlignment="Stretch"/>
                         </StackPanel>
 
                     </Grid>
                 </Border>
 
                 <!-- Rubric Content -->
-                <Border Classes="card" Padding="20">
+                <Border Classes="card" Padding="20" MaxWidth="700">
                     <StackPanel Spacing="12">
                         <Grid ColumnDefinitions="*,Auto">
                             <TextBlock Grid.Column="0"
@@ -83,17 +86,19 @@
                                     Content="Load from File"
                                     Command="{Binding ImportFromFileCommand}"
                                     Classes="secondary"
-                                    Padding="16,8"/>
+                                    Padding="16,8"
+                                    FontSize="13"/>
                         </Grid>
 
                         <TextBox Text="{Binding RubricText}"
                                  AcceptsReturn="True"
                                  TextWrapping="Wrap"
-                                 MinHeight="250"
-                                 MaxHeight="350"
+                                 MinHeight="200"
+                                 MaxHeight="300"
                                  Watermark="Paste or type your rubric here, or use 'Load from File' button..."
                                  FontFamily="JetBrains Mono,Consolas,Menlo,Monaco,Courier New,monospace"
-                                 FontSize="13"/>
+                                 FontSize="13"
+                                 HorizontalAlignment="Stretch"/>
 
                         <TextBlock Classes="description" FontSize="11" TextWrapping="Wrap">
                             Tip: The program works best with rubrics that clearly list criteria and point values.
@@ -103,7 +108,7 @@
                 </Border>
 
                 <!-- Conversion Options -->
-                <Border Classes="card" Padding="20">
+                <Border Classes="card" Padding="20" MaxWidth="700">
                     <StackPanel Spacing="12">
                         <TextBlock Text="Conversion Options"
                                    Classes="label"
@@ -167,6 +172,7 @@
                         Content="Save Rubric"
                         Command="{Binding SaveRubricCommand}"
                         Classes="primary"
+                        FontSize="13"
                         Width="120"
                         MinHeight="36"
                         Margin="0,0,12,0"
@@ -176,6 +182,7 @@
                         Content="Cancel"
                         Click="CancelButton_Click"
                         Classes="secondary"
+                        FontSize="13"
                         Width="100"
                         MinHeight="36"
                         IsEnabled="{Binding !IsProcessing}"/>

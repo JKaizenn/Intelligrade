@@ -31,7 +31,11 @@ public class RubricConverterService
             var json = ExtractJson(response);
             return IsValidJson(json) ? json : null;
         }
-        catch { return null; }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Failed to convert rubric to JSON: {ex.Message}");
+            return null;
+        }
     }
 
     public string? ConvertSimpleRubric(string plainTextRubric, string courseName, string assignmentName, string language = "")
@@ -56,8 +60,9 @@ public class RubricConverterService
 
             return JsonSerializer.Serialize(rubric, options);
         }
-        catch
+        catch (Exception ex)
         {
+            System.Diagnostics.Debug.WriteLine($"Failed to convert simple rubric: {ex.Message}");
             return null;
         }
     }

@@ -26,11 +26,13 @@
                             <Button Grid.Column="0"
                                     Content="Select Directory"
                                     Command="{Binding SelectDirectoryCommand}"
-                                    Classes="primary"/>
+                                    Classes="primary"
+                                    FontSize="13"/>
                             <Button Grid.Column="2"
                                     Content="Clone Git Repo"
                                     Command="{Binding CloneGitRepositoryCommand}"
-                                    Classes="secondary"/>
+                                    Classes="secondary"
+                                    FontSize="13"/>
                         </Grid>
                     </StackPanel>
 
@@ -43,11 +45,15 @@
                             <Button Grid.Column="0"
                                     Content="Manage Courses"
                                     Command="{Binding ManageCoursesCommand}"
-                                    Classes="secondary"/>
+                                    Classes="secondary"
+                                    FontSize="13"
+                                    Padding="8,10"/>
                             <Button Grid.Column="2"
                                     Content="Import Rubric"
                                     Command="{Binding ImportRubricCommand}"
-                                    Classes="secondary"/>
+                                    Classes="secondary"
+                                    FontSize="13"
+                                    Padding="8,10"/>
                         </Grid>
                     </StackPanel>
 
@@ -72,7 +78,8 @@
                         <Button Content="Detect Languages"
                                 Command="{Binding DetectLanguagesCommand}"
                                 Margin="0,8,0,0"
-                                Classes="secondary"/>
+                                Classes="secondary"
+                                FontSize="13"/>
                     </StackPanel>
 
                     <!-- Source File Selection -->
@@ -102,11 +109,12 @@
                         <Button Content="Run Program"
                                 Command="{Binding RunProgramCommand}"
                                 IsEnabled="{Binding !IsProcessing}"
-                                Classes="primary"/>
+                                Classes="primary"
+                                FontSize="13"/>
 
                         <!-- AI Analysis Mode Selection -->
                         <StackPanel Spacing="8">
-                            <TextBlock Text="AI Analysis Mode" Classes="label" FontSize="12"/>
+                            <TextBlock Text="AI Analysis Mode" Classes="label" FontSize="13"/>
                             <ComboBox ItemsSource="{Binding AvailableModes}"
                                       SelectedItem="{Binding SelectedMode}"
                                       HorizontalAlignment="Stretch"
@@ -119,12 +127,12 @@
                                                            FontWeight="SemiBold"
                                                            FontSize="13"/>
                                                 <TextBlock Text="{Binding Description}"
-                                                           FontSize="10"
+                                                           FontSize="11"
                                                            Foreground="{DynamicResource TextSecondary}"/>
                                             </StackPanel>
                                             <TextBlock Grid.Column="1"
                                                        Text="{Binding EstimatedTime}"
-                                                       FontSize="10"
+                                                       FontSize="11"
                                                        Foreground="{DynamicResource TextSecondary}"
                                                        VerticalAlignment="Center"
                                                        Margin="6,0,0,0"/>
@@ -136,8 +144,9 @@
 
                         <Button Content="Analyze with AI"
                                 Command="{Binding AnalyzeCodeCommand}"
-                                IsEnabled="{Binding !IsProcessing}"
-                                Classes="secondary"/>
+                                IsEnabled="{Binding CanRunAnalysis}"
+                                Classes="secondary"
+                                FontSize="13"/>
 
                         <!-- Progress indicator (visible during analysis) -->
                         <StackPanel IsVisible="{Binding ShowAnalysisProgress}"
@@ -153,7 +162,8 @@
                         <Button Content="Cleanup Files"
                                 Command="{Binding CleanupFilesCommand}"
                                 IsEnabled="{Binding !IsProcessing}"
-                                Classes="danger"/>
+                                Classes="danger"
+                                FontSize="13"/>
                     </StackPanel>
 
                 </StackPanel>
@@ -169,21 +179,111 @@
                 <!-- Source Code Tab -->
                 <TabItem Header="Source Code">
                     <ScrollViewer Padding="16">
-                        <TextBox Text="{Binding SourceCode}" Classes="code"/>
+                        <TextBox Text="{Binding SourceCode}"
+                                 Classes="code"
+                                 IsReadOnly="True"
+                                 x:Name="SourceCodeTextBox"/>
                     </ScrollViewer>
                 </TabItem>
 
-                <!-- Program Output Tab -->
+                <!-- Program Output Tab - Read-Only View -->
                 <TabItem Header="Output">
-                    <ScrollViewer Padding="16">
-                        <TextBox Text="{Binding ProgramOutput}" Classes="code"/>
-                    </ScrollViewer>
+                    <Border Classes="card" Padding="16" Margin="16"
+                            VerticalAlignment="Stretch"
+                            HorizontalAlignment="Stretch">
+                        <Grid RowDefinitions="Auto,*">
+                            <TextBlock Grid.Row="0"
+                                       Text="Program Output"
+                                       FontWeight="SemiBold"
+                                       FontSize="14"
+                                       Margin="0,0,0,12"/>
+                            <TextBox Grid.Row="1"
+                                     Text="{Binding ProgramOutput}"
+                                     Classes="code"
+                                     IsReadOnly="True"
+                                     AcceptsReturn="True"
+                                     TextWrapping="Wrap"
+                                     ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                     VerticalAlignment="Stretch"
+                                     x:Name="OutputTextBox"/>
+                        </Grid>
+                    </Border>
+                </TabItem>
+
+                <!-- Interactive Terminal Tab -->
+                <TabItem Header="Terminal">
+                    <Border Classes="card" Padding="0" Margin="16"
+                            VerticalAlignment="Stretch"
+                            HorizontalAlignment="Stretch">
+                        <Grid RowDefinitions="Auto,*,Auto">
+                            <!-- Terminal Header -->
+                            <Border Grid.Row="0" Padding="16,16,16,8"
+                                    Background="{DynamicResource CardBackground}">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock Grid.Column="0"
+                                               Text="Interactive Terminal"
+                                               FontWeight="SemiBold"
+                                               FontSize="14"/>
+                                    <Button Grid.Column="1"
+                                            Content="Stop Program"
+                                            Command="{Binding StopProgramCommand}"
+                                            Classes="secondary"
+                                            FontSize="13"
+                                            Padding="12,6"
+                                            IsVisible="{Binding IsProgramRunning}"/>
+                                </Grid>
+                            </Border>
+
+                            <!-- Terminal Output -->
+                            <ScrollViewer Grid.Row="1"
+                                          VerticalScrollBarVisibility="Auto"
+                                          HorizontalScrollBarVisibility="Disabled"
+                                          Padding="16,8,16,8">
+                                <TextBlock Text="{Binding ProgramOutput}"
+                                           FontFamily="JetBrains Mono,Consolas,Menlo,Monaco,Courier New,monospace"
+                                           FontSize="13"
+                                           TextWrapping="Wrap"
+                                           Background="Transparent"
+                                           x:Name="TerminalOutputTextBlock"/>
+                            </ScrollViewer>
+
+                            <!-- Terminal Input Prompt -->
+                            <Border Grid.Row="2" Padding="16,8,16,16"
+                                    Background="{DynamicResource CardBackground}">
+                                <Grid ColumnDefinitions="Auto,*">
+                                    <TextBlock Grid.Column="0"
+                                               Text="> "
+                                               FontFamily="JetBrains Mono,Consolas,Menlo,Monaco,Courier New,monospace"
+                                               FontSize="13"
+                                               FontWeight="Bold"
+                                               Foreground="{DynamicResource SystemAccentColor}"
+                                               VerticalAlignment="Center"
+                                               Margin="0,0,4,0"/>
+                                    <TextBox Grid.Column="1"
+                                             Text="{Binding InteractiveInput}"
+                                             Watermark="Type your input here and press Enter..."
+                                             FontFamily="JetBrains Mono,Consolas,Menlo,Monaco,Courier New,monospace"
+                                             FontSize="13"
+                                             Background="Transparent"
+                                             BorderThickness="0"
+                                             Padding="0"
+                                             IsEnabled="{Binding IsProgramRunning}"
+                                             KeyDown="InteractiveInput_KeyDown"
+                                             x:Name="TerminalInputTextBox"/>
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </Border>
                 </TabItem>
 
                 <!-- Rubric Tab -->
                 <TabItem Header="Rubric">
                     <ScrollViewer Padding="16">
-                        <TextBox Text="{Binding RubricContent}" Classes="code"/>
+                        <TextBox Text="{Binding RubricContent}"
+                                 Classes="code"
+                                 IsReadOnly="True"
+                                 x:Name="RubricTextBox"/>
                     </ScrollViewer>
                 </TabItem>
 
@@ -195,7 +295,8 @@
                             <TextBox Text="{Binding AiAnalysis}"
                                      Classes="code"
                                      IsReadOnly="True"
-                                     AcceptsReturn="True"/>
+                                     AcceptsReturn="True"
+                                     x:Name="AiAnalysisTextBox"/>
 
                             <!-- Code Quality Analysis Button -->
                             <Border Classes="card" Padding="16" Margin="0,8,0,0">
@@ -203,15 +304,16 @@
                                     <StackPanel Grid.Column="0" VerticalAlignment="Center">
                                         <TextBlock Text="Advanced Code Quality Analysis" FontWeight="SemiBold"/>
                                         <TextBlock Text="Analyze complexity, bugs, security issues, and code smells"
-                                                   FontSize="12"
+                                                   FontSize="11"
                                                    Foreground="{DynamicResource TextSecondary}"/>
                                     </StackPanel>
                                     <Button Grid.Column="1"
                                             Content="Analyze Code Quality"
                                             Command="{Binding AnalyzeCodeQualityCommand}"
-                                            IsEnabled="{Binding !IsProcessing}"
+                                            IsEnabled="{Binding CanRunAnalysis}"
                                             Classes="secondary"
-                                            Padding="16,8"/>
+                                            Padding="16,8"
+                                            FontSize="13"/>
                                 </Grid>
                             </Border>
 
@@ -443,6 +545,7 @@
                                     <Button Grid.Column="1"
                                             Content="Analyze with AI"
                                             Command="{Binding AnalyzeCodeCommand}"
+                                            IsEnabled="{Binding CanRunAnalysis}"
                                             Classes="primary"
                                             Padding="16,8"/>
                                 </Grid>
@@ -482,6 +585,7 @@
                                                 Content="Apply All AI Suggestions"
                                                 Command="{Binding GradingSession.ApplyAllAiSuggestionsCommand}"
                                                 Classes="secondary"
+                                                FontSize="13"
                                                 Padding="12,6"/>
                                     </Grid>
 
@@ -544,7 +648,8 @@
                                                                         Classes="secondary"
                                                                         Padding="8,4"
                                                                         Margin="8,0,0,0"
-                                                                        VerticalAlignment="Top"/>
+                                                                        VerticalAlignment="Top"
+                                                                        FontSize="13"/>
                                                             </Grid>
                                                         </Border>
 
@@ -678,11 +783,13 @@
                                         <Button Grid.Column="0"
                                                 Content="Save as JSON"
                                                 Command="{Binding ExportJsonCommand}"
-                                                Classes="primary"/>
+                                                Classes="primary"
+                                                FontSize="13"/>
                                         <Button Grid.Column="2"
                                                 Content="Save as CSV"
                                                 Command="{Binding ExportCsvCommand}"
-                                                Classes="success"/>
+                                                Classes="success"
+                                                FontSize="13"/>
                                     </Grid>
                                 </StackPanel>
                             </Border>

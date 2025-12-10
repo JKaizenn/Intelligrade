@@ -2,12 +2,12 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="IntelliGrade.App.Views.GitCloneDialog"
         Title="Clone GitHub Repository"
-        Width="600" Height="280"
-        MinWidth="500" MinHeight="260"
+        Width="600" Height="380"
+        MinWidth="500" MinHeight="350"
         WindowStartupLocation="CenterOwner"
         CanResize="False">
 
-    <Grid RowDefinitions="Auto,Auto,Auto" Margin="32,24,32,24">
+    <Grid RowDefinitions="Auto,Auto,Auto" Margin="24,20,24,20">
 
         <!-- Header -->
         <StackPanel Grid.Row="0" Spacing="8" Margin="0,0,0,20" HorizontalAlignment="Center" MaxWidth="500">
@@ -31,7 +31,8 @@
                          FontSize="13"
                          HorizontalAlignment="Stretch"
                          MinWidth="400"
-                         MinHeight="32"/>
+                         MinHeight="32"
+                         KeyDown="RepoUrlTextBox_KeyDown"/>
                 <TextBlock Classes="description" FontSize="11" TextWrapping="Wrap" Margin="0,4,0,0" LineHeight="16">
                     Supported formats:
                     <LineBreak/>• https://github.com/username/repo.git
@@ -48,6 +49,7 @@
                     Content="Clone"
                     Click="CloneButton_Click"
                     Classes="primary"
+                    FontSize="13"
                     Width="120"
                     MinHeight="36"
                     Margin="0,0,12,0"/>
@@ -56,6 +58,7 @@
                     Content="Cancel"
                     Click="CancelButton_Click"
                     Classes="secondary"
+                    FontSize="13"
                     Width="100"
                     MinHeight="36"/>
 

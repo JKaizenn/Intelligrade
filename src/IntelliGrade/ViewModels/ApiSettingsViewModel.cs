@@ -29,10 +29,10 @@ public partial class ApiSettingsViewModel : ViewModelBase
     public ApiSettingsViewModel(LocalStorageService localStorage)
     {
         _localStorage = localStorage;
-        LoadSettings();
+        _ = LoadSettingsAsync();
     }
 
-    private async void LoadSettings()
+    private async Task LoadSettingsAsync()
     {
         try
         {
@@ -44,7 +44,11 @@ public partial class ApiSettingsViewModel : ViewModelBase
                 UseCustomEndpoint = settings.UseCustomEndpoint;
             }
         }
-        catch { }
+        catch (Exception ex)
+        {
+            // Settings load is non-critical - use defaults if it fails
+            System.Diagnostics.Debug.WriteLine($"Failed to load API settings: {ex.Message}");
+        }
     }
 
     [RelayCommand]
