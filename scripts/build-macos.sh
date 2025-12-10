@@ -8,7 +8,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 cd "$SCRIPT_DIR/.."
 
 APP_NAME="IntelliGrade"
-VERSION="0.9.0-beta"
+VERSION="1.0-beta"
 PROJECT_DIR="src/IntelliGrade"
 PUBLISH_DIR="$PROJECT_DIR/bin/Release/net10.0/osx-arm64/publish"
 APP_BUNDLE="$APP_NAME.app"
@@ -53,9 +53,9 @@ cat > "$APP_BUNDLE/Contents/Info.plist" << 'EOF'
     <key>CFBundleIdentifier</key>
     <string>com.intelligrade.app</string>
     <key>CFBundleVersion</key>
-    <string>0.9.0</string>
+    <string>1.0</string>
     <key>CFBundleShortVersionString</key>
-    <string>0.9.0-beta</string>
+    <string>1.0-beta</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleExecutable</key>

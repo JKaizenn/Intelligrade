@@ -2,7 +2,7 @@
 ; This creates a Windows installer for IntelliGrade
 
 #define MyAppName "IntelliGrade"
-#define MyAppVersion "0.9.0-beta"
+#define MyAppVersion "1.0-beta"
 #define MyAppPublisher "IntelliGrade"
 #define MyAppURL "https://github.com/JKaizenn/Intelligrade"
 #define MyAppExeName "IntelliGrade.exe"

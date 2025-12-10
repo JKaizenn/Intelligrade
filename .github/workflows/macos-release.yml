@@ -81,13 +81,13 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: IntelliGrade-macOS
-        path: IntelliGrade-v0.9.0-beta-macOS.dmg
+        path: IntelliGrade-v1.0-beta-macOS.dmg
 
     - name: Upload to Release
       if: github.event_name == 'release'
       uses: softprops/action-gh-release@v1
       with:
-        files: IntelliGrade-v0.9.0-beta-macOS.dmg
+        files: IntelliGrade-v1.0-beta-macOS.dmg
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
